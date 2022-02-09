@@ -4,7 +4,7 @@ import {
   DatafeedConfiguration,
   IBasicDataFeed,
   LibrarySymbolInfo,
-} from "../../../public/charting_library/charting_library";
+} from "../../../public/static/charting_library/charting_library";
 import { configurationData } from "./bitquery";
 
 export default (baseCurrency: string = "BNB"): IBasicDataFeed => ({

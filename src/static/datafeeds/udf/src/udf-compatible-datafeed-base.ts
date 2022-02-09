@@ -72,7 +72,7 @@ function extractField<Field extends keyof Mark>(data: UdfDatafeedMark, field: Fi
 function extractField<Field extends keyof TimescaleMark>(data: UdfDatafeedTimescaleMark, field: Field, arrayIndex: number): TimescaleMark[Field];
 function extractField<Field extends keyof(TimescaleMark | Mark)>(data: UdfDatafeedMark | UdfDatafeedTimescaleMark, field: Field, arrayIndex: number): (TimescaleMark | Mark)[Field] {
 	const value = data[field];
-	return Array.isArray(value) ? value[arrayIndex] : value;
+	return Array.isArray(value) ? <any> value[arrayIndex] : <any> value;
 }
 
 /**
@@ -234,9 +234,9 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 			};
 
 			this._send<UdfSearchSymbolsResponse | UdfErrorResponse>('search', params)
-				.then((response: UdfSearchSymbolsResponse | UdfErrorResponse) => {
+				.then((response: any) => {
 					if (response.s !== undefined) {
-						logMessage(`UdfCompatibleDatafeed: search symbols error=${response.errmsg}`);
+						logMessage(`UdfCompatibleDatafeed: search symbols error=${response.s}`);
 						onResult([]);
 						return;
 					}
@@ -282,7 +282,7 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 			}
 
 			this._send<ResolveSymbolResponse | UdfErrorResponse>('symbols', params)
-				.then((response: ResolveSymbolResponse | UdfErrorResponse) => {
+				.then((response: any) => {
 					if (response.s !== undefined) {
 						onError('unknown_symbol');
 					} else {
