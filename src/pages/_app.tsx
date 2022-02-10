@@ -10,7 +10,7 @@ import { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { BSC_RPC_URL } from "@app/shared/AppConstant";
 import compose from "@app/shared/helpers/compose";
-import "@app/styles/tailwind.css";
+import "@app/styles/globals.css";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -38,7 +38,6 @@ function OrbitApp({
     <CacheProvider value={emotionCache}>
       <DAppProvider config={config}>
         <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           <Layout>
             <Component {...pageProps} />

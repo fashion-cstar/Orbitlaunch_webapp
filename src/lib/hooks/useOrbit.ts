@@ -57,6 +57,7 @@ export default function useOrbit() {
     marketCap: "0",
   });
 
+  // @todo: update format to use for amounts in $ and amount of holders
   useEffect(() => {
     if (orbitToken?.decimals && lpBalance && data && burnBalance) {
       const _liquidity = Number(formatUnits(lpBalance, orbitToken.decimals));
