@@ -3,9 +3,7 @@ import FundCard from "./Cards/FundCard";
 import ExchangeCard from "./Cards/ExchangeCard";
 import PadCard from "./Cards/PadCard";
 import AnalyticsCard from "./Cards/AnalyticsCard";
-import { Button } from "@mui/material";
-
-const buyM31viaPCS = 'https://pancakeswap.finance/swap?outputCurrency=0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414';
+import BuyButton from "../common/BuyButton";
 
 export default function Board() {
     return (
@@ -15,14 +13,7 @@ export default function Board() {
         <div className="flex flex-col space-y-4 w-full">
             <div className="flex flex-row items-center">
                 <h1 className="text-[40px] font-medium">Dashboard</h1>
-                <div className="absolute right-10">
-                    <Button 
-                        variant="contained" 
-                        href={buyM31viaPCS} 
-                        target="_blank">
-                            Buy M31
-                    </Button>
-                </div>
+                <BuyButton></BuyButton>
             </div>
             <div className="flex flex-row space-x-4">
                 <div className="flex-1">

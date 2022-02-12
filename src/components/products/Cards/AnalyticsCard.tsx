@@ -1,5 +1,7 @@
 const styleHeight = {
     height: '300px',
+    textAlign: 'center' as 'center',
+    color: 'grey',
 }
 
 export default function AnalyticsCard() {

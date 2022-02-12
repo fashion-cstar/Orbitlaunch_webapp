@@ -15,10 +15,10 @@ export enum SidebarItem {
 
 export const SIDEBAR_ROUTES = {
   [SidebarItem.DASHBOARD]: "/",
-  [SidebarItem.PAD]: "/coming-soon", // "/pad",
-  [SidebarItem.ANALYTICS]: "/coming-soon", // "/analytics",
-  [SidebarItem.FUND]: "/coming-soon", // "/fund",
-  [SidebarItem.EXCHANGE]: "/coming-soon", // "/exchange",
+  [SidebarItem.PAD]: "/pad",
+  [SidebarItem.ANALYTICS]: "/analytics",
+  [SidebarItem.FUND]: "/fund",
+  [SidebarItem.EXCHANGE]: "/exchange",
 };
 
 export const SIDEBAR_ITEMS = {

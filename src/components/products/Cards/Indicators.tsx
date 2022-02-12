@@ -32,7 +32,7 @@ export default function Indicators() {
                     <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                         <span>Holders</span>
                     </div>
-                    <div className="text-xl">${holders}</div>
+                    <div className="text-xl">{holders}</div>
                 </div>
                 {/* @todo: have a variation e.g up to 28% */}
                 <div className="flex-1 rounded-md bg-[#001926] p-4">
