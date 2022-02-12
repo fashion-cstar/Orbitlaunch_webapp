@@ -89,14 +89,13 @@ export class TVChartContainer extends PureComponent {
 		}
 	}
 
+	// @todo: change the w- size to fix the mockup even if the chart is not the target
 	render() {
 		return (
-			<div className="flex-1">
-				<div
-					id={this.props.containerId}
-					className={"h-full w-full block"}
-				/>
-			</div>
+			<div
+				id={this.props.containerId}
+				className={"h-full w-full block"}
+			/>
 		);
 	}
 }

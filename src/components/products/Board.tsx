@@ -1,50 +1,46 @@
-import useOrbit from "@app/lib/hooks/useOrbit";
-import dynamic from "next/dynamic";
-import { NoSsr } from "@mui/material";
+import Indicators from "@app/components/products/Cards/Indicators";
+import FundCard from "./Cards/FundCard";
+import ExchangeCard from "./Cards/ExchangeCard";
+import PadCard from "./Cards/PadCard";
+import AnalyticsCard from "./Cards/AnalyticsCard";
+import { Button } from "@mui/material";
 
-const TVChartContainer = dynamic(
-    () =>
-        import("@app/components/TVChartContainer/TVChartContainer").then(
-        (mod) => mod.TVChartContainer
-        ),
-    { ssr: false }
-);
+const buyM31viaPCS = 'https://pancakeswap.finance/swap?outputCurrency=0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414';
 
 export default function Board() {
-    const { liquidityPool, price, marketCap, holders } = useOrbit();
-
     return (
-        <div className="space-y-6 w-full">
-            <h1 className="text-3xl font-medium">Dashboard</h1>
-            <div className="flex items-center space-x-6 w-full">
-            <div className="space-y-2 rounded-md bg-[#001926] p-4 flex-1">
-                <div className="flex items-center space-x-2 text-xs font-bold uppercase text-app-primary">
-                <span>Market Cap</span>
+        // @todo: split by components, start chart.js, formating, align & grey center, button designs, connexion compo, menu & assets
+        // @todo: find a way to keep the same css values between screens and do common css var
+        <>
+        <div className="flex flex-col space-y-4 w-full">
+            <div className="flex flex-row items-center">
+                <h1 className="text-[40px] font-medium">Dashboard</h1>
+                <div className="absolute right-10">
+                    <Button 
+                        variant="contained" 
+                        href={buyM31viaPCS} 
+                        target="_blank">
+                            Buy M31
+                    </Button>
                 </div>
-                <div className="text-2xl">${marketCap}</div>
             </div>
-            <div className="space-y-2 rounded-md bg-[#001926] p-4 flex-1">
-                <div className="flex items-center space-x-2 text-xs font-bold uppercase text-app-primary">
-                <span>Liquidity Pool</span>
+            <div className="flex flex-row space-x-4">
+                <div className="flex-1">
+                    <Indicators></Indicators>
                 </div>
-                <div className="text-2xl">${liquidityPool}</div>
-            </div>
-            <div className="space-y-2 rounded-md bg-[#001926] p-4 flex-1">
-                <div className="flex items-center space-x-2 text-xs font-bold uppercase text-app-primary">
-                <span>Holders</span>
+                <div className="columns-3 rounded-md bg-[#001926] p-4">
+                    Latest News
                 </div>
-                <div className="text-2xl">{holders}</div>
             </div>
-            <div className="space-y-2 rounded-md bg-[#001926] p-4 flex-1">
-                <div className="flex items-center space-x-2 text-xs font-bold uppercase text-app-primary">
-                <span>Price</span>
-                </div>
-                <div className="text-2xl">${price}</div>
+            <div className="flex flex-row space-x-4">
+                <PadCard></PadCard>
+                <AnalyticsCard></AnalyticsCard>
             </div>
+            <div className="flex flex-row space-x-4">
+                <FundCard></FundCard>
+                <ExchangeCard></ExchangeCard>
             </div>
-            <NoSsr>
-                <TVChartContainer />
-            </NoSsr>
         </div>
+        </>
     )
 }

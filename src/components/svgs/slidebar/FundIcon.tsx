@@ -1,0 +1,11 @@
+import createSvg from "../createSvg";
+
+export default createSvg((props) => {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path opacity="0.3" fill-rule="evenodd" clip-rule="evenodd" d="M4 4H20C21.1046 4 22 4.89543 22 6V18C22 19.1046 21.1046 20 20 20H4C2.89543 20 2 19.1046 2 18V6C2 4.89543 2.89543 4 4 4Z" fill="#BAB8CC" fill-opacity="0.64" />
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M18.5 11H5.5C4.67157 11 4 11.6716 4 12.5V13H8.58579C8.851 13 9.10536 13.1054 9.29289 13.2929L10.2929 14.2929C10.7456 14.7456 11.3597 15 12 15C12.6403 15 13.2544 14.7456 13.7071 14.2929L14.7071 13.2929C14.8946 13.1054 15.149 13 15.4142 13H20V12.5C20 11.6716 19.3284 11 18.5 11Z" fill="#BAB8CC" fill-opacity="0.64" />
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M5.5 6C4.67157 6 4 6.67157 4 7.5V8H20V7.5C20 6.67157 19.3284 6 18.5 6H5.5Z" fill="#BAB8CC" fill-opacity="0.64" />
+    </svg>
+  );
+});

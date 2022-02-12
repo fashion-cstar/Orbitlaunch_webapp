@@ -9,6 +9,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      {/* @todo: add elements that corresponds to board content */}
+      {/* @todo: then create large board related to each sub products:
+      e.g when user click on menu or board card title for Orbit Fund, the screen change the content and load related Orbit Fund features */}
       <Board></Board>
     </>
   );

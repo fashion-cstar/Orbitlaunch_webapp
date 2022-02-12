@@ -1,3 +1,5 @@
+// @todo: make it more simple
+
 import {
   CSSObject,
   Drawer as MuiDrawer,
@@ -128,7 +130,8 @@ export default function Sidebar({ isOpen }: SidebarProps) {
         "& .MuiDrawer-paper": {
           zIndex: 20,
           top: 64,
-          backgroundColor: "#06111C",
+          backgroundColor: "transparent",
+          // backgroundColor: "#06111C",
           borderRight: "1px solid #112b40",
           display: "flex",
           alignItems: "center",
@@ -180,7 +183,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
                   >
                     <Icon active={isActive} />
                     {isOpen && (
-                      <div className="text-sm">{SIDEBAR_ITEMS[key]}</div>
+                      <div className="text-sm mx-12">{SIDEBAR_ITEMS[key]}</div>
                     )}
                   </a>
                 </Link>
