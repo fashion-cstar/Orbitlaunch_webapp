@@ -19,7 +19,7 @@ Orbitlaunch.io dapp contains different products:
 - npm i
 - npm run dev
 
-## practices
+## practices and misc info
 
 - start new branch for each development purpose, think small and tiny change easy to review and integrate quickly
 - every components are available under src/components, we have a common layout which include header and sidebar
