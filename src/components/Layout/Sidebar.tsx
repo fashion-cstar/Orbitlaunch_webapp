@@ -24,7 +24,7 @@ import { useEthers } from "@usedapp/core";
 import { ArrowDown2 } from "iconsax-react";
 import localforage from "localforage";
 import { MouseEvent, useState } from "react";
-import { useWalletConnect } from "../WalletConnect/WalletConnect";
+import Wallet from "./Wallet";
 
 const drawerWidth = 216;
 
@@ -145,11 +145,6 @@ export default function Sidebar({ isOpen }: SidebarProps) {
           const Icon = SIDEBAR_ICON_MAP[key];
           const isActive = routeMatch(SIDEBAR_ROUTES[key]);
           const isComingSoon = SIDEBAR_ROUTES[key] === "/coming-soon";
-
-          const { openWalletConnectDialog } = useWalletConnect();
-          const { account } = useEthers();
-          const isConnected = !!account;
-
           return (
             <Tooltip
               // disableHoverListener={isOpen}
@@ -190,23 +185,9 @@ export default function Sidebar({ isOpen }: SidebarProps) {
                 </Link>
               </div>
             </Tooltip>
-            // @todo: create a dedicated component to handle Wallet connexion
-            // {!isConnected && (
-            //   <Button
-            //     variant="outlined"
-            //     onClick={openWalletConnectDialog}
-            //     className="relative"
-            //   >
-            //     <span className="absolute -top-1 right-[-6px] flex h-3 w-3">
-            //       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-app-primary opacity-75"></span>
-            //       <span className="relative inline-flex h-3 w-3 rounded-full bg-app-primary"></span>
-            //     </span>
-            //     Connect Wallet
-            //   </Button>
-            // )}
-            // {isConnected && <AccountMenu />}
           );
         })}
+        <Wallet />
       </div>
     </Drawer>
   );
