@@ -1,7 +1,7 @@
 import { Button } from '@mui/material'
 import { useEthers } from '@usedapp/core'
 import { ArrowSwapHorizontal } from 'iconsax-react'
-import { CHAIN_ID_MAP, CHAIN_ID_ICON_MAP } from 'shared/AppConstant'
+import { CHAIN_ID_MAP, CHAIN_ID_ICON_MAP } from '@app/shared/AppConstant'
 import { useWalletConnect } from './WalletConnect'
 
 export default function ConnectCard() {
