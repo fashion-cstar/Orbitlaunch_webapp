@@ -9,7 +9,7 @@ Orbitlaunch.io dapp contains different products:
 
 ## technical stack
 
-- Frontend use: Next.js (react based framework), TailwindCSS, MUI material, Axios, Web3 libraries
+- Frontend use: Next.js (react based framework), TailwindCSS, MUI material, Axios, Usedapp Web3 libraries
 - Deployment for development purpose used Vercel: https://vercel.com/teams/orbitdev
 - Production deployment is based on AWS EC2
 
@@ -34,3 +34,5 @@ Preview the example live on [StackBlitz](http://stackblitz.com/):
 
 Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-tailwindcss&project-name=with-tailwindcss&repository-name=with-tailwindcss)
+
+Interacting with Web3 using [Usedapp](https://usedapp.readthedocs.io/en/latest/getting-started.html)

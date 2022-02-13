@@ -1,25 +1,31 @@
 import { Button } from "@mui/material";
-import { useEthers } from "@usedapp/core";
+import { useTokenBalance, useEthers } from "@usedapp/core";
 import { useWalletConnect } from "@app/components/WalletConnect/WalletConnect";
 import localforage from "localforage";
+import { formatEther } from "@ethersproject/units";
+import useOrbit from "@app/lib/hooks/useOrbit";
+import { AppTokenAddress } from '@app/shared/AppConstant';
 
 function BalanceAmount() {
-  // @todo get amount of M31 and * with the price to get the value in $
-  const m31Amount = "62,816";
-  const dollarAmount = "58,152";
+  const m31Address = AppTokenAddress;
+  const { account } = useEthers();
+  const userBalance = useTokenBalance(m31Address, account);
+  const formattedBalance = (!!userBalance) ? formatEther(userBalance) : '0';
+  const m31Amount = (!!formattedBalance) ? parseFloat(formattedBalance).toFixed(3) : '0';
+
+  const orbitKpi = (useOrbit()) ? useOrbit() : null;
+  const amountInDolls = (!!orbitKpi.price) ? parseFloat(m31Amount) * parseFloat(orbitKpi.price) : 0;
 
   return (
     <>
-      <div className="flex justify-center text-xs">{m31Amount} M31 (${dollarAmount})</div>
+      <div className="flex justify-center text-xs">{m31Amount} M31 (${amountInDolls.toFixed(2)})</div>
     </>
   )
 }
 
 function BalanceAndDisconnect() {
-
+  const { deactivate, connector } = useEthers();
   const handleDisconnect = async () => {
-    const { deactivate, connector } = useEthers();
-
     await localforage.setItem("connectionStatus", false);
     deactivate();
     if (connector) {
