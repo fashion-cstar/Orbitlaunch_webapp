@@ -1,11 +1,11 @@
 # app.orbitlaunch.io decentralized application - frontend
 
 Orbitlaunch.io dapp contains different products:
-- Dashboard: allow user to get an updated status on kpi related to $M31, launchpad, fund, analytics, exchange and twitter latest news
-- OrbitPad: tbd
-- OrbitAnalytics: tbd
-- OrbitFund: tbd
-- OrbitExchange: tbd
+- Dashboard (app.orbitlaunch.io): allow user to get an updated status on kpi related to $M31, launchpad, fund, analytics, exchange and twitter latest news
+- OrbitPad (app.orbitlaunch.io/pad): tbd
+- OrbitAnalytics (app.orbitlaunch.io/analytics): tbd
+- OrbitFund (app.orbitlaunch.io/fund): tbd
+- OrbitExchange (app.orbitlaunch.io/exchange): tbd
 
 ## technical stack
 
