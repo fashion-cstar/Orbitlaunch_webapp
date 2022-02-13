@@ -1,54 +1,48 @@
-import ChartIcon from "@app/components/svgs/ChartIcon";
-import DashboardIcon from "@app/components/svgs/DashboardIcon";
-import DexIcon from "@app/components/svgs/DexIcon";
-import FeedIcon from "@app/components/svgs/FeedIcon";
-import HedgeIcon from "@app/components/svgs/HedgeIcon";
-import LaunchpadIcon from "@app/components/svgs/LaunchpadIcon";
-import MultiChartIcon from "@app/components/svgs/MultiChartIcon";
-import OnChainIcon from "@app/components/svgs/OnChainIcon";
-import StakeIcon from "@app/components/svgs/StakeIcon";
-import SwapIcon from "@app/components/svgs/SwapIcon";
-import WalletIcon from "@app/components/svgs/WalletIcon";
+import DashboardIcon from "@app/components/svgs/slidebar/DashboardIcon";
+import ExchangeIcon from "@app/components/svgs/slidebar/ExchangeIcon";
+import FundIcon from "@app/components/svgs/slidebar/FundIcon";
+import PadIcon from "@app/components/svgs/slidebar/PadIcon";
+import AnalyticsIcon from "@app/components/svgs/slidebar/AnalyticsIcon";
 import { colors } from "@app/components/token/colors";
 
 export enum SidebarItem {
   DASHBOARD,
-  LAUNCHPAD,
-  ON_CHAIN,
-  DEX,
-  HEDGEFUND,
+  PAD,
+  ANALYTICS,
+  FUND,
+  EXCHANGE,
 }
 
 export const SIDEBAR_ROUTES = {
   [SidebarItem.DASHBOARD]: "/",
-  [SidebarItem.LAUNCHPAD]: "/coming-soon", // "/portfolio",
-  [SidebarItem.ON_CHAIN]: "/coming-soon", // "/feed",
-  [SidebarItem.DEX]: "/coming-soon", // "/chart",
-  [SidebarItem.HEDGEFUND]: "/coming-soon",
+  [SidebarItem.PAD]: "/pad",
+  [SidebarItem.ANALYTICS]: "/analytics",
+  [SidebarItem.FUND]: "/fund",
+  [SidebarItem.EXCHANGE]: "/exchange",
 };
 
 export const SIDEBAR_ITEMS = {
   [SidebarItem.DASHBOARD]: "Dashboard",
-  [SidebarItem.LAUNCHPAD]: "Launchpad",
-  [SidebarItem.ON_CHAIN]: "On Chain",
-  [SidebarItem.DEX]: "Dex",
-  [SidebarItem.HEDGEFUND]: "Hedgefund",
+  [SidebarItem.PAD]: "OrbitPad",
+  [SidebarItem.ANALYTICS]: "OrbitAnalytics",
+  [SidebarItem.FUND]: "OrbitFund",
+  [SidebarItem.EXCHANGE]: "OrbitExchange",
 };
 
 export const SIDEBAR_ICON_MAP = {
   [SidebarItem.DASHBOARD]: ({ active }: { active?: boolean }) => (
     <DashboardIcon fill={active ? colors.app.primary : "#BAB8CC"} />
   ),
-  [SidebarItem.LAUNCHPAD]: ({ active }: { active?: boolean }) => (
-    <LaunchpadIcon fill={active ? colors.app.primary : "#BAB8CC"} />
+  [SidebarItem.PAD]: ({ active }: { active?: boolean }) => (
+    <PadIcon fill={active ? colors.app.primary : "#BAB8CC"} />
   ),
-  [SidebarItem.ON_CHAIN]: ({ active }: { active?: boolean }) => (
-    <OnChainIcon fill={active ? colors.app.primary : "#BAB8CC"} />
+  [SidebarItem.ANALYTICS]: ({ active }: { active?: boolean }) => (
+    <AnalyticsIcon fill={active ? colors.app.primary : "#BAB8CC"} />
   ),
-  [SidebarItem.DEX]: ({ active }: { active?: boolean }) => (
-    <DexIcon fill={active ? colors.app.primary : "#BAB8CC"} />
+  [SidebarItem.FUND]: ({ active }: { active?: boolean }) => (
+    <FundIcon fill={active ? colors.app.primary : "#BAB8CC"} />
   ),
-  [SidebarItem.HEDGEFUND]: ({ active }: { active?: boolean }) => (
-    <HedgeIcon fill={active ? colors.app.primary : "#BAB8CC"} />
+  [SidebarItem.EXCHANGE]: ({ active }: { active?: boolean }) => (
+    <ExchangeIcon fill={active ? colors.app.primary : "#BAB8CC"} />
   ),
 };

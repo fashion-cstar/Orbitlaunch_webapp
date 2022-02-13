@@ -1,14 +1,14 @@
 import Head from "next/head";
-import Board from "@app/components/products/Board";
+import Exchange from "@app/components/products/Exchange";
 
 export default function Home() {
   return (
     <>
       <Head>
-        <title>Orbit - Dashboard</title>
+        <title>OrbitExchange</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Board></Board>
+      <Exchange></Exchange>
     </>
   );
 }

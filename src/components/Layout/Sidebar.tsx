@@ -1,3 +1,6 @@
+// @todo: make it more simple
+// @todo: remove unused code dedicated and coming soon
+
 import {
   CSSObject,
   Drawer as MuiDrawer,
@@ -15,6 +18,13 @@ import {
   SIDEBAR_ICON_MAP,
   SIDEBAR_ROUTES,
 } from "./LayoutConstants";
+
+import { Button, Menu, MenuItem } from "@mui/material";
+import { useEthers } from "@usedapp/core";
+import { ArrowDown2 } from "iconsax-react";
+import localforage from "localforage";
+import { MouseEvent, useState } from "react";
+import { useWalletConnect } from "../WalletConnect/WalletConnect";
 
 const drawerWidth = 216;
 
@@ -57,6 +67,54 @@ interface SidebarProps {
   isOpen: boolean;
 }
 
+function AccountMenu() {
+  const { account, deactivate, connector } = useEthers();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleDisconnect = async () => {
+    await localforage.setItem("connectionStatus", false);
+    deactivate();
+    if (connector) {
+      (connector as any)?.deactivate();
+    }
+  };
+
+  return (
+    <div>
+      <Button
+        onClick={handleClick}
+        variant="contained"
+        className="rounded bg-app-dark-primary p-[10px] font-mono text-sm text-white"
+        endIcon={<ArrowDown2 size={12} />}
+      >
+        {account?.substr(0, 4)}*****
+        {account?.substr(account?.length - 4, 4)}
+      </Button>
+      <Menu
+        id="account-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          "aria-labelledby": "account-button",
+          className: "bg-app-dark-primary py-0",
+        }}
+      >
+        <MenuItem onClick={handleDisconnect}>Disconnect</MenuItem>
+      </Menu>
+    </div>
+  );
+}
+
 export default function Sidebar({ isOpen }: SidebarProps) {
   const router = useRouter();
   const matchesDesktop = useMediaQuery(`(min-width: 1024px)`);
@@ -73,7 +131,8 @@ export default function Sidebar({ isOpen }: SidebarProps) {
         "& .MuiDrawer-paper": {
           zIndex: 20,
           top: 64,
-          backgroundColor: "#06111C",
+          backgroundColor: "transparent",
+          // backgroundColor: "#06111C",
           borderRight: "1px solid #112b40",
           display: "flex",
           alignItems: "center",
@@ -86,6 +145,11 @@ export default function Sidebar({ isOpen }: SidebarProps) {
           const Icon = SIDEBAR_ICON_MAP[key];
           const isActive = routeMatch(SIDEBAR_ROUTES[key]);
           const isComingSoon = SIDEBAR_ROUTES[key] === "/coming-soon";
+
+          const { openWalletConnectDialog } = useWalletConnect();
+          const { account } = useEthers();
+          const isConnected = !!account;
+
           return (
             <Tooltip
               // disableHoverListener={isOpen}
@@ -120,12 +184,27 @@ export default function Sidebar({ isOpen }: SidebarProps) {
                   >
                     <Icon active={isActive} />
                     {isOpen && (
-                      <div className="text-sm">{SIDEBAR_ITEMS[key]}</div>
+                      <div className="text-sm mx-12">{SIDEBAR_ITEMS[key]}</div>
                     )}
                   </a>
                 </Link>
               </div>
             </Tooltip>
+            // @todo: create a dedicated component to handle Wallet connexion
+            // {!isConnected && (
+            //   <Button
+            //     variant="outlined"
+            //     onClick={openWalletConnectDialog}
+            //     className="relative"
+            //   >
+            //     <span className="absolute -top-1 right-[-6px] flex h-3 w-3">
+            //       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-app-primary opacity-75"></span>
+            //       <span className="relative inline-flex h-3 w-3 rounded-full bg-app-primary"></span>
+            //     </span>
+            //     Connect Wallet
+            //   </Button>
+            // )}
+            // {isConnected && <AccountMenu />}
           );
         })}
       </div>

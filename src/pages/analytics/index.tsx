@@ -1,14 +1,14 @@
 import Head from "next/head";
-import Board from "@app/components/products/Board";
+import Analytics from "@app/components/products/Analytics";
 
 export default function Home() {
   return (
     <>
       <Head>
-        <title>Orbit - Dashboard</title>
+        <title>OrbitAnalytics</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Board></Board>
+      <Analytics></Analytics>
     </>
   );
 }
