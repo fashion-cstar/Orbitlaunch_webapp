@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>OrbitPad</title>
+        <title>OrbitFund</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Fund></Fund>

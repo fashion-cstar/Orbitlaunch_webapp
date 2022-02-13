@@ -94,7 +94,7 @@ export class TVChartContainer extends PureComponent {
 		return (
 			<div
 				id={this.props.containerId}
-				className={"h-full w-full block"}
+				// className={"h-full w-full block"}
 			/>
 		);
 	}
