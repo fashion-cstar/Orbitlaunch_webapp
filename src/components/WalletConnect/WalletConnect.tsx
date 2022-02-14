@@ -10,6 +10,8 @@ import TrustWalletCard from "./TrustWalletCard";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import localforage from "localforage";
 
+import { providers as hello } from "ethers";
+
 export const WalletConnectContext = createContext({
   open: false,
   openWalletConnectDialog: () => {},
@@ -39,8 +41,11 @@ export const WalletConnectProvider: FC = ({ children }) => {
   const handleConnectWalletConnect = async () => {
     try {
       // @todo: try using provider instead connectors
+      // @todo: fix here, can connect, no able to display wallet info
       await wcoprovider.enable();
-      // await activate(walletConnectConnector);
+      const web3Provider = new hello.Web3Provider(wcoprovider);
+      console.log(wcoprovider.accounts); // this works
+      await activate(web3Provider);
       await localforage.setItem("connectionStatus", true);
     } catch (error) {
       console.log(error);

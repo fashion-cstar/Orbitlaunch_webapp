@@ -17,5 +17,9 @@ export const walletConnectConnector = new WalletConnectConnector({
 });
 
 export const wcoprovider = new WalletConnectProvider({
-  infuraId: "64b1a32f80f249aa9fffbe3f89820148"
+  rpc: {
+    56: "https://bsc-dataseed1.binance.org",
+    1: "https://mainnet.infura.io/v3/64b1a32f80f249aa9fffbe3f89820148",
+  },
+  // infuraId: "64b1a32f80f249aa9fffbe3f89820148"
 })
