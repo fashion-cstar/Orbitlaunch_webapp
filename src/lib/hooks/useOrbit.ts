@@ -65,8 +65,8 @@ export default function useOrbit() {
         Number(formatUnits(orbitToken.totalSupply, orbitToken.decimals)) -
         Number(formatUnits(burnBalance, orbitToken.decimals));
       setInfo({
-        liquidityPool: formatToUSD((_liquidity * data.price).toFixed(0)),
-        price: data.price?.toFixed(7),
+        liquidityPool: formatToUSD(((_liquidity * data.price) / data.bnbPrice).toFixed(0)),
+        price: data.price?.toFixed(4),
         totalSupply: formatToUSD(_totalSupply.toFixed(0)),
         marketCap: formatToUSD((_totalSupply * data.price).toFixed(0)),
       });
@@ -79,7 +79,7 @@ export default function useOrbit() {
       price,
       totalSupply,
       marketCap,
-      holders: holdersData?.holders || 0,
+      holders: (!!holdersData) ? formatToUSD(holdersData.holders) : 0,
     }),
     [liquidityPool, price, totalSupply, holdersData]
   );

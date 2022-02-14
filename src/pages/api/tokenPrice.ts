@@ -75,6 +75,7 @@ export default async function getPriceBetween(
       baseCurrency: firstQuote.baseCurrency?.symbol,
       data: transformedQuote,
       price: price * bnbPrice,
+      bnbPrice: bnbPrice
     });
   } catch (error) {
     res.status(500).json({ error });
