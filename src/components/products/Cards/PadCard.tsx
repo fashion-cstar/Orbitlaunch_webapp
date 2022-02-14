@@ -6,6 +6,6 @@ const styleHeight = {
 
 export default function PadCard() {
     return (
-        <div className="flex justify-center items-center flex-1 rounded-md bg-[#001926] p-4" style={styleHeight}>OrbitPad<br />Coming Soon</div>
+        <div className="flex justify-center items-center flex-1 rounded-2xl bg-[#001926] p-4" style={styleHeight}>OrbitPad<br />Coming Soon</div>
     )
 }

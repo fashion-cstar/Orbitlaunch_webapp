@@ -20,7 +20,7 @@ export default function Board() {
                     <div className="flex-1">
                         <Indicators></Indicators>
                     </div>
-                    <div className="rounded-md bg-[#001926] p-4">
+                    <div className="rounded-2xl bg-[#001926] p-4">
                         <span className="block mb-8">Latest News</span>
 
                         <TwitterTimelineEmbed
