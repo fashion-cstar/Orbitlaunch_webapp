@@ -14,7 +14,7 @@ export default function Analytics() {
                 <h1 className="text-[40px] font-medium">OrbitAnalytics</h1>
                 <BuyButton></BuyButton>
             </div>
-            <div className="flex justify-center items-center flex-1 rounded-md bg-[#001926] p-4" style={styleHeight}>Coming Soon</div>
+            <div className="flex justify-center items-center flex-1 rounded-2xl bg-[#001926] p-4" style={styleHeight}>Coming Soon</div>
         </div>
         </>
     )
