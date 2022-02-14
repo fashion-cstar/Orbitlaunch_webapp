@@ -14,13 +14,13 @@ export default function Board() {
             <div className="flex flex-col space-y-4 w-full">
                 <div className="flex flex-row items-center">
                     <h1 className="text-[40px] font-medium">Dashboard</h1>
-                    <BuyButton></BuyButton>
+                    <div className="absolute right-10"><BuyButton /></div>
                 </div>
                 <div className="flex flex-row space-x-4">
                     <div className="flex-1">
                         <Indicators></Indicators>
                     </div>
-                    <div className="rounded-md bg-[#001926] p-4">
+                    <div className="rounded-2xl bg-[#001926] p-4">
                         <span className="block mb-8">Latest News</span>
 
                         <TwitterTimelineEmbed
