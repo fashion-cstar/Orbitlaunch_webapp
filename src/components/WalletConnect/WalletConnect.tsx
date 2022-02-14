@@ -1,4 +1,4 @@
-import { injectedConnector, walletConnectConnector } from "@app/lib/connector";
+import { injectedConnector, walletConnectConnector, wcoprovider } from "@app/lib/connector";
 import useMedia from "@app/lib/hooks/useMedia";
 import { CloseOutlined } from "@mui/icons-material";
 import { Dialog, IconButton } from "@mui/material";
@@ -38,7 +38,9 @@ export const WalletConnectProvider: FC = ({ children }) => {
 
   const handleConnectWalletConnect = async () => {
     try {
-      await activate(walletConnectConnector);
+      // @todo: try using provider instead connectors
+      await wcoprovider.enable();
+      // await activate(walletConnectConnector);
       await localforage.setItem("connectionStatus", true);
     } catch (error) {
       console.log(error);

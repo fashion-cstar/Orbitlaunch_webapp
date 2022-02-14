@@ -20,6 +20,7 @@
     "@mui/material": "^5.3.0",
     "@usedapp/coingecko": "^0.4.2",
     "@usedapp/core": "^0.10.0",
+    "@walletconnect/web3-provider": "^1.7.1",
     "@web3-react/injected-connector": "^6.0.7",
     "@web3-react/walletconnect-connector": "^6.2.10",
     "axios": "^0.25.0",
@@ -30,7 +31,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-twitter-embed": "^4.0.4",
-    "swr": "^1.2.0"
+    "swr": "^1.2.0",
+    "web3": "^1.7.0"
   },
   "devDependencies": {
     "@types/node": "17.0.4",

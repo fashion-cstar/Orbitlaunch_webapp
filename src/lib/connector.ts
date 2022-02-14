@@ -1,3 +1,4 @@
+import WalletConnectProvider from "@walletconnect/web3-provider";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 
@@ -14,3 +15,7 @@ export const walletConnectConnector = new WalletConnectConnector({
   qrcode: true,
   infuraId: "64b1a32f80f249aa9fffbe3f89820148",
 });
+
+export const wcoprovider = new WalletConnectProvider({
+  infuraId: "64b1a32f80f249aa9fffbe3f89820148"
+})
