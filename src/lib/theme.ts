@@ -18,6 +18,7 @@ const theme = createTheme({
     },
     common: {
       black: "hsla(206, 10.1%, 13.5%, 1)",
+      white: "#FFFFFF"
     },
   },
   typography: {
