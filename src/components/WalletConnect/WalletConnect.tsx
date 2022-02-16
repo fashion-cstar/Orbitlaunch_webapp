@@ -1,4 +1,4 @@
-import { injectedConnector, walletConnectConnector, wcoprovider } from "@app/lib/connector";
+import { injectedConnector, walletConnectConnector } from "@app/lib/connector";
 import useMedia from "@app/lib/hooks/useMedia";
 import { CloseOutlined } from "@mui/icons-material";
 import { Dialog, IconButton } from "@mui/material";
@@ -9,8 +9,6 @@ import WalletConnectCard from "./WalletConnectCard";
 import TrustWalletCard from "./TrustWalletCard";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import localforage from "localforage";
-
-import { providers as hello } from "ethers";
 
 export const WalletConnectContext = createContext({
   open: false,
@@ -40,12 +38,7 @@ export const WalletConnectProvider: FC = ({ children }) => {
 
   const handleConnectWalletConnect = async () => {
     try {
-      // @todo: try using provider instead connectors
-      // @todo: fix here, can connect, no able to display wallet info
-      await wcoprovider.enable();
-      const web3Provider = new hello.Web3Provider(wcoprovider);
-      console.log(wcoprovider.accounts); // this works
-      await activate(web3Provider);
+      await activate(walletConnectConnector);
       await localforage.setItem("connectionStatus", true);
     } catch (error) {
       console.log(error);

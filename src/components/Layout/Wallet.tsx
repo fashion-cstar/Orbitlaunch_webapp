@@ -5,6 +5,7 @@ import localforage from "localforage";
 import { formatEther } from "@ethersproject/units";
 import useOrbit from "@app/lib/hooks/useOrbit";
 import { AppTokenAddress } from '@app/shared/AppConstant';
+import { Web3ModalButton } from "../WalletConnect/Web3Modal";
 
 function BalanceAmount() {
   const m31Address = AppTokenAddress;
@@ -53,6 +54,7 @@ function BalanceAndDisconnect() {
 export default function Wallet() {
   const { account } = useEthers();
   const { openWalletConnectDialog } = useWalletConnect();
+  const activateProvider = Web3ModalButton();
   const isConnected = !!account;
 
   return (
@@ -60,7 +62,7 @@ export default function Wallet() {
       {!isConnected && (
         <Button
           variant="contained"
-          onClick={openWalletConnectDialog}
+          onClick={activateProvider}
           className="relative">
           Connect Wallet
         </Button>
