@@ -37,6 +37,7 @@ export const Web3ModalButton = () => {
 
     const web3Modal = new Web3Modal({
       providerOptions,
+      theme: "dark"
     })
     try {
       const provider = await web3Modal.connect()
