@@ -1,8 +1,18 @@
-import { Button, useTheme } from "@mui/material";
+import { Button } from "@mui/material";
 import BuyButton from "../common/BuyButton";
+import SliderCards from "../common/SliderCards";
 
 export default function Fund() {
-    const theme = useTheme();
+
+    const tierInformation = [
+        { tierNo: 1, requiredTokens: "250,000", monthlyPercent: "10" },
+        { tierNo: 2, requiredTokens: "100,000", monthlyPercent: "9.5" },
+        { tierNo: 3, requiredTokens: "50,000", monthlyPercent: "9" },
+        { tierNo: 4, requiredTokens: "25,000", monthlyPercent: "8.5" },
+        { tierNo: 5, requiredTokens: "10,000", monthlyPercent: "8" },
+        { tierNo: 6, requiredTokens: "5,000", monthlyPercent: "7.5" },
+        { tierNo: 7, requiredTokens: "2,500", monthlyPercent: "7" }
+    ]
 
     return (
         <div className="flex flex-col space-y-4 w-full">
@@ -11,13 +21,13 @@ export default function Fund() {
                 <div className="absolute right-10 space-x-3">
                     <BuyButton></BuyButton>
                     <Button
-                        style={{ color: theme.palette.common.white }}
+                        className="text-white"
                         variant="outlined"
                         href='https://pancakeswap.finance/swap?outputCurrency=0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414'>
                         Withdrawal
                     </Button>
                     <Button
-                        style={{ color: theme.palette.common.white }}
+                        className="text-white"
                         variant="outlined"
                         href='https://pancakeswap.finance/swap?outputCurrency=0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414'>
                         Deposit BUSD
@@ -55,16 +65,16 @@ export default function Fund() {
 
             <div className="container rounded-2xl bg-[#001926] p-4 items">
                 <div className="space-y-4">
-                    <div className="items-center text-l font-bold" style={{ color: theme.palette.common.white }}>
+                    <div className="items-center text-l text-white font-bold">
                         *Deposit Window Closing in &nbsp;<span className="text-app-primary">2 days 12hours 27 minutes</span> &nbsp;(April 1 - 12am UTC)
                     </div>
                     <hr style={{ borderColor: "#112B40" }} />
                 </div>
                 <div className="space-y-3 pt-4">
-                    <div className="items-center text-xs mb-2" style={{ color: theme.palette.common.white }}>
+                    <div className="items-center text-xs text-white mb-2">
                         Prior Month’s Total Investment:&nbsp;<span className="text-app-primary">$17,006.48</span>
                     </div>
-                    <div className="items-center text-xs mb-2" style={{ color: theme.palette.common.white }}>
+                    <div className="items-center text-xs text-white mb-2">
                         Prior Month’s Profit Returned to Investors:&nbsp;<span className="text-app-primary">$1,637.26</span>
                     </div>
                 </div>
@@ -73,6 +83,9 @@ export default function Fund() {
             <div className="container rounded-2xl bg-[#001926] p-4 items">
                 <div className="space-y-2">
                     <div className="text-l">Available Investment Tiers</div>
+                </div>
+                <div className="items-center mt-4">
+                    <SliderCards cardInformationList={tierInformation} firstCardIndex={0} />
                 </div>
             </div>
         </div>
