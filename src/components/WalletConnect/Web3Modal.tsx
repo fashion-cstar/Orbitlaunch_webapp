@@ -29,10 +29,8 @@ export const Web3ModalButton = () => {
         options: {
           rpc: {
             56: "https://bsc-dataseed1.binance.org",
-            1: "https://mainnet.infura.io/v3/14a0951f47e646c1b241aa533e150219",
           },
           bridge: 'https://bridge.walletconnect.org',
-          infuraId: '14a0951f47e646c1b241aa533e150219',
         },
       },
     }

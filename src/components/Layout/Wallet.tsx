@@ -1,6 +1,5 @@
 import { Button } from "@mui/material";
 import { useTokenBalance, useEthers } from "@usedapp/core";
-import { useWalletConnect } from "@app/components/WalletConnect/WalletConnect";
 import localforage from "localforage";
 import { formatEther } from "@ethersproject/units";
 import useOrbit from "@app/lib/hooks/useOrbit";
@@ -53,7 +52,6 @@ function BalanceAndDisconnect() {
 
 export default function Wallet() {
   const { account } = useEthers();
-  const { openWalletConnectDialog } = useWalletConnect();
   const activateProvider = Web3ModalButton();
   const isConnected = !!account;
 
