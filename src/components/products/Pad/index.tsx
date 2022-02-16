@@ -9,12 +9,6 @@ import EndedTabHeader from './components/EndedTable/EndedTabHeader'
 import EndedIdoTable from './components/EndedTable'
 import { useRouter } from 'next/router'
 
-const styleHeight = {
-    height: '300px',
-    textAlign: 'center' as 'center',
-    color: 'grey',
-}
-
 export default function Pad() {
     const [filterChain, setChainId] = useState(0)
     const [IdoEndedFiltered, setIdoEndedFiltered]=useState<any>()
