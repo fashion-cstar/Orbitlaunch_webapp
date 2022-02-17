@@ -80,13 +80,11 @@ export default function Fund() {
                 </div>
             </div>
 
-            <div className="container rounded-2xl bg-[#001926] p-4 items">
+            <div className="rounded-2xl bg-[#001926] p-4">
                 <div className="space-y-2">
                     <div className="text-l">Available Investment Tiers</div>
                 </div>
-                <div className="items-center mt-4">
-                    <SliderCards cardInformationList={tierInformation} firstCardIndex={0} />
-                </div>
+                <SliderCards cardInformationList={tierInformation} firstCardIndex={0} />
             </div>
         </div>
     )
