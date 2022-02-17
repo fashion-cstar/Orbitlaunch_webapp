@@ -23,7 +23,7 @@ import { Button, Menu, MenuItem } from "@mui/material";
 import { useEthers } from "@usedapp/core";
 import { ArrowDown2 } from "iconsax-react";
 import localforage from "localforage";
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useState, useRef } from "react";
 import Wallet from "./Wallet";
 
 const drawerWidth = 216;
@@ -145,8 +145,9 @@ export default function Sidebar({ isOpen }: SidebarProps) {
           const Icon = SIDEBAR_ICON_MAP[key];
           const isActive = routeMatch(SIDEBAR_ROUTES[key]);
           const isComingSoon = SIDEBAR_ROUTES[key] === "/coming-soon";
+          const widthRef = useRef<any>();
           return (
-            <Tooltip
+            <Tooltip key={key}
               // disableHoverListener={isOpen}
               title={
                 isComingSoon
@@ -155,7 +156,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
               }
               placement="right"
             >
-              <div
+              <div key={key}
                 className={clsx("relative", {
                   "w-[48px]": !isOpen,
                   "w-full": isOpen,
