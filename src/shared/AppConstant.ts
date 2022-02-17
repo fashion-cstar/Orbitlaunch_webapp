@@ -97,4 +97,4 @@ export const HTTP_METHODS: {
   DELETE: "DELETE",
 };
 
-export const BSC_RPC_URL = "https://bsc-dataseed.binance.org/";
+export const BSC_RPC_URL = "https://bsc-dataseed1.binance.org";

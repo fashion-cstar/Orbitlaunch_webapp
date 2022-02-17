@@ -3,6 +3,7 @@ import styles from './index.module.css';
 import { widget } from '../../../public/static/charting_library';
 import config from './config';
 import { getTimeZone } from '@app/shared/helpers/time';
+import { AppTokenAddress } from '@app/shared/AppConstant';
 
 function getLanguageFromURL() {
 	const regex = new RegExp('[\\?&]lang=([^&#]*)');
@@ -42,7 +43,7 @@ export class TVChartContainer extends PureComponent {
 		const widgetOptions = {
 			symbol: "M31/BNB",
 			// BEWARE: no trailing slash is expected in feed URL
-			datafeed: config("0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414"),
+			datafeed: config(AppTokenAddress),
 			interval: this.props.interval,
 			container_id: this.props.containerId,
 			library_path: this.props.libraryPath,

@@ -1,5 +1,7 @@
 import { Button } from "@mui/material";
-const buyM31viaPCS = 'https://pancakeswap.finance/swap?outputCurrency=0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414';
+import { AppTokenAddress } from '@app/shared/AppConstant';
+
+const buyM31viaPCS = 'https://pancakeswap.finance/swap?outputCurrency=' + AppTokenAddress;
 
 export default function BuyButton() {
     return (

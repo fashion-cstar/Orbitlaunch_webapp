@@ -2,7 +2,6 @@ import { CacheProvider, EmotionCache, ThemeProvider } from "@emotion/react";
 import { CssBaseline } from "@mui/material";
 import { BSC, Config, DAppProvider, Mainnet } from "@usedapp/core";
 import Layout from "@app/components/Layout/Layout";
-import { withWalletConnect } from "@app/components/WalletConnect/WalletConnect";
 
 import createEmotionCache from "@app/lib/emotion/createEmotionCache";
 import theme from "@app/lib/theme";
@@ -48,4 +47,4 @@ function OrbitApp({
   );
 }
 
-export default compose(withWalletConnect)(OrbitApp);
+export default compose()(OrbitApp);
