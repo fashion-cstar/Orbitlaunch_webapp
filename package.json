@@ -3,8 +3,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "postinstall": "npx tailwindcss -i ./src/styles/globals.css -o ./src/styles/tailwind.css"
+    "start": "next start"
   },
   "dependencies": {
     "@emotion/cache": "^11.7.1",
