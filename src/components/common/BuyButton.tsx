@@ -9,7 +9,8 @@ export default function BuyButton() {
             <Button
                 variant="contained"
                 href={buyM31viaPCS}
-                target="_blank">
+                target="_blank"
+                sx={{minWidth:"90px", borderRadius:"12px"}}>
                 Buy M31
             </Button>
         </>
