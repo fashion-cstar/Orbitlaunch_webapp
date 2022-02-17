@@ -4,6 +4,8 @@ import SliderCards from "../common/SliderCards";
 
 export default function Fund() {
 
+    // @todo: remove this todo
+
     const tierInformation = [
         { tierNo: 1, requiredTokens: "250,000", monthlyPercent: "10" },
         { tierNo: 2, requiredTokens: "100,000", monthlyPercent: "9.5" },
