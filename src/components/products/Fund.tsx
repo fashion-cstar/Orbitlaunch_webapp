@@ -4,8 +4,6 @@ import SliderCards from "../common/SliderCards";
 
 export default function Fund() {
 
-    // @todo: remove this todo
-
     const tierInformation = [
         { tierNo: 1, requiredTokens: "250,000", monthlyPercent: "10" },
         { tierNo: 2, requiredTokens: "100,000", monthlyPercent: "9.5" },
@@ -25,12 +23,14 @@ export default function Fund() {
                     <Button
                         className="text-white"
                         variant="outlined"
+                        sx={{ borderRadius: "12px" }}
                         href='https://pancakeswap.finance/swap?outputCurrency=0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414'>
                         Withdrawal
                     </Button>
                     <Button
                         className="text-white"
                         variant="outlined"
+                        sx={{ borderRadius: "12px" }}
                         href='https://pancakeswap.finance/swap?outputCurrency=0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414'>
                         Deposit BUSD
                     </Button>
