@@ -146,6 +146,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
           const isActive = routeMatch(SIDEBAR_ROUTES[key]);
           const isComingSoon = SIDEBAR_ROUTES[key] === "/coming-soon";
           return (
+            <div key={key}>
             <Tooltip
               // disableHoverListener={isOpen}
               title={
@@ -155,7 +156,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
               }
               placement="right"
             >
-              <div
+              <div key={key}
                 className={clsx("relative", {
                   "w-[48px]": !isOpen,
                   "w-full": isOpen,
@@ -185,6 +186,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
                 </Link>
               </div>
             </Tooltip>
+            </div>
           );
         })}
         <Wallet />
