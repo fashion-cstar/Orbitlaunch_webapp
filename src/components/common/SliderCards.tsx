@@ -1,83 +1,87 @@
 import { useState } from "react";
-import LeftArrow from "../products/Pad/components/LeftArrow";
-import RightArrow from "../products/Pad/components/RightArrow";
+import RightArrow from '../products/Pad/components/Buttons/RightArrow';
+import LeftArrow from '../products/Pad/components/Buttons/LeftArrow';
 
 interface SliderCardsProps {
     cardInformationList: any
-    firstCardIndex: number
+    firstCardIndex: number,
+    selectedCardIndex: number
 }
 
 const styleCircle = {
-    // position: "static",
     width: "40px",
     height: "40px",
     left: "47px",
     top: "0px",
-    borderRadius: "50%",
-    display: "inline-block"
+    borderRadius: "50%"
 }
 
-export default function SliderCards({ cardInformationList, firstCardIndex }: SliderCardsProps) {
-    const [cardIndex, setCardIndex] = useState(0);
+export default function SliderCards({ cardInformationList, firstCardIndex, selectedCardIndex }: SliderCardsProps) {
+    const [cardIndex, setCardIndex] = useState(firstCardIndex);
 
     const handleLeftClick = () => {
-        if (cardIndex > 0) {
-            setCardIndex(cardIndex - 1)
+        if (cardIndex === 0) {
+            return;
         }
-        else {
-            setCardIndex(cardInformationList.length - 1)
-        }
+
+        setCardIndex(cardIndex - 1);
     }
 
     const handleRightClick = () => {
-        if (cardIndex > 0) {
-            setCardIndex(cardIndex - 1)
+        if (cardIndex === cardInformationList.length - 1) {
+            return;
         }
-        else {
-            setCardIndex(cardInformationList.length - 1)
-        }
+
+        setCardIndex(cardIndex + 1);
     }
 
     return (
-        <div className="inline-block" style={{ transform: `translateX(-${firstCardIndex * 100}%)`, transition: "transform 500ms ease 0s" }}>
-            <div className="flex flex-col space-y-4">
-                <div className="flex flex-row space-x-4">
-                    {cardInformationList?.map((info) => {
+        <>
+            <div className='overflow-hidden'>
+                <div className="mt-4 block whitespace-nowrap overflow-visible relative w-1">
+                    {cardInformationList?.map((info: any, index: number) => {
                         return (
-                            // ${?'':''}
-                            <div className={`flex-1 items-center rounded-2xl bg-[#06111C] p-5`}>
-                                <div className="space-y-3 pt-4">
-                                    <div className="items-center text-l text-white mb-2">
-                                        Tier &nbsp;
-                                        <span style={styleCircle} className="items-center text-center bg-[#c9e2fa] text-[#3984d5] text-bold">
-                                            {info.tierNo}
-                                        </span>
-                                    </div>
-                                    <div className="items-center text-xs text-white mb-2">
-                                        Requires {info.requiredTokens} M31
-                                    </div>
-                                    <div className="items-center text-xs text-white mb-2">
-                                        Up to {info.monthlyPercent}% Monthly
-                                    </div>
-                                    <div className="items-center text-xs text-white mb-2">{/* text-slate-400 */}
-                                        Return on Investment
+                            <div key={index} className='inline-block'>
+                                <div className="pr-4 inline-block" style={{ transform: `translateX(-${cardIndex * 100}%)`, transition: "transform 500ms ease 0s" }}>
+                                    <div
+                                        className='rounded-2xl bg-[#001926] w-[320px] h-[200px] flex-col justify-center items-start'
+                                        style={{
+                                            border: `1px solid ${selectedCardIndex === index ? '#867EE8' : 'none'}`,
+                                            background: `${selectedCardIndex === index ? 'linear-gradient(90deg, rgba(134, 126, 232, 0.156) 0%, rgba(134, 126, 232, 0) 100%), linear-gradient(0deg, #06111C, #06111C)' : '#06111C'}`
+                                        }}
+                                    >
+                                        <div className={'flex-1 items-center rounded-2xl p-10'}>
+                                            <div className="space-y-2">
+                                                <div className="flex items-center text-l text-white mb-4">
+                                                    <span>Tier &nbsp;</span>
+                                                    <div style={styleCircle} className="flex items-center justify-center bg-[#c9e2fa] text-[#3984d5] text-xl text-bold">
+                                                        {info.tierNo}
+                                                    </div>
+                                                </div>
+                                                <div className="items-center text-xs text-white mb-2">
+                                                    Requires {info.requiredTokens} M31
+                                                </div>
+                                                <div className="items-center text-xs text-white mb-2">
+                                                    Up to {info.monthlyPercent}% Monthly
+                                                </div>
+                                                <div className="items-center text-xs text-white mb-2">{/* text-slate-400 */}
+                                                    Return on Investment
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         );
                     })}
-                    <div className="flex flex-col space-x-2 items-center">
-                        <div className="flex flex-row space-x-2 mt-4">
-                            <div className="flex-1 items-center">
-                                <LeftArrow handleLeftClick={handleLeftClick} />
-                            </div>
-                            <div className="flex-1 items-center">
-                                <RightArrow handleRightClick={handleRightClick} />
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-        </div>
+            <div className='flex justify-center mt-4'>
+                <div className="flex flex-row gap-4">
+                    <LeftArrow handleLeftClick={handleLeftClick} />
+                    <RightArrow handleRightClick={handleRightClick} />
+                </div>
+            </div>
+        </>
     )
 }

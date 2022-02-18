@@ -84,7 +84,11 @@ export default function Fund() {
                 <div className="space-y-2">
                     <div className="text-l">Available Investment Tiers</div>
                 </div>
-                <SliderCards cardInformationList={tierInformation} firstCardIndex={0} />
+                <SliderCards
+                    cardInformationList={tierInformation}
+                    firstCardIndex={0}
+                    selectedCardIndex={3}
+                />
             </div>
         </div>
     )
