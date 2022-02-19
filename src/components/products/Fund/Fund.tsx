@@ -1,9 +1,9 @@
 import { Button } from "@mui/material";
-import BuyButton from "../common/BuyButton";
-import SliderCards from "../common/SliderCards";
+import BuyButton from "../../common/BuyButton";
+import SliderCards from "../../common/SliderCards";
+import DepositPopup from "./DepositPopup";
 
 export default function Fund() {
-
     const tierInformation = [
         { tierNo: 1, requiredTokens: "250,000", monthlyPercent: "10" },
         { tierNo: 2, requiredTokens: "100,000", monthlyPercent: "9.5" },
@@ -14,24 +14,35 @@ export default function Fund() {
         { tierNo: 7, requiredTokens: "2,500", monthlyPercent: "7" }
     ]
 
+    const handleOpenModal = () => {
+        const modal = document.getElementById("deposit-busd-modal");
+        modal.style.display = "flex";
+    }
+
+    const handleDepositSubmit = (e: any, amount: any) => {
+
+    }
+
     return (
         <div className="flex flex-col space-y-4 w-full">
+            <DepositPopup onDepositSubmit={(e, amount) => handleDepositSubmit(e, amount)} />
+
             <div className="flex flex-row items-center">
                 <h1 className="text-[40px] font-medium">OrbitFund</h1>
                 <div className="absolute right-10 space-x-3">
                     <BuyButton></BuyButton>
                     <Button
-                        className="text-white"
                         variant="outlined"
                         sx={{ borderRadius: "12px" }}
-                        href='https://pancakeswap.finance/swap?outputCurrency=0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414'>
+                    >
                         Withdrawal
                     </Button>
                     <Button
-                        className="text-white"
+                        type="button"
+                        onClick={handleOpenModal}
                         variant="outlined"
                         sx={{ borderRadius: "12px" }}
-                        href='https://pancakeswap.finance/swap?outputCurrency=0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414'>
+                    >
                         Deposit BUSD
                     </Button>
                 </div>
