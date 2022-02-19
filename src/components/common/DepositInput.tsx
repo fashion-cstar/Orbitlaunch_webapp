@@ -40,7 +40,7 @@ export default function DepositInput({
             <div className="flex flex-row items-center">
                 <div className="basis-3/4">
                     <input
-                        className="bg-[#001926] text-gray-400 text-sm rounded-lg block w-full p-2.5"
+                        className="bg-[#001926] text-white text-sm rounded-lg block w-full p-2.5"
                         placeholder="0.0"
                         onChange={handleChangeAmount}
                         value={depositAmount}

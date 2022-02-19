@@ -1,9 +1,13 @@
+import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
 import { Button } from "@mui/material";
+import { useEthers } from "@usedapp/core";
 import BuyButton from "../../common/BuyButton";
 import SliderCards from "../../common/SliderCards";
 import DepositPopup from "./DepositPopup";
 
 export default function Fund() {
+    const activateProvider = Web3ModalButton();
+    const { account } = useEthers();
     const tierInformation = [
         { tierNo: 1, requiredTokens: "250,000", monthlyPercent: "10" },
         { tierNo: 2, requiredTokens: "100,000", monthlyPercent: "9.5" },
@@ -31,20 +35,34 @@ export default function Fund() {
                 <h1 className="text-[40px] font-medium">OrbitFund</h1>
                 <div className="absolute right-10 space-x-3">
                     <BuyButton></BuyButton>
-                    <Button
-                        variant="outlined"
-                        sx={{ borderRadius: "12px" }}
-                    >
-                        Withdrawal
-                    </Button>
-                    <Button
-                        type="button"
-                        onClick={handleOpenModal}
-                        variant="outlined"
-                        sx={{ borderRadius: "12px" }}
-                    >
-                        Deposit BUSD
-                    </Button>
+                    {!!account
+                        ? (<>
+                            <Button
+                                variant="outlined"
+                                sx={{ borderRadius: "12px" }}
+                            >
+                                Withdrawal
+                            </Button>
+                            <Button
+                                type="button"
+                                onClick={handleOpenModal}
+                                variant="outlined"
+                                sx={{ borderRadius: "12px" }}
+                            >
+                                Deposit BUSD
+                            </Button>
+                        </>)
+                        : (
+                            <Button
+                                variant="outlined"
+                                onClick={activateProvider}
+                                className="relative"
+                                sx={{ borderRadius: "12px" }}
+                            >
+                                Connect to Deposit
+                            </Button>
+                        )
+                    }
                 </div>
             </div>
 
@@ -76,20 +94,48 @@ export default function Fund() {
                 </div>
             </div>
 
-            <div className="container rounded-2xl bg-[#001926] p-4 items">
-                <div className="space-y-4">
-                    <div className="items-center text-l text-white font-bold">
-                        *Deposit Window Closing in &nbsp;<span className="text-app-primary">2 days 12hours 27 minutes</span> &nbsp;(April 1 - 12am UTC)
+            <div className="flex flex-col">
+                <div className="flex flex-row space-x-4">
+                    <div className="flex-1 rounded-2xl bg-[#001926] p-4">
+                        <div className="space-y-4">
+                            <div className="items-center text-l text-white font-bold">
+                                *Deposit Window Closing in &nbsp;<span className="text-app-primary">2 days 12hours 27 minutes</span> &nbsp;(April 1 - 12am UTC)
+                            </div>
+                            <hr style={{ borderColor: "#112B40" }} />
+                        </div>
+                        <div className="space-y-3 pt-4">
+                            <div className="items-center text-xs text-white mb-2">
+                                Prior Month’s Total Investment:&nbsp;<span className="text-app-primary">$17,006.48</span>
+                            </div>
+                            <div className="items-center text-xs text-white mb-2">
+                                Prior Month’s Profit Returned to Investors:&nbsp;<span className="text-app-primary">$1,637.26</span>
+                            </div>
+                        </div>
                     </div>
-                    <hr style={{ borderColor: "#112B40" }} />
-                </div>
-                <div className="space-y-3 pt-4">
-                    <div className="items-center text-xs text-white mb-2">
-                        Prior Month’s Total Investment:&nbsp;<span className="text-app-primary">$17,006.48</span>
-                    </div>
-                    <div className="items-center text-xs text-white mb-2">
-                        Prior Month’s Profit Returned to Investors:&nbsp;<span className="text-app-primary">$1,637.26</span>
-                    </div>
+                    {!account
+                        ? (
+                            <div className="flex-1 rounded-2xl bg-[#001926] p-4">
+                                <div className="space-y-4">
+                                    <div className="items-center text-l text-white font-bold">
+                                        Learn About OrbitFund (Andromeda M31)
+                                    </div>
+                                    <hr style={{ borderColor: "#112B40" }} />
+                                </div>
+                                <div className="grid grid-cols-2 pt-2">
+                                    <div className="ml-0 col-span-1">
+                                        <iframe src="https://player.vimeo.com/video/146022717?color=0c88dd&title=0&byline=0&portrait=0&badge=0"
+                                            width="100%"
+                                            height="70%"
+                                            frameBorder="0"
+                                            allow="autoplay; picture-in-picture"
+                                            allowFullScreen={true}>
+                                        </iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                        : null
+                    }
                 </div>
             </div>
 
