@@ -24,6 +24,7 @@ const config: Config = {
     [BSC.chainId]: BSC_RPC_URL,
   },
   networks: [BSC, Mainnet],
+  autoConnect: false
 };
 
 function OrbitApp({
