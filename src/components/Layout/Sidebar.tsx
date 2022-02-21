@@ -163,7 +163,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
                 })}
               >
                 {isActive && (
-                  <div className="absolute -left-6 bottom-1/2 h-8 w-8  translate-y-1/2 transform flex items-center justify-center rounded-full bg-blurry">
+                  <div className="absolute -left-6 bottom-1/2 h-8 w-8 translate-y-1/2 transform flex items-center justify-center rounded-full bg-blurry">
                     <div className="h-3 w-3 rounded-full bg-[#463DB4]" />
                   </div>
                 )}
