@@ -27,7 +27,7 @@ export default function Board() {
                             sourceType="profile"
                             screenName="orbitlaunchm31"
                             theme="dark"
-                            options={{ height: 427, width: 373 }}
+                            options={{ height: '537', width: 373 }}
                         />
                     </div>
                 </div>
