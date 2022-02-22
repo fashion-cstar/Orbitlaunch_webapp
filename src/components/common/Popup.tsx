@@ -3,27 +3,34 @@
 interface PopupProps {
     id?: string,
     children?: React.ReactNode,
-    mainModalStyles?: any,
-    contentStyles?: any,
+    mainModalClasses?: any,
+    contentClasses?: any,
     backgroundColorModal?: any,
+    title: string,
     onPopupClose?(): void
 }
 
 export default function Popup({
     id,
     children,
-    mainModalStyles,
-    contentStyles,
+    mainModalClasses,
+    contentClasses,
+    title,
     onPopupClose
 }: PopupProps) {
     const customId = `${!!id ? id : 'custom-modal'}`;
-    const customContentStyles = !!contentStyles ? contentStyles : {};
+    const customMainModalClasses = !mainModalClasses
+        ? 'hidden bg-[#ab949447] overflow-y-auto overflow-x-hidden fixed z-50 justify-center items-center h-modal h-full inset-0'
+        : mainModalClasses
+    const customContentModalClasses = !contentClasses
+        ? 'p-3 bg-[#06111C] rounded-2xl shadow dark:bg-gray-700'
+        : contentClasses
 
     const handlePopupClose = () => {
         const modal = document.getElementById(customId);
         modal.style.display = "none";
-        
-        if(onPopupClose){
+
+        if (onPopupClose) {
             onPopupClose();
         }
     }
@@ -33,14 +40,13 @@ export default function Popup({
             id={customId}
             aria-hidden="true"
             role="dialog"
-            style={mainModalStyles}
-            className="hidden overflow-y-auto overflow-x-hidden fixed right-0 left-0 z-50 justify-center items-center h-modal h-full inset-0"
+            className={customMainModalClasses}
         >
             <div className="px-4 w-full max-w-md h-full md:h-auto">
-                <div className={`p-3 rounded-2xl shadow dark:bg-gray-700`} style={customContentStyles}>
+                <div className={customContentModalClasses} style={{overflow:'auto;', maxHeight:'calc(100vh - 125px);'}}>
                     <div className="flex flex-row">
                         <div className="flex-1 justify-start p-2">
-                            <h3 className="text-xl font-medium dark:text-white text-white">Deposit BUSD</h3>
+                            <h3 className="text-xl font-medium dark:text-white text-white">{title}</h3>
                         </div>
                         <div className="flex justify-end p-2">
                             <button

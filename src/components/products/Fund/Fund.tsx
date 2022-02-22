@@ -7,6 +7,7 @@ import DepositPopup from "./DepositPopup";
 
 export default function Fund() {
     const activateProvider = Web3ModalButton();
+    const depositModalId = "deposit-busd-modal";
     const { account } = useEthers();
     const tierInformation = [
         { tierNo: 1, requiredTokens: "250,000", monthlyPercent: "10" },
@@ -18,18 +19,14 @@ export default function Fund() {
         { tierNo: 7, requiredTokens: "2,500", monthlyPercent: "7" }
     ]
 
-    const handleOpenModal = () => {
-        const modal = document.getElementById("deposit-busd-modal");
+    const handleOpenDepositModal = () => {
+        const modal = document.getElementById(depositModalId);
         modal.style.display = "flex";
-    }
-
-    const handleDepositSubmit = (e: any, amount: any) => {
-
     }
 
     return (
         <div className="flex flex-col space-y-4 w-full">
-            <DepositPopup onDepositSubmit={(e, amount) => handleDepositSubmit(e, amount)} />
+            <DepositPopup id={depositModalId} />
 
             <div className="flex flex-row items-center">
                 <h1 className="text-[40px] font-medium">OrbitFund</h1>
@@ -45,7 +42,7 @@ export default function Fund() {
                             </Button>
                             <Button
                                 type="button"
-                                onClick={handleOpenModal}
+                                onClick={handleOpenDepositModal}
                                 variant="outlined"
                                 sx={{ borderRadius: "12px" }}
                             >

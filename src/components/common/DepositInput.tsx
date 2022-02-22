@@ -5,7 +5,8 @@ interface DepositInputProps {
     depositCurrencyOptions?: { key: number, value: any, icon: any }[],
     defaultSelectedCurrency?: number,
     inputClass?: any,
-    onChange?(amount: any): any
+    onChange?(amount: any): any,
+    onSelectedCurrencyChange?(selectedCurrency: any): any
 }
 
 export default function DepositInput({
@@ -13,7 +14,8 @@ export default function DepositInput({
     defaultSelectedCurrency,
     depositCurrencyOptions,
     inputClass,
-    onChange
+    onChange,
+    onSelectedCurrencyChange
 }: DepositInputProps) {
     const [depositAmount, setDepositAmount] = useState(isNaN(value) ? 0.0 : value);
     const [selectedDepositCurrency, setSelectedDepositCurrency] = useState(defaultSelectedCurrency ?? 0);
@@ -29,6 +31,12 @@ export default function DepositInput({
 
         if (onChange) {
             onChange(amount);
+        }
+    }
+
+    const handleChangeSelectedCurrency = (e, selectedCurrency) => {
+        if (onSelectedCurrencyChange) {
+            onSelectedCurrencyChange(selectedCurrency);
         }
     }
 
