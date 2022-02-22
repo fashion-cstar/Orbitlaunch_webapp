@@ -3,10 +3,24 @@
 // get total profit to date
 // get total invested to date
 
+import { getTotalInvestors } from "@app/lib/hooks/useFundContract";
+import { useEffect } from "react";
+
 export default function FundCard() {
 
-    const currentInvestorsAmount = "18,643";
-    const totalProfitToDate = "$2,737,195";
+    let currentInvestorsAmount = null;
+    
+    // @todo: 1. should we use useEffect or direct await getTotalInvestors() ?
+    // then how to manage the async call ?
+    // useEffect(() => {
+    //     getTotalInvestors().then((res) => {
+    //         console.log({res})
+    //         currentInvestorsAmount = res;
+    //     })
+    // }, []);
+
+    
+    const totalProfitToDate = "Coming soon";
     const totalInvestedToDate = "$15,258,526";
 
     return (

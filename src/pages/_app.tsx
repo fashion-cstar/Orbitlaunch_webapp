@@ -1,6 +1,6 @@
 import { CacheProvider, EmotionCache, ThemeProvider } from "@emotion/react";
 import { CssBaseline } from "@mui/material";
-import { BSC, Config, DAppProvider, Mainnet } from "@usedapp/core";
+import { BSC, BSCTestnet, Config, DAppProvider, Mainnet } from "@usedapp/core";
 import Layout from "@app/components/Layout/Layout";
 
 import createEmotionCache from "@app/lib/emotion/createEmotionCache";
@@ -18,12 +18,13 @@ interface OrbitAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
 
+// @todo: create a config for dev and prd
 const config: Config = {
-  readOnlyChainId: BSC.chainId,
+  readOnlyChainId: 97,
   readOnlyUrls: {
-    [BSC.chainId]: BSC_RPC_URL,
+    [97]: "https://data-seed-prebsc-1-s1.binance.org:8545/",
   },
-  networks: [BSC, Mainnet],
+  networks: [BSCTestnet, Mainnet],
   autoConnect: false
 };
 
