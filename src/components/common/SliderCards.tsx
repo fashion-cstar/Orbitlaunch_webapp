@@ -1,10 +1,15 @@
 import { useState } from "react";
 import RightArrow from '../products/Pad/components/Buttons/RightArrow';
 import LeftArrow from '../products/Pad/components/Buttons/LeftArrow';
+import { ethers } from "ethers";
 
 interface SliderCardsProps {
-    cardInformationList: any
-    firstCardIndex: number,
+    cardInformationList: {
+        tierNo:number,
+        requiredTokens:ethers.BigNumber,
+        shownRequiredTokens:string,
+        monthlyPercent:string
+    }[]
     selectedCardIndex: number
 }
 
@@ -16,8 +21,8 @@ const styleCircle = {
     borderRadius: "50%"
 }
 
-export default function SliderCards({ cardInformationList, firstCardIndex, selectedCardIndex }: SliderCardsProps) {
-    const [cardIndex, setCardIndex] = useState(firstCardIndex);
+export default function SliderCards({ cardInformationList, selectedCardIndex }: SliderCardsProps) {
+    const [cardIndex, setCardIndex] = useState(0);
 
     const handleLeftClick = () => {
         if (cardIndex === 0) {
@@ -59,7 +64,7 @@ export default function SliderCards({ cardInformationList, firstCardIndex, selec
                                                     </div>
                                                 </div>
                                                 <div className="items-center text-xs text-white mb-2">
-                                                    Requires {info.requiredTokens} M31
+                                                    Requires {info.shownRequiredTokens} M31
                                                 </div>
                                                 <div className="items-center text-xs text-white mb-2">
                                                     Up to {info.monthlyPercent}% Monthly

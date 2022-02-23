@@ -1,4 +1,7 @@
 import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
+import { setPeriod } from "@app/lib/contract/abis/consumers/orbitFundContractConsumer";
+import useFund from "@app/lib/hooks/useFund";
+import { tierInformation as tierInfo } from "@app/shared/TierLevels";
 import { Button } from "@mui/material";
 import { useEthers } from "@usedapp/core";
 import BuyButton from "../../common/BuyButton";
@@ -9,15 +12,14 @@ export default function Fund() {
     const activateProvider = Web3ModalButton();
     const depositModalId = "deposit-busd-modal";
     const { account } = useEthers();
-    const tierInformation = [
-        { tierNo: 1, requiredTokens: "250,000", monthlyPercent: "10" },
-        { tierNo: 2, requiredTokens: "100,000", monthlyPercent: "9.5" },
-        { tierNo: 3, requiredTokens: "50,000", monthlyPercent: "9" },
-        { tierNo: 4, requiredTokens: "25,000", monthlyPercent: "8.5" },
-        { tierNo: 5, requiredTokens: "10,000", monthlyPercent: "8" },
-        { tierNo: 6, requiredTokens: "5,000", monthlyPercent: "7.5" },
-        { tierNo: 7, requiredTokens: "2,500", monthlyPercent: "7" }
-    ]
+    const {
+        currentInvestment,
+        currentTierNo,
+        currentTierPercentage,
+        isInvestmentPeriodAvailable,
+        roiToDate
+    } = useFund();
+    const tierInformation = tierInfo;
 
     const handleOpenDepositModal = () => {
         const modal = document.getElementById(depositModalId);
@@ -42,6 +44,7 @@ export default function Fund() {
                             </Button>
                             <Button
                                 type="button"
+                                disabled={!isInvestmentPeriodAvailable}
                                 onClick={handleOpenDepositModal}
                                 variant="outlined"
                                 sx={{ borderRadius: "12px" }}
@@ -69,13 +72,13 @@ export default function Fund() {
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>Current Investment</span>
                         </div>
-                        <div className="text-xl">$18,643.74</div>
+                        <div className="text-xl">${currentInvestment}</div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>ROI to Date</span>
                         </div>
-                        <div className="text-xl">$1,637.26</div>
+                        <div className="text-xl">$1,000,000,000</div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
@@ -83,8 +86,8 @@ export default function Fund() {
                         </div>
                         <div className="container">
                             <div className="grid grid-cols-1 md:grid-cols-12 items-center">
-                                <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">Tier 5</div>
-                                <div className="flex text-slate-400 md:col-span-8 lg:col-span-9 xl:col-span-9 text-sm">Up to 8% monthly ROI</div>
+                                <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">Tier {currentTierNo}</div>
+                                <div className="flex text-slate-400 md:col-span-8 lg:col-span-9 xl:col-span-9 text-sm">Up to {currentTierPercentage}% monthly ROI</div>
                             </div>
                         </div>
                     </div>
@@ -142,8 +145,7 @@ export default function Fund() {
                 </div>
                 <SliderCards
                     cardInformationList={tierInformation}
-                    firstCardIndex={0}
-                    selectedCardIndex={3}
+                    selectedCardIndex={currentTierNo - 1}
                 />
             </div>
         </div>

@@ -1,8 +1,9 @@
 import DepositInput from "@app/components/common/DepositInput";
 import Popup from "@app/components/common/Popup";
-import { approveBusd, depositBusd, userAgreed } from "@app/lib/contract/abis/consumers/busdContractConsumer";
+import { approveBusd, depositBusd, userAgreed } from "@app/lib/contract/abis/consumers/orbitFundContractConsumer";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
-import { orbitFundMockAccountAddress, orbitFundMockContractddress } from "@app/shared/AppConstant";
+import { MockOrbitFundContractAddress } from "@app/shared/AppConstant";
+import { useEthers } from "@usedapp/core";
 import { useState } from "react";
 import AgreeTermsPopup from "./AgreeTermsPopup";
 
@@ -18,6 +19,7 @@ export default function DepositPopup({
     onClose
 }: DepositPopupProps) {
     const snackbar = useSnackbar();
+    const { account } = useEthers();
     const agreeTermsModalId = "agree-terms-modal";
     const [disableDepositButton, setDisableDepositButton] = useState(true);
     const [depositAmount, setDepositAmount] = useState('');
@@ -33,7 +35,7 @@ export default function DepositPopup({
     }
 
     const deposit = async () => {
-        const approveBusdResult = await approveBusd({ spender: orbitFundMockContractddress, value: depositAmount });
+        const approveBusdResult = await approveBusd({ spender: MockOrbitFundContractAddress, value: depositAmount });
         if (!approveBusdResult.ok && !approveBusdResult.returnedModel) {
             snackbar.snackbar.show(approveBusdResult.message, "error");
             return;
@@ -54,7 +56,7 @@ export default function DepositPopup({
     }
 
     const handleDepositSubmit = async (e: any, amount: any) => {
-        const userAgreedResult = await userAgreed({ address: orbitFundMockAccountAddress });
+        const userAgreedResult = await userAgreed({ address: account });
         if (userAgreedResult.ok) {
             //If user agreement has not been done, open the agreement modal
             if (!userAgreedResult.returnedModel) {

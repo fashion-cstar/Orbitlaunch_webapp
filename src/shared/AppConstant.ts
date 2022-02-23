@@ -37,15 +37,10 @@ export const PancakeSwapContractAddress =
   "0x10ed43c718714eb63d5aa57b78b54704e256024e";
 export const PancakeRouterContractAddress =
   "0x10ed43c718714eb63d5aa57b78b54704e256024e";
-export const busdMockContractAddress =
-  "0xCbdEB985e2189e615eAe14F5784733C0122c253c";
-export const busdMockAccountAddress =
-  "0xCbdEB985e2189e615eAe14F5784733C0122c253c";
-export const orbitFundMockContractddress =
-  "0x3367cDA140fe536E55b65E523044AFB946Df23B5";
-export const orbitFundMockAccountAddress =
-  "0x8F593B5784BA27cEEB96C8CE2F07840965B2d6a6";
 
+export const MockOrbitFundContractAddress = "0x26E17791ee9a2116DDf78620D966b8967f0F85B2";
+export const MockBusdContractAddress = "0xCbdEB985e2189e615eAe14F5784733C0122c253c";
+export const OrbitStableTokenAddress = "0x2a087e33c0C44A2B351B5329cBFf8A63d352C599"
 export const AppTokenAddress = "0x8401e6E7ba1A1EC011BDf34CD59Fb11545FaE523";//TODO: "0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414";
 export const AppLPAddress = "0xba5282c6e9Fe1aDC51A7Da876D7ACD88069dF865"//TODO: "0x931B22A138893258c58f3e4143B17086a97862F6";
 export const AppERC20TokenAddress =
