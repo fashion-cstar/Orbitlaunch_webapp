@@ -19,12 +19,21 @@ interface OrbitAppProps extends AppProps {
 }
 
 // @todo: create a config for dev and prd
+// const config: Config = {
+//   readOnlyChainId: 97,
+//   readOnlyUrls: {
+//     [97]: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+//   },
+//   networks: [BSCTestnet, Mainnet],
+//   autoConnect: false
+// };
+
 const config: Config = {
-  readOnlyChainId: 97,
+  readOnlyChainId: BSC.chainId,
   readOnlyUrls: {
-    [97]: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+    [BSC.chainId]: BSC_RPC_URL,
   },
-  networks: [BSCTestnet, Mainnet],
+  networks: [BSC, Mainnet],
   autoConnect: false
 };
 
