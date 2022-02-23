@@ -19,12 +19,11 @@ export const getTierValues = async (tokenAmount: ethers.BigNumber) => {
         return noTierInfo;
     }
 
-    let requiredTokenList = currentTierInformation.map(tier => tier.requiredTokens);
-    requiredTokenList.push(tokenAmount);
+    let requiredTokenList = currentTierInformation.map(tier => tier.requiredTokens._hex);
+    requiredTokenList.push(tokenAmount._hex);
     const sortedList = requiredTokenList.sort((a, b) => (ethers.utils.formatEther(a) <= ethers.utils.formatEther(b)) ? 0 : -1)
-    debugger;
 
-    const index = sortedList.indexOf(tokenAmount);
+    const index = sortedList.indexOf(tokenAmount._hex);
 
     return tierInformation[index];
 }

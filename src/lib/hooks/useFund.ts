@@ -1,4 +1,4 @@
-import { startPeriodTime, totalInvestedAmount, endPeriodTime } from '@app/lib/contract/abis/consumers/orbitFundContractConsumer';
+import { startPeriodTime, totalInvestedAmount, endPeriodTime, getTotalInvestors } from '@app/lib/contract/abis/consumers/orbitFundContractConsumer';
 import { formatEther } from "@ethersproject/units";
 import { useEthers, useTokenBalance } from "@usedapp/core";
 import { useEffect, useMemo, useState } from "react";
@@ -22,8 +22,16 @@ export default function useFund() {
     const connectedUserBalance = useTokenBalance(AppTokenAddress, account);
     // const orbitFundUserBalance = useTokenBalance(MockOrbitFundContractAddress, account);
 
-    const [{ currentInvestment, roiToDate, currentTierNo, currentTierPercentage, isInvestmentPeriodAvailable, balance }, setInfo] = useState({
+    const [{
+        currentInvestment,
+        totalInvestors,
+        roiToDate, currentTierNo,
+        currentTierPercentage,
+        isInvestmentPeriodAvailable,
+        balance
+    }, setInfo] = useState({
         currentInvestment: '0.000',
+        totalInvestors: 0,
         roiToDate: '0.0',
         currentTierNo: 0,
         currentTierPercentage: "0",
@@ -47,6 +55,15 @@ export default function useFund() {
         return result.returnedModel;
     }
 
+    const getTotalInvestorNumber = async () => {
+        const result = await getTotalInvestors();
+        if (!result.ok) {
+            return '0';
+        }
+
+        return result.returnedModel;
+    }
+
     const isDepositPeriodAvailable = async () => {
         const startTime = await startPeriodTime();
         if (!startTime.ok) return false;
@@ -65,14 +82,15 @@ export default function useFund() {
             const formattedConnectedBalance = (!!connectedUserBalance) ? formatEther(connectedUserBalance) : '0';
             const connectedAmount = (!!formattedConnectedBalance) ? parseFloat(formattedConnectedBalance).toFixed(3) : '0';
             let tierResult = await getTierValues((!!formattedConnectedBalance) ? ethers.BigNumber.from(parseFloat(formattedConnectedBalance)) : ethers.BigNumber.from('0'));
-            
+
             debugger;
             // const formattedOrbitStableBalance = (!!orbitFundUserBalance) ? formatEther(orbitFundUserBalance) : '0';
             // const connectedOrbitAmount = (!!formattedOrbitStableBalance) ? parseFloat(formattedOrbitStableBalance).toFixed(3) : '0';
             const investmentAmountInDollars = (parseFloat(connectedAmount) * parseFloat("1")).toFixed(2);
-            
+
             return {
                 currentInvestment: investmentAmountInDollars,
+                totalInvestors: 0,
                 roiToDate: '0.0',
                 currentTierNo: tierResult.tierNo,
                 currentTierPercentage: tierResult.monthlyPercent,
@@ -84,9 +102,11 @@ export default function useFund() {
         const fetchNotConnectedData = async () => {
             let periodAvailable = await isDepositPeriodAvailable();
             let totalInvestment = ethers.utils.formatEther(await getTotalInvestment());
+            let totalInvestorNumber = await getTotalInvestorNumber();
 
             return {
                 currentInvestment: totalInvestment,
+                totalInvestors: totalInvestorNumber,
                 roiToDate: '0.0',
                 currentTierNo: 0,
                 currentTierPercentage: "0",
@@ -99,6 +119,7 @@ export default function useFund() {
             fetchConnectedData().then(result => {
                 setInfo({
                     currentInvestment: result.currentInvestment,
+                    totalInvestors: result.totalInvestors,
                     roiToDate: result.roiToDate,
                     currentTierNo: result.currentTierNo,
                     currentTierPercentage: result.currentTierPercentage,
@@ -111,6 +132,7 @@ export default function useFund() {
             fetchNotConnectedData().then(result => {
                 setInfo({
                     currentInvestment: result.currentInvestment,
+                    totalInvestors: result.totalInvestors,
                     roiToDate: result.roiToDate,
                     currentTierNo: result.currentTierNo,
                     currentTierPercentage: result.currentTierPercentage,
@@ -125,13 +147,14 @@ export default function useFund() {
     const fundInfo = useMemo(
         () => ({
             currentInvestment,
+            totalInvestors,
             roiToDate,
             currentTierNo,
             currentTierPercentage,
             isInvestmentPeriodAvailable,
             balance
         }),
-        [currentInvestment, roiToDate, currentTierNo, currentTierPercentage, isInvestmentPeriodAvailable, balance]
+        [currentInvestment, totalInvestors, roiToDate, currentTierNo, currentTierPercentage, isInvestmentPeriodAvailable, balance]
     );
 
     return fundInfo;

@@ -257,7 +257,6 @@ export async function setPeriod({
                 ok: true
             };
         }).catch((err: any) => {
-            debugger;
             console.log("ERROR:" + err);
             return {
                 ok: false,
@@ -266,7 +265,6 @@ export async function setPeriod({
         });
     }
     catch (error) {
-        debugger;
         console.log("ERROR:" + error);
         return {
             ok: false,
@@ -291,20 +289,50 @@ export async function totalInvestedAmount(): Promise<ResponseModel> {
                     returnedModel: response
                 };
             }).catch((err: any) => {
-                debugger;
                 console.log("ERROR:" + err);
                 return {
                     ok: false,
-                    message: "Total Investors cannot be fetched. Please try again."
+                    message: "Total Invested Amount cannot be fetched. Please try again."
                 };
             });
     }
     catch (error) {
-        debugger;
         console.log("ERROR:" + error);
         return {
             ok: false,
-            message: "Total Investors cannot be fetched"
+            message: "Total Invested Amount cannot be fetched. Please try again."
+        };
+    }
+}
+
+export async function getTotalInvestors(): Promise<ResponseModel> {
+    try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const orbitFundContract = new ethers.Contract(
+            MockOrbitFundContractAddress,
+            orbitFundAbi,
+            provider.getSigner()
+        );
+
+        return await orbitFundContract.getTotalInvestors()
+            .then((response: any) => {
+                return {
+                    ok: true,
+                    returnedModel: response
+                };
+            }).catch((err: any) => {
+                console.log("ERROR:" + err);
+                return {
+                    ok: false,
+                    message: "Get Total Investors cannot be fetched. Please try again."
+                };
+            });
+    }
+    catch (error) {
+        console.log("ERROR:" + error);
+        return {
+            ok: false,
+            message: "Get Total Investors cannot be fetched. Please try again."
         };
     }
 }
