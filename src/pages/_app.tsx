@@ -23,7 +23,8 @@ const config: Config = {
   readOnlyUrls: {
     [BSCTestnet.chainId]: BSC_RPC_URL, //TODO: [BSC.chainId]: BSC_RPC_URL,
   },
-  networks: [BSC, Mainnet, BSCTestnet]
+  networks: [BSC, Mainnet, BSCTestnet],
+  autoConnect: false
 };
 
 function OrbitApp({
