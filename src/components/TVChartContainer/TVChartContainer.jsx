@@ -60,6 +60,8 @@ export class TVChartContainer extends PureComponent {
 			studies_overrides: this.props.studiesOverrides,
 			timezone: getTimeZone(),
 			drawing_access: {},
+			width: '100%',
+			height: '385px'
 		};
 
 		const tvWidget = new widget(widgetOptions);

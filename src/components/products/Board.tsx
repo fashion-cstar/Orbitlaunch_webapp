@@ -7,6 +7,7 @@ import BuyButton from "../common/BuyButton";
 import { TwitterTimelineEmbed } from 'react-twitter-embed';
 
 export default function Board() {
+
     return (
         // @todo: split by components, start chart.js, formating, align & grey center, button designs, connexion compo, menu & assets
         // @todo: find a way to keep the same css values between screens and do common css var
@@ -23,12 +24,18 @@ export default function Board() {
                     <div className="rounded-2xl bg-[#001926] p-4">
                         <span className="block mb-8">Latest News</span>
 
-                        <TwitterTimelineEmbed
-                            sourceType="profile"
-                            screenName="orbitlaunchm31"
-                            theme="dark"
-                            options={{ height: 427, width: 373 }}
-                        />
+                        <div className="bg-[#06111c]">
+                            <TwitterTimelineEmbed
+                                sourceType="profile"
+                                screenName="orbitlaunchm31"
+                                theme="dark"
+                                options={{ height: 427, width: 303 }}
+                                noHeader
+                                noFooter
+                                noScrollbar
+                                transparent
+                            />
+                        </div>
                     </div>
                 </div>
                 <div className="flex flex-row space-x-4">
