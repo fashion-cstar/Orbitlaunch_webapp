@@ -1,6 +1,6 @@
 import DepositInput from "@app/components/common/DepositInput";
 import Popup from "@app/components/common/Popup";
-import { approveBusd, depositBusd, userAgreed } from "@app/lib/contract/abis/consumers/orbitFundContractConsumer";
+import { approveBusd, depositBusd, userAgreed } from "@app/lib/contract/abis/consumers/fundService";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { MockOrbitFundContractAddress } from "@app/shared/AppConstant";
 import { useEthers } from "@usedapp/core";
@@ -40,14 +40,6 @@ export default function DepositPopup({
             snackbar.snackbar.show(approveBusdResult.message, "error");
             return;
         }
-
-        const depositResult = await depositBusd({ amount: depositAmount });
-        if (!depositResult.ok) {
-            snackbar.snackbar.show(depositResult.message, "error");
-            return;
-        }
-
-        snackbar.snackbar.show("Deposit is succesfull", "success");
     }
 
     const handleOpenAgreeTermsModal = () => {

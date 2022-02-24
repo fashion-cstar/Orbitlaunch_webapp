@@ -1,15 +1,19 @@
 import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
-import { setPeriod } from "@app/lib/contract/abis/consumers/orbitFundContractConsumer";
+import { approveOrbitStableCoin, getLossPercentage, setPeriod, withdrawInvestment } from "@app/lib/contract/abis/consumers/fundService";
 import useFund from "@app/lib/hooks/useFund";
+import { useSnackbar } from "@app/lib/hooks/useSnackbar";
+import { MockOrbitFundContractAddress } from "@app/shared/AppConstant";
 import { tierInformation as tierInfo } from "@app/shared/TierLevels";
 import { Button } from "@mui/material";
 import { useEthers } from "@usedapp/core";
+import { ethers } from "ethers";
 import BuyButton from "../../common/BuyButton";
 import SliderCards from "../../common/SliderCards";
 import DepositPopup from "./DepositPopup";
 
 export default function Fund() {
     const activateProvider = Web3ModalButton();
+    const snackbar = useSnackbar();
     const depositModalId = "deposit-busd-modal";
     const { account } = useEthers();
     const {
@@ -17,7 +21,8 @@ export default function Fund() {
         currentTierNo,
         currentTierPercentage,
         isInvestmentPeriodAvailable,
-        roiToDate
+        roiToDate,
+        totalInvestors
     } = useFund();
     const tierInformation = tierInfo;
 
@@ -26,9 +31,38 @@ export default function Fund() {
         modal.style.display = "flex";
     }
 
+    const handleWithdrawalSubmit = async () => {
+        return;
+        const lossPercentageResult = await getLossPercentage();
+        if (!lossPercentageResult.ok && !lossPercentageResult.returnedModel) {
+            snackbar.snackbar.show(lossPercentageResult.message, "error");
+            return;
+        }
+
+        // const approvedAmount = currentInvestment - lossPercentageResult.returnedModel;
+        const approveOrbitResult = await approveOrbitStableCoin({ spender: MockOrbitFundContractAddress, value: 0 });
+        if (!approveOrbitResult.ok && !approveOrbitResult.returnedModel) {
+            snackbar.snackbar.show(approveOrbitResult.message, "error");
+            return;
+        }
+
+        const withdrawalResult = await withdrawInvestment();
+        if (!withdrawalResult.ok) {
+            snackbar.snackbar.show(withdrawalResult.message, "error");
+            return;
+        }
+
+        snackbar.snackbar.show("Deposit is succesfull", "success");
+    }
+
+    const handleDeneme = async () => {
+        await setPeriod({ startTime: 1645665917, endTime: 1645665930 });
+    }
+
     return (
         <div className="flex flex-col space-y-4 w-full">
             <DepositPopup id={depositModalId} />
+            {/* <Button variant="contained" onClick={async () => await handleDeneme()}>BUTTON</Button> */}
 
             <div className="flex flex-row items-center">
                 <h1 className="text-[40px] font-medium">OrbitFund</h1>
@@ -36,20 +70,25 @@ export default function Fund() {
                     <BuyButton></BuyButton>
                     {!!account
                         ? (<>
-                            <Button
-                                variant="outlined"
-                                sx={{ borderRadius: "12px" }}
-                            >
-                                Withdrawal
-                            </Button>
+                            {isInvestmentPeriodAvailable
+                                ? <Button
+                                    type="button"
+                                    variant="outlined"
+                                    onClick={isInvestmentPeriodAvailable ? async () => await handleWithdrawalSubmit() : null}
+                                    sx={{ borderRadius: "12px" }}
+                                >
+                                    Withdrawal
+                                </Button>
+                                : null
+                            }
                             <Button
                                 type="button"
-                                disabled={!isInvestmentPeriodAvailable}
-                                onClick={handleOpenDepositModal}
+                                disabled={!isInvestmentPeriodAvailable || currentTierNo === 0}
+                                onClick={(!isInvestmentPeriodAvailable || currentTierNo === 0) ? null : handleOpenDepositModal}
                                 variant="outlined"
                                 sx={{ borderRadius: "12px" }}
                             >
-                                Deposit BUSD
+                                {isInvestmentPeriodAvailable ? 'Deposit BUSD' : 'Deposit window closed'}
                             </Button>
                         </>)
                         : (
@@ -70,24 +109,31 @@ export default function Fund() {
                 <div className="flex flex-row space-x-4">
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
-                            <span>Current Investment</span>
+                            <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                         </div>
-                        <div className="text-xl">${currentInvestment}</div>
+                        <div className="text-xl">{!!account ? currentInvestment : totalInvestors.toString()}</div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
-                            <span>ROI to Date</span>
+                            <span>{!!account ? 'ROI to Date' : 'Total Invested to Date'}</span>
                         </div>
-                        <div className="text-xl">$1,000,000,000</div>
+                        <div className="text-xl">{!!account ? '$1,000,000,000' : currentInvestment}</div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
-                            <span>Current Tier</span>
+                            <span>{!!account ? 'Current Tier' : 'Profit to Date'}</span>
                         </div>
                         <div className="container">
                             <div className="grid grid-cols-1 md:grid-cols-12 items-center">
-                                <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">Tier {currentTierNo}</div>
-                                <div className="flex text-slate-400 md:col-span-8 lg:col-span-9 xl:col-span-9 text-sm">Up to {currentTierPercentage}% monthly ROI</div>
+                                {!!account
+                                    ? <>
+                                        <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">Tier {currentTierNo}</div>
+                                        <div className="flex text-slate-400 md:col-span-8 lg:col-span-9 xl:col-span-9 text-sm">Up to {currentTierPercentage}% monthly ROI</div>
+                                    </>
+                                    : <>
+                                        <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">$1,234,422</div>
+                                    </>
+                                }
                             </div>
                         </div>
                     </div>

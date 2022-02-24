@@ -1,6 +1,6 @@
 import Popup from "@app/components/common/Popup";
 import { CONSTANT, ConstantItem } from "@app/constants/constant";
-import { agreeToTerms } from "@app/lib/contract/abis/consumers/orbitFundContractConsumer";
+import { agreeToTerms } from "@app/lib/contract/abis/consumers/fundService";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { Button } from "@mui/material";
 

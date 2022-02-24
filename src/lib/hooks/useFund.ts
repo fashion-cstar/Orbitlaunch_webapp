@@ -1,11 +1,13 @@
-import { startPeriodTime, totalInvestedAmount, endPeriodTime, getTotalInvestors } from '@app/lib/contract/abis/consumers/orbitFundContractConsumer';
+import busdAbi from '@app/lib/contract/abis/busdAbi.json';
+import { startPeriodTime, totalInvestedAmount, endPeriodTime, getTotalInvestors, depositInfos, depositBusd } from '@app/lib/contract/abis/consumers/fundService';
 import { formatEther } from "@ethersproject/units";
 import { useEthers, useTokenBalance } from "@usedapp/core";
 import { useEffect, useMemo, useState } from "react";
 import {
     AppTokenAddress,
     MockOrbitFundContractAddress,
-    BSC_RPC_URL
+    BSC_RPC_URL,
+    MockBusdContractAddress
 } from "@app/shared/AppConstant";
 import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbi.json";
 import { ethers } from "ethers";
@@ -19,8 +21,12 @@ export default function useFund() {
         orbitFundAbi,
         provider.getSigner()
     );
+    const busdContract = new ethers.Contract(
+        MockBusdContractAddress,
+        busdAbi,
+        provider.getSigner()
+    );
     const connectedUserBalance = useTokenBalance(AppTokenAddress, account);
-    // const orbitFundUserBalance = useTokenBalance(MockOrbitFundContractAddress, account);
 
     const [{
         currentInvestment,
@@ -39,12 +45,31 @@ export default function useFund() {
         balance: '0.000'
     });
 
+    //------ EVENTS ------
+
     orbitFundContract.on('Deposited', (wallet: any, amount: any, tierValue: any) => {
         console.log("DEPOSIT EVENT TRIGGERED");
         console.log("WALLET: " + wallet);
         console.log("AMOUNT: " + amount);
         console.log("TIER VALUE: " + tierValue);
+
+        return;
     });
+
+    busdContract.on('Approval', async (owner: any, spender: any, value: any) => {
+        console.log("APPROVAL EVENT TRIGGERED");
+        console.log("OWNER: " + owner);
+        console.log("SPENDER: " + spender);
+        console.log("VALUE: " + value);
+
+        const depositResult = await depositBusd({ amount: value });
+        if (!depositResult.ok) {
+            console.error(depositResult.message);
+            return;
+        }
+    })
+
+    //----------------------
 
     const getTotalInvestment = async () => {
         const result = await totalInvestedAmount();
@@ -74,19 +99,24 @@ export default function useFund() {
         return startTime.returnedModel > Math.round(new Date().getTime() / 1000);
     }
 
+    const getTotalDepositedInfo = async () => {
+        const depositedAmount = await depositInfos({ address: account });
+        if (!depositedAmount.ok) return '0.000';
+
+        return depositedAmount.returnedModel;
+    }
+
     useEffect(() => {
 
         const fetchConnectedData = async () => {
             let periodAvailable = await isDepositPeriodAvailable();
 
-            const formattedConnectedBalance = (!!connectedUserBalance) ? formatEther(connectedUserBalance) : '0';
-            const connectedAmount = (!!formattedConnectedBalance) ? parseFloat(formattedConnectedBalance).toFixed(3) : '0';
-            let tierResult = await getTierValues((!!formattedConnectedBalance) ? ethers.BigNumber.from(parseFloat(formattedConnectedBalance)) : ethers.BigNumber.from('0'));
+            let totalInvestment = await getTotalDepositedInfo();
+            const formattedFundBalance = (!!totalInvestment) ? formatEther(totalInvestment) : '0';
+            const investmentAmountInDollars = (parseFloat(formattedFundBalance) * parseFloat("1")).toFixed(2);
 
-            debugger;
-            // const formattedOrbitStableBalance = (!!orbitFundUserBalance) ? formatEther(orbitFundUserBalance) : '0';
-            // const connectedOrbitAmount = (!!formattedOrbitStableBalance) ? parseFloat(formattedOrbitStableBalance).toFixed(3) : '0';
-            const investmentAmountInDollars = (parseFloat(connectedAmount) * parseFloat("1")).toFixed(2);
+            const formattedConnectedBalance = (!!connectedUserBalance) ? formatEther(connectedUserBalance) : '0';
+            let tierResult = await getTierValues((!!formattedConnectedBalance) ? ethers.BigNumber.from(parseFloat(formattedConnectedBalance)) : ethers.BigNumber.from('0'));
 
             return {
                 currentInvestment: investmentAmountInDollars,

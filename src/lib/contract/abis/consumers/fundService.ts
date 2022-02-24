@@ -1,9 +1,10 @@
 import busdAbi from "@app/lib/contract/abis/busdAbi.json";
+import orbitStableCoinAbi from "@app/lib/contract/abis/orbitStableCoinAbi.json";
 import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbi.json";
 import {
-    BSC_RPC_URL,
     MockBusdContractAddress,
-    MockOrbitFundContractAddress
+    MockOrbitFundContractAddress,
+    OrbitStableTokenAddress
 } from "@app/shared/AppConstant";
 import { ethers } from 'ethers';
 
@@ -22,6 +23,10 @@ interface DepositBusdParameter {
     amount: any
 }
 
+interface DepositInfosParameter {
+    address: any
+}
+
 interface UserAgreedParameter {
     address: any
 }
@@ -29,6 +34,11 @@ interface UserAgreedParameter {
 interface SetPeriodParameter {
     startTime: any
     endTime: any
+}
+
+interface ApproveOrbitStableParameter {
+    spender: any,
+    value: any
 }
 
 export async function agreeToTerms(): Promise<ResponseModel> {
@@ -109,7 +119,7 @@ export async function approveBusd({
         );
 
         const weiValue = ethers.utils.parseEther(value);
-        console.log("WEI: " + weiValue)
+        console.log("WEI APPROVED: " + weiValue);
         return await busdContract.approve(
             spender,
             weiValue
@@ -146,8 +156,7 @@ export async function depositBusd({
             provider.getSigner()
         );
 
-        const weiValue = ethers.utils.parseEther(amount);
-        return await orbitFundContract.deposit(weiValue)
+        return await orbitFundContract.deposit(amount)
             .then(() => {
                 return {
                     ok: true
@@ -165,6 +174,40 @@ export async function depositBusd({
         return {
             ok: false,
             message: "Deposit transaction rejected. Please try again."
+        };
+    }
+}
+
+export async function depositInfos({
+    address
+}: DepositInfosParameter): Promise<ResponseModel> {
+    try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const orbitFundContract = new ethers.Contract(
+            MockOrbitFundContractAddress,
+            orbitFundAbi,
+            provider.getSigner()
+        );
+
+        return await orbitFundContract.depositInfos(address)
+            .then((response: any) => {
+                return {
+                    ok: true,
+                    returnedModel: response.amount
+                };
+            }).catch((err: any) => {
+                console.log("ERROR:" + err);
+                return {
+                    ok: false,
+                    message: "Deposit Info cannot be fetched. Please try again."
+                };
+            });
+    }
+    catch (error) {
+        console.log("ERROR:" + error);
+        return {
+            ok: false,
+            message: "Deposit Info cannot be fetched. Please try again."
         };
     }
 }
@@ -333,6 +376,106 @@ export async function getTotalInvestors(): Promise<ResponseModel> {
         return {
             ok: false,
             message: "Get Total Investors cannot be fetched. Please try again."
+        };
+    }
+}
+
+export async function approveOrbitStableCoin({
+    spender,
+    value
+}: ApproveBusdParameter): Promise<ResponseModel> {
+    try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const orbitStableContract = new ethers.Contract(
+            OrbitStableTokenAddress,
+            orbitStableCoinAbi,
+            provider.getSigner()
+        );
+
+        const weiValue = ethers.utils.parseEther(value);
+        console.log("WEI APPROVED: " + weiValue);
+        return await orbitStableContract.approve(
+            spender,
+            weiValue
+        ).then((response: any) => {
+            return {
+                ok: true,
+                returnedModel: response
+            }
+        }).catch((err: any) => {
+            console.log("ERROR:" + err);
+            return {
+                ok: false,
+                message: "Orbit amount cannot be approved to use. Please try again."
+            };
+        });
+    }
+    catch (err) {
+        console.log("ERROR:" + err);
+        return {
+            ok: false,
+            message: "Orbit amount cannot be approved to use. Please try again."
+        }
+    }
+}
+
+export async function withdrawInvestment(): Promise<ResponseModel> {
+    try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const orbitFundContract = new ethers.Contract(
+            MockOrbitFundContractAddress,
+            orbitFundAbi,
+            provider.getSigner()
+        );
+
+        return await orbitFundContract.withdraw()
+            .then(() => {
+                return {
+                    ok: true
+                };
+            }).catch((err: any) => {
+                console.log("ERROR:" + err);
+                return {
+                    ok: false,
+                    message: "Withdrawal cannot be made. Please try again."
+                };
+            });
+    }
+    catch (error) {
+        console.log("ERROR:" + error);
+        return {
+            ok: false,
+            message: "Withdrawal cannot be made. Please try again."
+        };
+    }
+}
+
+export async function getLossPercentage(): Promise<ResponseModel> {
+    try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const orbitFundContract = new ethers.Contract(
+            MockOrbitFundContractAddress,
+            orbitFundAbi,
+            provider.getSigner()
+        );
+
+        return await orbitFundContract.lossPercentage()
+            .then((response: any) => {
+                return {
+                    ok: true,
+                    returnedModel: response
+                };
+            }).catch((err: any) => {
+                return {
+                    ok: false,
+                    message: "Loss Percentage value cannot be get. Please try again."
+                };
+            });
+    }
+    catch (error) {
+        return {
+            ok: false,
+            message: "Loss Percentage value cannot be get. Please try again."
         };
     }
 }
