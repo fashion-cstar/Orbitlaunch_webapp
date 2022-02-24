@@ -17,7 +17,7 @@ const theme = createTheme({
       main: "hsla(210, 19.2%, 20.4%, 1)",
     },
     common: {
-      black: "hsla(206, 10.1%, 13.5%, 1)",
+      black: "hsla(206, 10.1%, 13.5%, 1)"
     },
   },
   typography: {
