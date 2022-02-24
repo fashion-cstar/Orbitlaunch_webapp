@@ -18,6 +18,8 @@ interface OrbitAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
 
+// @todo: below needs to be in .env file and create dedicated command in package.json
+
 // testnet
 const config: Config = {
   readOnlyChainId: BSCTestnet.chainId, //TODO: BSC.chainId,

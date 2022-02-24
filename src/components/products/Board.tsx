@@ -8,8 +8,6 @@ import { TwitterTimelineEmbed } from 'react-twitter-embed';
 
 export default function Board() {
     return (
-        // @todo: split by components, start chart.js, formating, align & grey center, button designs, connexion compo, menu & assets
-        // @todo: find a way to keep the same css values between screens and do common css var
         <>
             <div className="flex flex-col space-y-4 w-full">
                 <div className="flex flex-row items-center">
