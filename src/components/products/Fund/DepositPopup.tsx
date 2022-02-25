@@ -2,8 +2,9 @@ import DepositInput from "@app/components/common/DepositInput";
 import Popup from "@app/components/common/Popup";
 import { approveBusd, depositBusd, userAgreed } from "@app/lib/contract/abis/consumers/fundService";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
-import { MockOrbitFundContractAddress } from "@app/shared/AppConstant";
+import {  MockOrbitFundContractAddress } from "@app/shared/AppConstant";
 import { useEthers } from "@usedapp/core";
+import { ethers } from "ethers";
 import { useState } from "react";
 import AgreeTermsPopup from "./AgreeTermsPopup";
 
@@ -35,9 +36,9 @@ export default function DepositPopup({
     }
 
     const deposit = async () => {
-        const approveBusdResult = await approveBusd({ spender: MockOrbitFundContractAddress, value: depositAmount });
-        if (!approveBusdResult.ok && !approveBusdResult.returnedModel) {
-            snackbar.snackbar.show(approveBusdResult.message, "error");
+        const depositResult = await depositBusd({ amount: depositAmount });
+        if (!depositResult.ok) {
+            console.error(depositResult.message);
             return;
         }
     }

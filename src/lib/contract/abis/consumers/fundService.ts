@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import busdAbi from "@app/lib/contract/abis/busdAbi.json";
 import orbitStableCoinAbi from "@app/lib/contract/abis/orbitStableCoinAbi.json";
 import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbi.json";
@@ -6,7 +7,6 @@ import {
     MockOrbitFundContractAddress,
     OrbitStableTokenAddress
 } from "@app/shared/AppConstant";
-import { ethers } from 'ethers';
 
 interface ResponseModel {
     ok: boolean,
@@ -38,7 +38,15 @@ interface SetPeriodParameter {
 
 interface ApproveOrbitStableParameter {
     spender: any,
-    value: any
+    weiAmount: ethers.BigNumber
+}
+
+interface WitdrawInvestmentParameter {
+    weiAmount: ethers.BigNumber
+}
+
+interface UserWithdrewParameter {
+    account: string
 }
 
 export async function agreeToTerms(): Promise<ResponseModel> {
@@ -56,7 +64,7 @@ export async function agreeToTerms(): Promise<ResponseModel> {
                     ok: true
                 };
             }).catch((err: any) => {
-                console.log("ERROR:" + err);
+                console.error("ERROR: " + err.data?.message);
                 return {
                     ok: false,
                     message: "Cannot agree to terms now. Please try again."
@@ -64,7 +72,7 @@ export async function agreeToTerms(): Promise<ResponseModel> {
             });
     }
     catch (err: any) {
-        console.log("ERROR:" + err);
+        console.error("ERROR: " + err.data?.message);
         return {
             ok: false,
             message: "Cannot agree to terms now. Please try again."
@@ -91,14 +99,14 @@ export async function userAgreed({
                 }
             })
             .catch((err: any) => {
-                console.log("ERROR:" + err);
+                console.error("ERROR: " + err.data?.message);
                 return {
                     ok: false,
                     message: "User Agreement cannot be checked. Please try again.",
                 };
             });
     } catch (err: any) {
-        console.log("ERROR:" + err);
+        console.error("ERROR: " + err.data?.message);
         return {
             ok: false,
             message: "User Agreement cannot be checked. Please try again.",
@@ -129,7 +137,7 @@ export async function approveBusd({
                 returnedModel: response
             }
         }).catch((err: any) => {
-            console.log("ERROR:" + err);
+            console.error("ERROR: " + err.data?.message);
             return {
                 ok: false,
                 message: "BUSD amount cannot be approved to use. Please try again."
@@ -137,7 +145,7 @@ export async function approveBusd({
         });
     }
     catch (err) {
-        console.log("ERROR:" + err);
+        console.error("ERROR: " + err.data?.message);
         return {
             ok: false,
             message: "BUSD amount cannot be approved to use. Please try again."
@@ -155,22 +163,34 @@ export async function depositBusd({
             orbitFundAbi,
             provider.getSigner()
         );
+        const busdContract = new ethers.Contract(
+            MockBusdContractAddress,
+            busdAbi,
+            provider.getSigner()
+        );
 
-        return await orbitFundContract.deposit(amount)
-            .then(() => {
-                return {
-                    ok: true
-                };
-            }).catch((err: any) => {
-                console.log("ERROR:" + err);
-                return {
-                    ok: false,
-                    message: "Deposit transaction rejected. Please try again."
-                };
-            });
+        const weiAmount = ethers.utils.parseEther(amount);
+        const approveTxHash = await busdContract
+            .connect(provider.getSigner())
+            .approve(MockOrbitFundContractAddress, weiAmount);
+
+        return approveTxHash.wait().then(async (_: any) => {
+            return await orbitFundContract.deposit(weiAmount)
+                .then(() => {
+                    return {
+                        ok: true
+                    };
+                }).catch((err: any) => {
+                    console.error("ERROR: " + err.data?.message);
+                    return {
+                        ok: false,
+                        message: "Deposit transaction rejected. Please try again."
+                    };
+                });
+        });
     }
-    catch (error) {
-        console.log("ERROR:" + error);
+    catch (err) {
+        console.error("ERROR: " + err.data?.message);
         return {
             ok: false,
             message: "Deposit transaction rejected. Please try again."
@@ -196,15 +216,15 @@ export async function depositInfos({
                     returnedModel: response.amount
                 };
             }).catch((err: any) => {
-                console.log("ERROR:" + err);
+                console.error("ERROR: " + err.data?.message);
                 return {
                     ok: false,
                     message: "Deposit Info cannot be fetched. Please try again."
                 };
             });
     }
-    catch (error) {
-        console.log("ERROR:" + error);
+    catch (err) {
+        console.error("ERROR: " + err.data?.message);
         return {
             ok: false,
             message: "Deposit Info cannot be fetched. Please try again."
@@ -228,15 +248,15 @@ export async function startPeriodTime(): Promise<ResponseModel> {
                     returnedModel: response
                 };
             }).catch((err: any) => {
-                console.log("ERROR:" + err);
+                console.error("ERROR: " + err.data?.message);
                 return {
                     ok: false,
                     message: "Start time is not received. Please try again."
                 };
             });
     }
-    catch (error) {
-        console.log("ERROR:" + error);
+    catch (err) {
+        console.error("ERROR: " + err.data?.message);
         return {
             ok: false,
             message: "Start time is not received. Please try again."
@@ -260,15 +280,15 @@ export async function endPeriodTime(): Promise<ResponseModel> {
                     returnedModel: response
                 };
             }).catch((err: any) => {
-                console.log("ERROR:" + err);
+                console.error("ERROR: " + err.data?.message);
                 return {
                     ok: false,
                     message: "End time is not received. Please try again."
                 };
             });
     }
-    catch (error) {
-        console.log("ERROR:" + error);
+    catch (err) {
+        console.error("ERROR: " + err.data?.message);
         return {
             ok: false,
             message: "End time is not received. Please try again."
@@ -300,15 +320,15 @@ export async function setPeriod({
                 ok: true
             };
         }).catch((err: any) => {
-            console.log("ERROR:" + err);
+            console.error("ERROR: " + err.data?.message);
             return {
                 ok: false,
                 message: "Period cannot be set. Please try again."
             };
         });
     }
-    catch (error) {
-        console.log("ERROR:" + error);
+    catch (err) {
+        console.error("ERROR: " + err.data?.message);
         return {
             ok: false,
             message: "Period cannot be set. Please try again."
@@ -332,15 +352,15 @@ export async function totalInvestedAmount(): Promise<ResponseModel> {
                     returnedModel: response
                 };
             }).catch((err: any) => {
-                console.log("ERROR:" + err);
+                console.error("ERROR: " + err.data?.message);
                 return {
                     ok: false,
                     message: "Total Invested Amount cannot be fetched. Please try again."
                 };
             });
     }
-    catch (error) {
-        console.log("ERROR:" + error);
+    catch (err) {
+        console.error("ERROR: " + err.data?.message);
         return {
             ok: false,
             message: "Total Invested Amount cannot be fetched. Please try again."
@@ -364,15 +384,15 @@ export async function getTotalInvestors(): Promise<ResponseModel> {
                     returnedModel: response
                 };
             }).catch((err: any) => {
-                console.log("ERROR:" + err);
+                console.error("ERROR: " + err.data?.message);
                 return {
                     ok: false,
                     message: "Get Total Investors cannot be fetched. Please try again."
                 };
             });
     }
-    catch (error) {
-        console.log("ERROR:" + error);
+    catch (err) {
+        console.error("ERROR: " + err.data?.message);
         return {
             ok: false,
             message: "Get Total Investors cannot be fetched. Please try again."
@@ -382,8 +402,8 @@ export async function getTotalInvestors(): Promise<ResponseModel> {
 
 export async function approveOrbitStableCoin({
     spender,
-    value
-}: ApproveBusdParameter): Promise<ResponseModel> {
+    weiAmount
+}: ApproveOrbitStableParameter): Promise<ResponseModel> {
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitStableContract = new ethers.Contract(
@@ -392,18 +412,16 @@ export async function approveOrbitStableCoin({
             provider.getSigner()
         );
 
-        const weiValue = ethers.utils.parseEther(value);
-        console.log("WEI APPROVED: " + weiValue);
         return await orbitStableContract.approve(
             spender,
-            weiValue
+            weiAmount
         ).then((response: any) => {
             return {
                 ok: true,
                 returnedModel: response
             }
         }).catch((err: any) => {
-            console.log("ERROR:" + err);
+            console.error("ERROR: " + err.data?.message);
             return {
                 ok: false,
                 message: "Orbit amount cannot be approved to use. Please try again."
@@ -411,7 +429,7 @@ export async function approveOrbitStableCoin({
         });
     }
     catch (err) {
-        console.log("ERROR:" + err);
+        console.error("ERROR: " + err.data?.message);
         return {
             ok: false,
             message: "Orbit amount cannot be approved to use. Please try again."
@@ -419,7 +437,9 @@ export async function approveOrbitStableCoin({
     }
 }
 
-export async function withdrawInvestment(): Promise<ResponseModel> {
+export async function withdrawInvestment({
+    weiAmount
+}: WitdrawInvestmentParameter): Promise<ResponseModel> {
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitFundContract = new ethers.Contract(
@@ -427,22 +447,33 @@ export async function withdrawInvestment(): Promise<ResponseModel> {
             orbitFundAbi,
             provider.getSigner()
         );
+        const orbitStableContract = new ethers.Contract(
+            OrbitStableTokenAddress,
+            orbitStableCoinAbi,
+            provider.getSigner()
+        );
 
-        return await orbitFundContract.withdraw()
-            .then(() => {
-                return {
-                    ok: true
-                };
-            }).catch((err: any) => {
-                console.log("ERROR:" + err);
-                return {
-                    ok: false,
-                    message: "Withdrawal cannot be made. Please try again."
-                };
-            });
+        const approveTxHash = await orbitStableContract
+            .connect(provider.getSigner())
+            .approve(MockOrbitFundContractAddress, weiAmount);
+
+        return approveTxHash.wait().then(async (_: any) => {
+            return await orbitFundContract.withdraw()
+                .then(() => {
+                    return {
+                        ok: true
+                    };
+                }).catch((err: any) => {
+                    console.error("ERROR: " + err.data?.message);
+                    return {
+                        ok: false,
+                        message: "Withdrawal cannot be made. Please try again."
+                    };
+                });
+        })
     }
-    catch (error) {
-        console.log("ERROR:" + error);
+    catch (err) {
+        console.error("ERROR: " + err.data?.message);
         return {
             ok: false,
             message: "Withdrawal cannot be made. Please try again."
@@ -466,16 +497,55 @@ export async function getLossPercentage(): Promise<ResponseModel> {
                     returnedModel: response
                 };
             }).catch((err: any) => {
+                console.error("ERROR: " + err.data?.message);
                 return {
                     ok: false,
                     message: "Loss Percentage value cannot be get. Please try again."
                 };
             });
     }
-    catch (error) {
+    catch (err) {
+        console.error("ERROR: " + err.data?.message);
         return {
             ok: false,
             message: "Loss Percentage value cannot be get. Please try again."
+        };
+    }
+}
+
+export async function userWithdrew({
+    account
+}: UserWithdrewParameter): Promise<ResponseModel> {
+    try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const orbitFundContract = new ethers.Contract(
+            MockOrbitFundContractAddress,
+            orbitFundAbi,
+            provider.getSigner()
+        );
+
+        const userWithdrewTxHash = await orbitFundContract
+            .connect(provider.getSigner())
+            .userWithdrew(account);
+
+        return userWithdrewTxHash.wait().then(async (result: any) => {
+            return {
+                ok: true,
+                returnedModel: result
+            };
+        }).catch((err: any) => {
+            console.error("ERROR: " + err.data?.message);
+            return {
+                ok: false,
+                message: "err.data?.message"
+            };
+        })
+    }
+    catch (err) {
+        console.error("ERROR: " + err.data?.message);
+        return {
+            ok: false,
+            message: "Withdrawal cannot be made. Please try again."
         };
     }
 }
