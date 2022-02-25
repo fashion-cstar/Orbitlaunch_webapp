@@ -1,8 +1,7 @@
 import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
-import { approveOrbitStableCoin, getLossPercentage, setPeriod, withdrawInvestment } from "@app/lib/contract/abis/consumers/fundService";
+import { getLossPercentage, withdrawInvestment } from "@app/lib/contract/abis/consumers/fundService";
 import useFund from "@app/lib/hooks/useFund";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
-import { MockOrbitFundContractAddress } from "@app/shared/AppConstant";
 import { tierInformation as tierInfo } from "@app/shared/TierLevels";
 import { Button } from "@mui/material";
 import { useEthers } from "@usedapp/core";
@@ -17,14 +16,19 @@ export default function Fund() {
     const depositModalId = "deposit-busd-modal";
     const { account } = useEthers();
     const {
+        startInvestmentPeriodDate,
+        endInvestmentPeriodDate,
         currentInvestment,
         currentTierNo,
         currentTierPercentage,
-        isInvestmentPeriodAvailable,
         roiToDate,
-        totalInvestors
+        totalInvestors,
+        disableDeposit,
+        disableWithdraw,
+        remainingTimeText
     } = useFund();
     const tierInformation = tierInfo;
+    // time.toLocaleString('en-US', { hour: 'numeric', hour12: true })
 
     const handleOpenDepositModal = () => {
         const modal = document.getElementById(depositModalId);
@@ -32,21 +36,14 @@ export default function Fund() {
     }
 
     const handleWithdrawalSubmit = async () => {
-        return;
         const lossPercentageResult = await getLossPercentage();
         if (!lossPercentageResult.ok && !lossPercentageResult.returnedModel) {
             snackbar.snackbar.show(lossPercentageResult.message, "error");
             return;
         }
 
-        // const approvedAmount = currentInvestment - lossPercentageResult.returnedModel;
-        const approveOrbitResult = await approveOrbitStableCoin({ spender: MockOrbitFundContractAddress, value: 0 });
-        if (!approveOrbitResult.ok && !approveOrbitResult.returnedModel) {
-            snackbar.snackbar.show(approveOrbitResult.message, "error");
-            return;
-        }
-
-        const withdrawalResult = await withdrawInvestment();
+        const weiAmount = ethers.utils.parseEther(currentInvestment);
+        const withdrawalResult = await withdrawInvestment({ weiAmount: weiAmount });
         if (!withdrawalResult.ok) {
             snackbar.snackbar.show(withdrawalResult.message, "error");
             return;
@@ -55,14 +52,9 @@ export default function Fund() {
         snackbar.snackbar.show("Deposit is succesfull", "success");
     }
 
-    const handleDeneme = async () => {
-        await setPeriod({ startTime: 1645665917, endTime: 1645665930 });
-    }
-
     return (
         <div className="flex flex-col space-y-4 w-full">
             <DepositPopup id={depositModalId} />
-            {/* <Button variant="contained" onClick={async () => await handleDeneme()}>BUTTON</Button> */}
 
             <div className="flex flex-row items-center">
                 <h1 className="text-[40px] font-medium">OrbitFund</h1>
@@ -70,25 +62,23 @@ export default function Fund() {
                     <BuyButton></BuyButton>
                     {!!account
                         ? (<>
-                            {isInvestmentPeriodAvailable
-                                ? <Button
-                                    type="button"
-                                    variant="outlined"
-                                    onClick={isInvestmentPeriodAvailable ? async () => await handleWithdrawalSubmit() : null}
-                                    sx={{ borderRadius: "12px" }}
-                                >
-                                    Withdrawal
-                                </Button>
-                                : null
-                            }
                             <Button
                                 type="button"
-                                disabled={!isInvestmentPeriodAvailable || currentTierNo === 0}
-                                onClick={(!isInvestmentPeriodAvailable || currentTierNo === 0) ? null : handleOpenDepositModal}
+                                disabled={disableWithdraw || currentTierNo === 0}
+                                variant="outlined"
+                                onClick={disableWithdraw ? null : async () => await handleWithdrawalSubmit()}
+                                sx={{ borderRadius: "12px" }}
+                            >
+                                Withdrawal
+                            </Button>
+                            <Button
+                                type="button"
+                                disabled={disableDeposit || currentTierNo === 0}
+                                onClick={(disableDeposit || currentTierNo === 0) ? null : handleOpenDepositModal}
                                 variant="outlined"
                                 sx={{ borderRadius: "12px" }}
                             >
-                                {isInvestmentPeriodAvailable ? 'Deposit BUSD' : 'Deposit window closed'}
+                                {disableDeposit ? 'Deposit window closed' : 'Deposit BUSD'}
                             </Button>
                         </>)
                         : (
@@ -145,16 +135,18 @@ export default function Fund() {
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="space-y-4">
                             <div className="items-center text-l text-white font-bold">
-                                *Deposit Window Closing in &nbsp;<span className="text-app-primary">2 days 12hours 27 minutes</span> &nbsp;(April 1 - 12am UTC)
+                                *Deposit Window {disableDeposit ? 'Opens' : 'Closing'} in &nbsp;
+                                <span className="text-app-primary">{remainingTimeText}</span>
+                                &nbsp;({disableDeposit ? startInvestmentPeriodDate : endInvestmentPeriodDate})
                             </div>
                             <hr style={{ borderColor: "#112B40" }} />
                         </div>
                         <div className="space-y-3 pt-4">
                             <div className="items-center text-xs text-white mb-2">
-                                Prior Month’s Total Investment:&nbsp;<span className="text-app-primary">$17,006.48</span>
+                                Prior Month’s Total Investment:&nbsp;<span className="text-app-primary">$0</span>
                             </div>
                             <div className="items-center text-xs text-white mb-2">
-                                Prior Month’s Profit Returned to Investors:&nbsp;<span className="text-app-primary">$1,637.26</span>
+                                Prior Month’s Profit Returned to Investors:&nbsp;<span className="text-app-primary">$0</span>
                             </div>
                         </div>
                     </div>
