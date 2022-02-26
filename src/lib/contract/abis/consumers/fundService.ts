@@ -371,17 +371,21 @@ export async function totalInvestedAmount(): Promise<ResponseModel> {
 export async function getTotalInvestors(): Promise<ResponseModel> {
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
+        console.log({provider})
         const orbitFundContract = new ethers.Contract(
             OrbitFundContractAddress,
             orbitFundAbi,
             provider.getSigner()
         );
 
+        console.log({orbitFundContract})
+
         return await orbitFundContract.getTotalInvestors()
             .then((response: any) => {
+                console.log({response})
                 return {
                     ok: true,
-                    returnedModel: response
+                    returnedModel: ethers.utils.parseUnits(response)
                 };
             }).catch((err: any) => {
                 console.error("ERROR: " + err.data?.message);
