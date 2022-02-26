@@ -2,7 +2,7 @@ import DepositInput from "@app/components/common/DepositInput";
 import Popup from "@app/components/common/Popup";
 import { approveBusd, depositBusd, userAgreed } from "@app/lib/contract/abis/consumers/fundService";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
-import {  MockOrbitFundContractAddress } from "@app/shared/AppConstant";
+import {  OrbitFundContractAddress } from "@app/shared/AppConstant";
 import { useEthers } from "@usedapp/core";
 import { ethers } from "ethers";
 import { useState } from "react";

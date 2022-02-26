@@ -21,24 +21,24 @@ interface OrbitAppProps extends AppProps {
 // @todo: below needs to be in .env file and create dedicated command in package.json
 
 // testnet
-const config: Config = {
-  readOnlyChainId: BSCTestnet.chainId, //TODO: BSC.chainId,
-  readOnlyUrls: {
-    [BSCTestnet.chainId]: BSC_RPC_URL, //TODO: [BSC.chainId]: BSC_RPC_URL,
-  },
-  networks: [BSC, Mainnet, BSCTestnet],
-  autoConnect: false
-};
-
-// mainet
 // const config: Config = {
-//   readOnlyChainId: BSC.chainId,
+//   readOnlyChainId: BSCTestnet.chainId, //TODO: BSC.chainId,
 //   readOnlyUrls: {
-//     [BSC.chainId]: BSC_RPC_URL,
+//     [BSCTestnet.chainId]: BSC_RPC_URL, //TODO: [BSC.chainId]: BSC_RPC_URL,
 //   },
-//   networks: [BSC, Mainnet],
+//   networks: [BSC, Mainnet, BSCTestnet],
 //   autoConnect: false
 // };
+
+// mainet
+const config: Config = {
+  readOnlyChainId: BSC.chainId,
+  readOnlyUrls: {
+    [BSC.chainId]: BSC_RPC_URL,
+  },
+  networks: [BSC, Mainnet],
+  autoConnect: false
+};
 
 function OrbitApp({
   Component,

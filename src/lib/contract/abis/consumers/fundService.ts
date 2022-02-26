@@ -3,8 +3,8 @@ import busdAbi from "@app/lib/contract/abis/busdAbi.json";
 import orbitStableCoinAbi from "@app/lib/contract/abis/orbitStableCoinAbi.json";
 import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbi.json";
 import {
-    MockBusdContractAddress,
-    MockOrbitFundContractAddress,
+    BusdContractAddress,
+    OrbitFundContractAddress,
     OrbitStableTokenAddress
 } from "@app/shared/AppConstant";
 
@@ -53,7 +53,7 @@ export async function agreeToTerms(): Promise<ResponseModel> {
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitFundContract = new ethers.Contract(
-            MockOrbitFundContractAddress,
+            OrbitFundContractAddress,
             orbitFundAbi,
             provider.getSigner()
         );
@@ -86,7 +86,7 @@ export async function userAgreed({
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitFundContract = new ethers.Contract(
-            MockOrbitFundContractAddress,
+            OrbitFundContractAddress,
             orbitFundAbi,
             provider.getSigner()
         );
@@ -121,7 +121,7 @@ export async function approveBusd({
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const busdContract = new ethers.Contract(
-            MockBusdContractAddress,
+            BusdContractAddress,
             busdAbi,
             provider.getSigner()
         );
@@ -159,12 +159,12 @@ export async function depositBusd({
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitFundContract = new ethers.Contract(
-            MockOrbitFundContractAddress,
+            OrbitFundContractAddress,
             orbitFundAbi,
             provider.getSigner()
         );
         const busdContract = new ethers.Contract(
-            MockBusdContractAddress,
+            BusdContractAddress,
             busdAbi,
             provider.getSigner()
         );
@@ -172,7 +172,7 @@ export async function depositBusd({
         const weiAmount = ethers.utils.parseEther(amount);
         const approveTxHash = await busdContract
             .connect(provider.getSigner())
-            .approve(MockOrbitFundContractAddress, weiAmount);
+            .approve(OrbitFundContractAddress, weiAmount);
 
         return approveTxHash.wait().then(async (_: any) => {
             return await orbitFundContract.deposit(weiAmount)
@@ -204,7 +204,7 @@ export async function depositInfos({
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitFundContract = new ethers.Contract(
-            MockOrbitFundContractAddress,
+            OrbitFundContractAddress,
             orbitFundAbi,
             provider.getSigner()
         );
@@ -236,7 +236,7 @@ export async function startPeriodTime(): Promise<ResponseModel> {
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitFundContract = new ethers.Contract(
-            MockOrbitFundContractAddress,
+            OrbitFundContractAddress,
             orbitFundAbi,
             provider.getSigner()
         );
@@ -268,7 +268,7 @@ export async function endPeriodTime(): Promise<ResponseModel> {
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitFundContract = new ethers.Contract(
-            MockOrbitFundContractAddress,
+            OrbitFundContractAddress,
             orbitFundAbi,
             provider.getSigner()
         );
@@ -303,7 +303,7 @@ export async function setPeriod({
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitFundContract = new ethers.Contract(
-            MockOrbitFundContractAddress,
+            OrbitFundContractAddress,
             orbitFundAbi,
             provider.getSigner()
         );
@@ -340,7 +340,7 @@ export async function totalInvestedAmount(): Promise<ResponseModel> {
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitFundContract = new ethers.Contract(
-            MockOrbitFundContractAddress,
+            OrbitFundContractAddress,
             orbitFundAbi,
             provider.getSigner()
         );
@@ -372,7 +372,7 @@ export async function getTotalInvestors(): Promise<ResponseModel> {
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitFundContract = new ethers.Contract(
-            MockOrbitFundContractAddress,
+            OrbitFundContractAddress,
             orbitFundAbi,
             provider.getSigner()
         );
@@ -443,7 +443,7 @@ export async function withdrawInvestment({
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitFundContract = new ethers.Contract(
-            MockOrbitFundContractAddress,
+            OrbitFundContractAddress,
             orbitFundAbi,
             provider.getSigner()
         );
@@ -455,7 +455,7 @@ export async function withdrawInvestment({
 
         const approveTxHash = await orbitStableContract
             .connect(provider.getSigner())
-            .approve(MockOrbitFundContractAddress, weiAmount);
+            .approve(OrbitFundContractAddress, weiAmount);
 
         return approveTxHash.wait().then(async (_: any) => {
             return await orbitFundContract.withdraw()
@@ -485,7 +485,7 @@ export async function getLossPercentage(): Promise<ResponseModel> {
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitFundContract = new ethers.Contract(
-            MockOrbitFundContractAddress,
+            OrbitFundContractAddress,
             orbitFundAbi,
             provider.getSigner()
         );
@@ -519,7 +519,7 @@ export async function userWithdrew({
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const orbitFundContract = new ethers.Contract(
-            MockOrbitFundContractAddress,
+            OrbitFundContractAddress,
             orbitFundAbi,
             provider.getSigner()
         );

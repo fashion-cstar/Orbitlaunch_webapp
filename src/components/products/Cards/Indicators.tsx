@@ -39,7 +39,7 @@ export default function Indicators() {
                     <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-[6px]">
                         <span>Price</span>
                     </div>
-                    <div className="text-xl">{price} $</div>
+                    <div className="text-xl">$ {price}</div>
                 </div>
             </div>
             <div className="rounded-2xl bg-[#001926] p-4">
