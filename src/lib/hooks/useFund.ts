@@ -68,9 +68,12 @@ export default function useFund() {
         returnedModel.endDate = !endTime.ok ? new Date() : new Date(endTime.returnedModel * 1000);
 
         const nowTime = new Date().getTime();
-        const nowUnix = Math.round(nowTime / 1000);
-        returnedModel.disabledDeposit = startTime.ok ? nowUnix >= startTime.returnedModel : returnedModel.disabledDeposit;
-        returnedModel.disabledWithdraw = endTime.ok ? nowUnix <= endTime.returnedModel : returnedModel.disabledWithdraw;
+        returnedModel.disabledDeposit = startTime.ok 
+            ? nowTime >= returnedModel.startDate.getTime()
+            : returnedModel.disabledDeposit;
+        returnedModel.disabledWithdraw = endTime.ok 
+            ? nowTime <= returnedModel.endDate.getTime()
+            : returnedModel.disabledWithdraw;
 
         const comparedDate = returnedModel.disabledDeposit ? returnedModel.startDate : returnedModel.endDate;
         const remainingTimeResult = returnedModel.disabledDeposit

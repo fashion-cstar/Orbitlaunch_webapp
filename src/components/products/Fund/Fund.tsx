@@ -28,7 +28,6 @@ export default function Fund() {
         remainingTimeText
     } = useFund();
     const tierInformation = tierInfo;
-    // time.toLocaleString('en-US', { hour: 'numeric', hour12: true })
 
     const handleOpenDepositModal = () => {
         const modal = document.getElementById(depositModalId);
@@ -159,7 +158,10 @@ export default function Fund() {
                                     </div>
                                     <hr style={{ borderColor: "#112B40" }} />
                                 </div>
-                                <div className="grid grid-cols-2 pt-2">
+                                <div className="flex justify-center items-center flex-1 rounded-2xl bg-[#001926] p-4 text-gray-400">
+                                    OrbitFund Video Coming Soon
+                                </div>
+                                {/* <div className="grid grid-cols-2 pt-2">
                                     <div className="ml-0 col-span-1">
                                         <iframe src="https://player.vimeo.com/video/146022717?color=0c88dd&title=0&byline=0&portrait=0&badge=0"
                                             width="100%"
@@ -169,7 +171,7 @@ export default function Fund() {
                                             allowFullScreen={true}>
                                         </iframe>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                         )
                         : null
