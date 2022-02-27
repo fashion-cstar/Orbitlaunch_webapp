@@ -38,7 +38,7 @@ export const PancakeSwapContractAddress =
 export const PancakeRouterContractAddress =
   "0x10ed43c718714eb63d5aa57b78b54704e256024e";
 
-export const OrbitFundContractAddress = "0x0141b423432C4DF0721dCFB3e3b64278A14AF66A"; // testnet: 0x26E17791ee9a2116DDf78620D966b8967f0F85B2
+export const OrbitFundContractAddress = "0x88520Ddf58675EDe704027407e9177c62A0209F5"; // testnet: 0x26E17791ee9a2116DDf78620D966b8967f0F85B2
 export const BusdContractAddress = "0xe9e7cea3dedca5984780bafc599bd69add087d56"; // testnet MOCK BUSD: 0xCbdEB985e2189e615eAe14F5784733C0122c253c
 export const OrbitStableTokenAddress = "0xb96a921fd923ff5c23d2a4f5d3d099b47d9d95f1" // testnet: 0x2a087e33c0C44A2B351B5329cBFf8A63d352C599
 export const AppTokenAddress = "0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414";//TODO: "0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414"; / testnet 0x8401e6E7ba1A1EC011BDf34CD59Fb11545FaE523
