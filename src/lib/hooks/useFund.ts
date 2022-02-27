@@ -16,23 +16,27 @@ export default function useFund() {
         startInvestmentPeriodDate,
         endInvestmentPeriodDate,
         currentInvestment,
+        totalInvestedToDate,
         totalInvestors,
         roiToDate, currentTierNo,
         currentTierPercentage,
         disableDeposit,
         disableWithdraw,
-        remainingTimeText
+        remainingTimeText,
+        balance
     }, setInfo] = useState({
         startInvestmentPeriodDate: '-',
         endInvestmentPeriodDate: '-',
         currentInvestment: '0.00',
+        totalInvestedToDate: '0.00',
         totalInvestors: 0,
         roiToDate: '0.0',
         currentTierNo: 0,
         currentTierPercentage: "0",
         disableDeposit: true,
         disableWithdraw: true,
-        remainingTimeText: '0 days 0 hours 0 minutes'
+        remainingTimeText: '0 days 0 hours 0 minutes',
+        balance: '0.00'
     });
 
     const getTotalInvestment = async () => {
@@ -121,13 +125,15 @@ export default function useFund() {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
                 endInvestmentPeriodDate: depositPeriodResult.endDate,
                 currentInvestment: userWithdrewResult ? '0.00' : investmentAmountInDollars,
+                totalInvestedToDate: '0.00',
                 totalInvestors: 0,
                 roiToDate: '0.00',
                 currentTierNo: tierResult.tierNo,
                 currentTierPercentage: tierResult.monthlyPercent,
                 disableDeposit: depositPeriodResult.disabledDeposit,
                 disableWithdraw: depositPeriodResult.disabledWithdraw,
-                remainingTimeText: depositPeriodResult.remainingTimeText
+                remainingTimeText: depositPeriodResult.remainingTimeText,
+                balance: formattedConnectedBalance
             };
         }
 
@@ -135,18 +141,20 @@ export default function useFund() {
             let depositPeriodResult = await depositPeriodInfo();
             let totalInvestment = ethers.utils.formatEther(await getTotalInvestment());
             let totalInvestorNumber = await getTotalInvestorNumber();
-
+            
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
                 endInvestmentPeriodDate: depositPeriodResult.endDate,
-                currentInvestment: totalInvestment,
+                currentInvestment: '0.00',
+                totalInvestedToDate: totalInvestment,
                 totalInvestors: totalInvestorNumber,
                 roiToDate: '0.00',
                 currentTierNo: 0,
                 currentTierPercentage: "0",
                 disableDeposit: depositPeriodResult.disabledDeposit,
                 disableWithdraw: depositPeriodResult.disabledWithdraw,
-                remainingTimeText: depositPeriodResult.remainingTimeText
+                remainingTimeText: depositPeriodResult.remainingTimeText,
+                balance: '0.00'
             }
         }
 
@@ -156,13 +164,15 @@ export default function useFund() {
                     startInvestmentPeriodDate: result.startInvestmentPeriodDate,
                     endInvestmentPeriodDate: result.endInvestmentPeriodDate,
                     currentInvestment: result.currentInvestment,
+                    totalInvestedToDate: result.totalInvestedToDate,
                     totalInvestors: result.totalInvestors,
                     roiToDate: result.roiToDate,
                     currentTierNo: result.currentTierNo,
                     currentTierPercentage: result.currentTierPercentage,
                     disableDeposit: result.disableDeposit,
                     disableWithdraw: result.disableWithdraw,
-                    remainingTimeText: result.remainingTimeText
+                    remainingTimeText: result.remainingTimeText,
+                    balance: result.balance,
                 });
             }).catch(console.error);;
         }
@@ -172,13 +182,15 @@ export default function useFund() {
                     startInvestmentPeriodDate: result.startInvestmentPeriodDate,
                     endInvestmentPeriodDate: result.endInvestmentPeriodDate,
                     currentInvestment: result.currentInvestment,
+                    totalInvestedToDate: result.totalInvestedToDate,
                     totalInvestors: result.totalInvestors,
                     roiToDate: result.roiToDate,
                     currentTierNo: result.currentTierNo,
                     currentTierPercentage: result.currentTierPercentage,
                     disableDeposit: result.disableDeposit,
                     disableWithdraw: result.disableWithdraw,
-                    remainingTimeText: result.remainingTimeText
+                    remainingTimeText: result.remainingTimeText,
+                    balance: result.balance
                 });
             }).catch(console.error);
         }
@@ -190,17 +202,19 @@ export default function useFund() {
             startInvestmentPeriodDate,
             endInvestmentPeriodDate,
             currentInvestment,
+            totalInvestedToDate,
             totalInvestors,
             roiToDate,
             currentTierNo,
             currentTierPercentage,
             disableDeposit,
             disableWithdraw,
-            remainingTimeText
+            remainingTimeText,
+            balance
         }),
         [startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, totalInvestors,
             roiToDate, currentTierNo, currentTierPercentage, disableDeposit, disableWithdraw,
-            remainingTimeText]
+            remainingTimeText, balance, totalInvestedToDate]
     );
 
     return fundInfo;

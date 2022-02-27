@@ -19,13 +19,15 @@ export default function Fund() {
         startInvestmentPeriodDate,
         endInvestmentPeriodDate,
         currentInvestment,
+        totalInvestedToDate,
         currentTierNo,
         currentTierPercentage,
         roiToDate,
         totalInvestors,
         disableDeposit,
         disableWithdraw,
-        remainingTimeText
+        remainingTimeText,
+        balance
     } = useFund();
     const tierInformation = tierInfo;
 
@@ -35,13 +37,7 @@ export default function Fund() {
     }
 
     const handleWithdrawalSubmit = async () => {
-        const lossPercentageResult = await getLossPercentage();
-        if (!lossPercentageResult.ok && !lossPercentageResult.returnedModel) {
-            snackbar.snackbar.show(lossPercentageResult.message, "error");
-            return;
-        }
-
-        const weiAmount = ethers.utils.parseEther(currentInvestment);
+        const weiAmount = ethers.utils.parseEther(balance);
         const withdrawalResult = await withdrawInvestment({ weiAmount: weiAmount });
         if (!withdrawalResult.ok) {
             snackbar.snackbar.show(withdrawalResult.message, "error");
@@ -100,13 +96,13 @@ export default function Fund() {
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                         </div>
-                        <div className="text-xl">{!!account ? currentInvestment : totalInvestors.toString()}</div>
+                        <div className="text-xl">{!!account ? `$${currentInvestment}` : totalInvestors.toString()}</div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>{!!account ? 'ROI to Date' : 'Total Invested to Date'}</span>
                         </div>
-                        <div className="text-xl">{!!account ? '$1,000,000,000' : currentInvestment}</div>
+                        <div className="text-xl">${!!account ? '0' : totalInvestedToDate}</div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
@@ -120,7 +116,7 @@ export default function Fund() {
                                         <div className="flex text-slate-400 md:col-span-8 lg:col-span-9 xl:col-span-9 text-sm">Up to {currentTierPercentage}% monthly ROI</div>
                                     </>
                                     : <>
-                                        <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">$1,234,422</div>
+                                        <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">$0</div>
                                     </>
                                 }
                             </div>
