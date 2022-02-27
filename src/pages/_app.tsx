@@ -19,9 +19,9 @@ interface OrbitAppProps extends AppProps {
 }
 
 const config: Config = {
-  readOnlyChainId: BSCTestnet.chainId, //TODO: BSC.chainId,
+  readOnlyChainId: BSC.chainId, //TODO: BSCTestnet.chainId,
   readOnlyUrls: {
-    [BSCTestnet.chainId]: BSC_RPC_URL, //TODO: [BSC.chainId]: BSC_RPC_URL,
+    [BSC.chainId]: BSC_RPC_URL, //TODO: [BSCTestnet.chainId]: BSC_RPC_URL,
   },
   networks: [BSC, Mainnet, BSCTestnet],
   autoConnect: false

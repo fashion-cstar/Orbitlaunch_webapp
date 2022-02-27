@@ -72,10 +72,10 @@ export default function useFund() {
         returnedModel.disabledDeposit = startTime.ok ? nowUnix >= startTime.returnedModel : returnedModel.disabledDeposit;
         returnedModel.disabledWithdraw = endTime.ok ? nowUnix <= endTime.returnedModel : returnedModel.disabledWithdraw;
 
-        const comparedDate = returnedModel.disabledDeposit ? startTime.returnedModel : endTime.returnedModel;
+        const comparedDate = returnedModel.disabledDeposit ? returnedModel.startDate : returnedModel.endDate;
         const remainingTimeResult = returnedModel.disabledDeposit
-            ? getRemainingTimeBetweenTwoDates(nowUnix, Math.round(comparedDate / 1000))
-            : getRemainingTimeBetweenTwoDates(Math.round(comparedDate / 1000), nowUnix);
+            ? getRemainingTimeBetweenTwoDates(nowUnix, Math.round(comparedDate.getTime() / 1000))
+            : getRemainingTimeBetweenTwoDates(Math.round(comparedDate.getTime() / 1000), nowUnix);
 
         return {
             startDate: moment.utc(returnedModel.startDate).format("MMMM D [-] h[:]mma [UTC]"),
@@ -88,9 +88,11 @@ export default function useFund() {
 
     const getTotalDepositedInfo = async () => {
         const depositedAmount = await depositInfos({ address: account });
-        if (!depositedAmount.ok) return '0.000';
+        if (!depositedAmount.ok) {
+            return formatEther(ethers.utils.parseEther('0.000'))
+        };
 
-        return depositedAmount.returnedModel;
+        return formatEther(depositedAmount.returnedModel);
     }
 
     const isUserWithdrew = async () => {
@@ -107,11 +109,10 @@ export default function useFund() {
             let userWithdrewResult = await isUserWithdrew();
 
             let totalInvestment = await getTotalDepositedInfo();
-            const formattedFundBalance = (!!totalInvestment) ? formatEther(totalInvestment) : '0';
-            const investmentAmountInDollars = (parseFloat(formattedFundBalance) * parseFloat("1")).toFixed(2);
+            const investmentAmountInDollars = (parseFloat(totalInvestment) * parseFloat("1")).toFixed(2);
+            const formattedConnectedBalance = formatEther(connectedUserBalance);
 
-            const formattedConnectedBalance = (!!connectedUserBalance) ? formatEther(connectedUserBalance) : '0';
-            let tierResult = await getTierValues((!!formattedConnectedBalance) ? ethers.BigNumber.from(parseFloat(formattedConnectedBalance)) : ethers.BigNumber.from('0'));
+            let tierResult = await getTierValues(ethers.BigNumber.from(Math.trunc(parseFloat(formattedConnectedBalance))));
 
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
