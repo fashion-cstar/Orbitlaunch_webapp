@@ -74,8 +74,8 @@ export default function useFund() {
 
         const comparedDate = returnedModel.disabledDeposit ? returnedModel.startDate : returnedModel.endDate;
         const remainingTimeResult = returnedModel.disabledDeposit
-            ? getRemainingTimeBetweenTwoDates(nowUnix, Math.round(comparedDate.getTime() / 1000))
-            : getRemainingTimeBetweenTwoDates(Math.round(comparedDate.getTime() / 1000), nowUnix);
+            ? getRemainingTimeBetweenTwoDates(nowTime, comparedDate.getTime())
+            : getRemainingTimeBetweenTwoDates(comparedDate.getTime(), nowTime);
 
         return {
             startDate: moment.utc(returnedModel.startDate).format("MMMM D [-] h[:]mma [UTC]"),
