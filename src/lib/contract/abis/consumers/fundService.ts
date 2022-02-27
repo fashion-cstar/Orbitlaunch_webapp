@@ -206,7 +206,7 @@ export async function depositInfos({
         const orbitFundContract = new ethers.Contract(
             OrbitFundContractAddress,
             orbitFundAbi,
-            provider.getSigner()
+            provider
         );
 
         return await orbitFundContract.depositInfos(address)
@@ -368,24 +368,21 @@ export async function totalInvestedAmount(): Promise<ResponseModel> {
     }
 }
 
-export async function getTotalInvestors(): Promise<ResponseModel> {
+export async function getTotalInvestors() {
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        console.log({provider})
+
         const orbitFundContract = new ethers.Contract(
             OrbitFundContractAddress,
             orbitFundAbi,
-            provider.getSigner()
+            provider
         );
-
-        console.log({orbitFundContract})
 
         return await orbitFundContract.getTotalInvestors()
             .then((response: any) => {
-                console.log({response})
                 return {
                     ok: true,
-                    returnedModel: ethers.utils.parseUnits(response)
+                    returnedModel: response
                 };
             }).catch((err: any) => {
                 console.error("ERROR: " + err.data?.message);
@@ -525,25 +522,22 @@ export async function userWithdrew({
         const orbitFundContract = new ethers.Contract(
             OrbitFundContractAddress,
             orbitFundAbi,
-            provider.getSigner()
+            provider
         );
 
-        const userWithdrewTxHash = await orbitFundContract
-            .connect(provider.getSigner())
-            .userWithdrew(account);
-
-        return userWithdrewTxHash.wait().then(async (result: any) => {
-            return {
-                ok: true,
-                returnedModel: result
-            };
-        }).catch((err: any) => {
-            console.error("ERROR: " + err.data?.message);
-            return {
-                ok: false,
-                message: "err.data?.message"
-            };
-        })
+        return await orbitFundContract.userWithdrew(account)
+            .then(async (result: any) => {
+                return {
+                    ok: true,
+                    returnedModel: result
+                };
+            }).catch((err: any) => {
+                console.error("ERROR: " + err.data?.message);
+                return {
+                    ok: false,
+                    message: "err.data?.message"
+                };
+            })
     }
     catch (err) {
         console.error("ERROR: " + err.data?.message);
