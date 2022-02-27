@@ -134,7 +134,7 @@ export default function Fund() {
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="space-y-4">
                             <div className="items-center text-l text-white font-bold">
-                                *Deposit Window {disableDeposit ? 'Opens' : 'Closing'} in &nbsp;
+                                Deposit and Withdrawal Window {disableDeposit ? 'Opens' : 'Closes'} in &nbsp;
                                 <span className="text-app-primary">{remainingTimeText}</span>
                                 &nbsp;({disableDeposit ? startInvestmentPeriodDate : endInvestmentPeriodDate})
                             </div>
