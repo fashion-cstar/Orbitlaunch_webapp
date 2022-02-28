@@ -1,5 +1,4 @@
 import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
-import { getLossPercentage, withdrawInvestment } from "@app/lib/contract/abis/consumers/fundService";
 import useFund from "@app/lib/hooks/useFund";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { tierInformation as tierInfo } from "@app/shared/TierLevels";
@@ -27,7 +26,8 @@ export default function Fund() {
         disableDeposit,
         disableWithdraw,
         remainingTimeText,
-        balance
+        balance,
+        withdraw
     } = useFund();
     const tierInformation = tierInfo;
 
@@ -38,7 +38,7 @@ export default function Fund() {
 
     const handleWithdrawalSubmit = async () => {
         const weiAmount = ethers.utils.parseEther(balance);
-        const withdrawalResult = await withdrawInvestment({ weiAmount: weiAmount });
+        const withdrawalResult = await withdraw(weiAmount);
         if (!withdrawalResult.ok) {
             snackbar.snackbar.show(withdrawalResult.message, "error");
             return;

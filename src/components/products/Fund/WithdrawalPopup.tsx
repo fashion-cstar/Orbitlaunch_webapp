@@ -1,6 +1,5 @@
 import DepositInput from "@app/components/common/DepositInput";
 import Popup from "@app/components/common/Popup";
-import { approveBusd, approveOrbitStableCoin, depositBusd, userAgreed } from "@app/lib/contract/abis/consumers/fundService";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { OrbitFundContractAddress } from "@app/shared/AppConstant";
 import { useEthers } from "@usedapp/core";
@@ -35,7 +34,7 @@ export default function WithdrawalPopup({
         //     return;
         // }
 
-        // const withdrawalResult = await withdrawInvestment({ amount: amount });
+        // const withdrawalResult = await withdraw(amount);
         // if (!withdrawalResult.ok) {
         //     snackbar.snackbar.show(withdrawalResult.message, "error");
         //     return;
