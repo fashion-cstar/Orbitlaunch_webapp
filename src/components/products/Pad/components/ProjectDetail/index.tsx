@@ -76,7 +76,7 @@ export default function ProjectDetail({ project }: { project: any }) {
                 </>)}
                 <div className="mt-8">
                     <h1 className="text-white text-[24px]">Featured projects</h1>
-                    <FeaturedProjects />
+                    <FeaturedProjects options={null} />
                 </div>
             </div>
         </>
