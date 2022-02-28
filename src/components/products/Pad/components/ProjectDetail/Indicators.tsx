@@ -50,10 +50,10 @@ export default function Indicators({ ido, hideTierCard }: { ido: any, hideTierCa
                             {!!account
                                 ? (<>
                                     <div className="flex-1 rounded-2xl bg-[#001926]">
-                                        <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
+                                        <div className="flex items-center space-x-5 text-[18px] font-bold uppercase text-app-primary mb-2">
                                             <span>{`Tier ${currentTierNo}`}</span>
                                         </div>
-                                        <div className="text-xl text-white">{ido[`tierAllocation${tier}`]}{'% Max Allocation'}</div>
+                                        {/* <div className="text-xl text-white">{ido[`tierAllocation${tier}`]}{'% Max Allocation'}</div> */}
                                     </div>
                                 </>)
                                 : (
@@ -77,7 +77,7 @@ export default function Indicators({ ido, hideTierCard }: { ido: any, hideTierCa
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>Website</span>
                         </div>
-                        <a href={ido.website} target="_blank" className="text-xl text-white underline break-all">{ido.website}</a>
+                        <a href={ido.website} target="_blank" className="text-xl text-white underline break-all">Click Here</a>
                     </div>
                 </div>
                 <div className="flex gap-4 flex-col md:flex-row  basis-1/2">

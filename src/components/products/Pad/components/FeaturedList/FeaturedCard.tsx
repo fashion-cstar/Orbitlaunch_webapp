@@ -47,7 +47,7 @@ export default function FeaturedCard({ ido, firstCardIndex, onDetail, options }:
                         </div>
                     </div>
                     <p className="text-gray-500 mt-5" style={descSize}>Total Raise:{' '}
-                        <span className="text-white">${ido.totalRaise.toLocaleString()}</span>
+                        <span className="text-white">${ido.totalRaise?.toLocaleString()}</span>
                     </p>
                     <p className="text-gray-500 my-2" style={descSize}>Allocations:{' '}
                         <span className="text-white">{ido.allocationMin === "TBD" ? ido.allocationMin : `$${ido.allocationMin} - $${ido.allocationMax}`}</span>
