@@ -55,6 +55,7 @@ export default function useOrbit() {
     price: "0",
     totalSupply: "0",
     marketCap: "0",
+    bnbPrice: "0"
   });
 
   // @todo: update format to use for amounts in $ and amount of holders
@@ -69,6 +70,7 @@ export default function useOrbit() {
         price: data.price?.toFixed(4),
         totalSupply: formatToUSD(_totalSupply.toFixed(0)),
         marketCap: formatToUSD((_totalSupply * data.price).toFixed(0)),
+        bnbPrice: data.bnbPrice
       });
     }
   }, [orbitToken?.decimals, lpBalance, data, burnBalance]);
@@ -80,6 +82,7 @@ export default function useOrbit() {
       totalSupply,
       marketCap,
       holders: (!!holdersData) ? formatToUSD(holdersData.holders) : 0,
+      bnbPrice: data?.bnbPrice?.toFixed(4)
     }),
     [liquidityPool, price, totalSupply, holdersData]
   );

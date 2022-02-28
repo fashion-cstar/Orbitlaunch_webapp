@@ -25,6 +25,12 @@ Orbitlaunch.io dapp contains different products:
 - every components are available under src/components, we have a common layout which include header and sidebar
 - routing is already managed by next.js and the folder configuration has been done for each products
 
+## technical debts
+
+- duplicated codes (on styles and components)
+- complexity on sidebar component, hooks and api calls
+- split more features related to products (especially on libs and apis part)
+
 #### More informations related to Next.js and Tailwind
 
 This example shows how to use [Tailwind CSS](https://tailwindcss.com/) [(v3.0)](https://tailwindcss.com/blog/tailwindcss-v3) with Next.js. It follows the steps outlined in the official [Tailwind docs](https://tailwindcss.com/docs/guides/nextjs).

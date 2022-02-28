@@ -17,7 +17,7 @@ export const NETWORK_BSC = "bsc";
 export const BNB_TOKEN_ADDRESS = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c";
 export const ETH_TOKEN_ADDRESS = "0x2170ed0880ac9a755fd29b2688956bd959f933f8";
 export const BTC_TOKEN_ADDRESS = "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c";
-export const BUSD_TOKEN_ADDRESS = "0xe9e7cea3dedca5984780bafc599bd69add087d56";
+export const BUSD_TOKEN_ADDRESS = "0xe9e7cea3dedca5984780bafc599bd69add087d56";//mainet: "0xe9e7cea3dedca5984780bafc599bd69add087d56"; testnet: 0x8301F2213c0eeD49a7E28Ae4c3e91722919B8B47
 export const RESOLUTION_TO_INTERVAL = {
   1: 60,
   5: 300,
@@ -38,8 +38,11 @@ export const PancakeSwapContractAddress =
 export const PancakeRouterContractAddress =
   "0x10ed43c718714eb63d5aa57b78b54704e256024e";
 
-export const AppTokenAddress = "0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414";
-export const AppLPAddress = "0x931B22A138893258c58f3e4143B17086a97862F6";
+export const OrbitFundContractAddress = "0x88520Ddf58675EDe704027407e9177c62A0209F5"; // testnet: 0x26E17791ee9a2116DDf78620D966b8967f0F85B2
+export const BusdContractAddress = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"; // testnet MOCK BUSD: 0xCbdEB985e2189e615eAe14F5784733C0122c253c
+export const OrbitStableTokenAddress = "0xc7D37e2601DEd22e28A0C37De82807cb91878A32" // testnet: 0x2a087e33c0C44A2B351B5329cBFf8A63d352C599
+export const AppTokenAddress = "0xB46aCB1f8D0fF6369C2f00146897aeA1dFCf2414";//TODO: "0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414"; / testnet 0x8401e6E7ba1A1EC011BDf34CD59Fb11545FaE523
+export const AppLPAddress = "0x931B22A138893258c58f3e4143B17086a97862F6"//TODO: "0x931B22A138893258c58f3e4143B17086a97862F6"; / testnet 0xba5282c6e9Fe1aDC51A7Da876D7ACD88069dF865
 export const AppERC20TokenAddress =
   "0x43f11c02439e2736800433b4594994bd43cd066d";
 export const EthRewardsTokenAddress =
@@ -97,4 +100,4 @@ export const HTTP_METHODS: {
   DELETE: "DELETE",
 };
 
-export const BSC_RPC_URL = "https://bsc-dataseed1.binance.org";
+export const BSC_RPC_URL = "https://bsc-dataseed1.binance.org"; //TODO: "https://bsc-dataseed1.binance.org" testnet https://data-seed-prebsc-1-s1.binance.org:8545/

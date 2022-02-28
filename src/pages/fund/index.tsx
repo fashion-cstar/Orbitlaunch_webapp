@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Fund from "@app/components/products/Fund";
+import Fund from "@app/components/products/Fund/Fund";
 
 export default function Home() {
   return (
