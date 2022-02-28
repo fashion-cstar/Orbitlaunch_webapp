@@ -1,57 +1,62 @@
 import React, { useMemo, useState, useEffect, useRef  } from 'react'
 import BuyButton from "./components/Buttons/BuyButton"
-import FeaturedList from './components/FeaturedList'
 import moment from 'moment'
-import { IDO_LIST } from "./constants/Idos"
-import RightArrow from './components/Buttons/RightArrow'
-import LeftArrow from './components/Buttons/LeftArrow'
 import EndedTabHeader from './components/EndedTable/EndedTabHeader'
 import EndedIdoTable from './components/EndedTable'
 import { useRouter } from 'next/router'
+import FeaturedProjects from './components/FeaturedProjects'
+import ConnectTier from './components/Buttons/ConnectTier'
+import { Button } from "@mui/material";
+import ProjectSubmitModal from './components/ProjectSubmitModal'
+import { fetchProjectList } from 'src/state/Pad/hooks'
+import { getChainIdFromName } from 'src/utils'
 
 export default function Pad() {
-    const [filterChain, setChainId] = useState(0)
-    const [IdoEndedFiltered, setIdoEndedFiltered]=useState<any>()
+    const [filterChain, setChainId] = useState(0)    
     const [tableWidth, setTableWidth]=useState(1)
-    const widthRef = useRef<any>();
+    const [isOpenProjectSubmit, setIsOpenProjectSubmit] = useState(false);    
+    const [IdoList, setIdoList] = useState<any>()
+    const [IdoEndedProjects, setEndedProjects] = useState<any>()
     const router = useRouter()
-    const IdoListComplete = IDO_LIST // fetch this list from the server    
-    const IdoUpcomingFiltered = useMemo(() => {        
-        return IdoListComplete.filter(item => moment(item?.launchDate ?? '').isAfter(moment.now()))
-    }, [IdoListComplete])    
-    
-    const [cardIndex, setCardIndex] = useState(0)    
-    const handleLeftClick=()=>{
-        if (cardIndex>0) setCardIndex(cardIndex-1)
-        else setCardIndex(IdoUpcomingFiltered.length-1)                  
-    }
-    const handleRightClick=()=>{
-        if (cardIndex<IdoUpcomingFiltered.length-1) setCardIndex(cardIndex+1)
-        else setCardIndex(0)
-    }
+    const widthRef = useRef<any>();    
+   
     const handleTabClick = (id:number) => {
         setChainId(id)
-    }    
-    const onDetail = (ido:any) => {
-        router.push({
-            pathname: '/pad',
-            query: { project: ido.project },
-          })
-    }
-    useEffect(() => {        
-        setIdoEndedFiltered(IdoListComplete.filter(item => moment(item?.endDate ?? '').isBefore(moment.now())))        
-    }, [IdoListComplete])
+    }        
 
-    useEffect(()=>{
-        if (filterChain===0) setIdoEndedFiltered(IdoListComplete.filter(item => moment(item?.endDate ?? '').isBefore(moment.now())))
-        else setIdoEndedFiltered(IdoListComplete.filter(item => moment(item?.endDate ?? '').isBefore(moment.now()) && item.chainId===filterChain))
-    }, [filterChain])
+    useEffect(() => {
+        fetchProjectList().then(res => {            
+          if (res) setIdoList(res.data)      
+        })    
+    },[])
+
+    useEffect(() => {
+        if (IdoList){                                                    
+            if (filterChain===0) setEndedProjects(IdoList.filter(item => moment((item?.launchEndDate*1000) ?? '').isBefore(moment.now())))
+            else  setEndedProjects(IdoList.filter(item => moment((item?.launchEndDate*1000) ?? '').isBefore(moment.now()) && getChainIdFromName(item.blockchain)===filterChain))
+        }
+    }, [IdoList, filterChain])
 
     const getListSize = () => {   
         if (widthRef){
             const newWidth = widthRef?.current?.clientWidth;
             setTableWidth(newWidth)          
         }
+    };    
+
+    const handleClickProjectSubmit = () => {
+        setIsOpenProjectSubmit(true);
+    };
+
+    const handleCloseProjectSubmit = () => {
+        setIsOpenProjectSubmit(false);
+    };
+
+    const handleCreateNewProject = () => {
+        router.push({
+            pathname: '/pad',
+            query: { project: "register" },
+        })
     };
 
     useEffect(() => {
@@ -59,24 +64,32 @@ export default function Pad() {
         setTableWidth(newWidth)         
         window.addEventListener("resize", getListSize);
     }, []);
+
     return (
-        <div className="w-full" ref={widthRef}>
-            <div className="flex flex-row items-center justify-between">
-                <h1 className="text-[40px] font-medium">OrbitPad</h1>
-                <BuyButton />
-            </div>
-            <div className="mt-8">
-                <h1 className="text-white text-[24px]">Featured projects</h1>
-                <FeaturedList IdoUpcomingFiltered={IdoUpcomingFiltered} cardIndex={cardIndex} onDetail={onDetail} />     
-                    <div className='flex justify-end mt-4 w-full mr-8'>
-                        <div className="flex flex-row gap-8">
-                            <LeftArrow handleLeftClick={handleLeftClick} />
-                            <RightArrow handleRightClick={handleRightClick} />
-                        </div>
+        <>
+            <ProjectSubmitModal isOpen={isOpenProjectSubmit} handleClose={handleCloseProjectSubmit} />            
+            <div className="w-full" ref={widthRef}>
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <h1 className="text-[40px] font-medium">OrbitPad</h1>
+                    <div className='flex flex-col md:flex-row gap-4 justify-center items-center'>                      
+                        <ConnectTier />
+                        <BuyButton />
+                        <Button variant="outlined" sx={{minWidth:"160px", borderRadius:"12px"}} onClick={handleClickProjectSubmit}>
+                            Submit your project
+                        </Button>
                     </div>
+                </div>
+                <div className="mt-8">
+                    <h1 className="text-white text-[24px]">Featured projects</h1>
+                    <FeaturedProjects />
+                </div>                
+                {IdoEndedProjects && 
+                    <>
+                        <EndedTabHeader handleTabClick={handleTabClick} />
+                        <EndedIdoTable idos={IdoEndedProjects} width={tableWidth} />
+                    </>
+                }
             </div>
-            <EndedTabHeader handleTabClick={handleTabClick} />
-            {IdoEndedFiltered && <EndedIdoTable idos={IdoEndedFiltered} width={tableWidth} />}
-        </div>
+        </>
     )
 }

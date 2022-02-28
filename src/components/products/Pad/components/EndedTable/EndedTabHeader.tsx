@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import TabButton from "../Buttons/TabButton"
-export default function EndedTabHeader({handleTabClick}:{handleTabClick:(chainId:number)=>void}) {
+export default function EndedTabHeader({handleTabClick}:{handleTabClick:(chainId:number) => void}) {
     const [id, setChainId] = useState(0)
     const handleClick = (id:number) => {
         setChainId(id)

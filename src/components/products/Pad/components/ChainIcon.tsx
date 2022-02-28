@@ -1,6 +1,6 @@
-import BSCIcon from "@app/components/products/Pad/components/svgs/BSCIcon"
-import ETHIcon from "@app/components/products/Pad/components/svgs/ETHIcon"
-import POLYGONIcon from "@app/components/products/Pad/components/svgs/POLYGONIcon"
+import BSCIcon from "@app/components/svgs/BSCIcon"
+import ETHIcon from "@app/components/svgs/ETHIcon"
+import POLYGONIcon from "@app/components/svgs/POLYGONIcon"
 
 export default function ChainIcon({chainId}:{chainId:number}) {
 
