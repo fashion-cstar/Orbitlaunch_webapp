@@ -6,6 +6,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@emailjs/browser": "^3.4.0",
     "@emotion/cache": "^11.7.1",
     "@emotion/react": "^11.7.1",
     "@emotion/server": "^11.4.0",
@@ -28,9 +29,10 @@
     "iconsax-react": "^0.0.8",
     "localforage": "^1.10.0",
     "moment": "^2.29.1",
-    "next": "^11",
+    "next": "^11.1.4",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-google-recaptcha": "^2.1.0",
     "react-twitter-embed": "^4.0.4",
     "styled-components": "^5.3.3",
     "swr": "^1.2.0",

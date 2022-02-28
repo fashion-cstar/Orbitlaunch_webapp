@@ -25,8 +25,8 @@ export default function FundCard() {
                     <hr className="border-[#112B40] my-4" />
                     <div className="flex flex-col space-y-2 text-sm">
                         <p>Current Investors: <span className="text-[#867EE8]">{totalInvestorsFormatted}</span></p>
-                        <p>Profit to Date: <span className="text-[#867EE8]">{roiToDate}</span></p>
-                        <p>Total Invested to Date: <span className="text-[#867EE8]">{currentInvestment}</span></p>
+                        <p>Profit to Date: <span className="text-[#867EE8]">$ {roiToDate}</span></p>
+                        <p>Total Invested to Date: <span className="text-[#867EE8]">$ {currentInvestment}</span></p>
                     </div>
                 </div>
             )}
@@ -37,8 +37,8 @@ export default function FundCard() {
                     <p className=""><span className="text-[#867EE8]">Investment Tier {currentTierNo}</span> <span className="text-sm text-[#BAB8CC]">Up to {currentTierPercentage}% monthly ROI</span></p>
                     <hr className="border-[#112B40] my-4" />
                     <div className="flex flex-col space-y-2 text-sm">
-                        <p>Current Investment: <span className="text-[#867EE8]">{currentInvestment}</span></p>
-                        <p>ROI to Date: <span className="text-[#867EE8]">{roiToDate}</span></p>
+                        <p>Current Investment: <span className="text-[#867EE8]">$ {currentInvestment}</span></p>
+                        <p>ROI to Date: <span className="text-[#867EE8]">$ {roiToDate}</span></p>
                     </div>
                 </div>
             )}

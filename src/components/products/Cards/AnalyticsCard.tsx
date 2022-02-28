@@ -1,5 +1,5 @@
 const styleHeight = {
-    height: '410px',
+    height: '480px',
     textAlign: 'center' as 'center'
 }
 

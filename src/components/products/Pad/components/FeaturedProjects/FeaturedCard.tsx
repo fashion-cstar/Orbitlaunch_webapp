@@ -1,5 +1,6 @@
+import React, { useMemo, useState, useEffect, useRef  } from 'react'
 import ChainIcon from "../ChainIcon"
-import Link from "next/link";
+import { getChainIdFromName } from 'src/utils'
 
 interface UpcomingCardProps {
     ido: any
@@ -14,7 +15,7 @@ export default function FeaturedCard({ ido, firstCardIndex, onDetail, options }:
     let width = (!!options && !!options.width) ? options.width : '450px';
     let titleFontSize = (!!options && !!options.titleFontSize) ? options.titleFontSize : '24px';
     let descFontSize = (!!options && !!options.descFontSize) ? options.descFontSize : '16px';
-
+    let imgHeight = (!!options && !!options.imgHeight) ? options.imgHeight : '160px';
     const styling = {
         backgroundColor: bgColor,
         width
@@ -27,34 +28,31 @@ export default function FeaturedCard({ ido, firstCardIndex, onDetail, options }:
     const descSize = {
         fontSize: descFontSize
     }
-
-    return (
-        // <Link href={{
-        //     pathname: '/pad',
-        //     query: { id: "1" },
-        //   }}>        
+    
+    return (              
         <div className="pr-6" style={{ transform: `translateX(-${firstCardIndex * 100}%)`, transition: "transform 500ms ease 0s" }} onClick={() => onDetail(ido)}>
             <div className="rounded-2xl cursor-pointer hover:shadow-md hover:border-slate-400 hover:border" style={styling}>
-                <img className="w-full rounded-t-2xl" src={ido.hero} alt={ido.project} />
+                <div className="overflow-hidden" style={{ height: imgHeight }}>
+                    <img className="w-full rounded-t-2xl" src={ido.projectBanner} alt={ido.projectName} />
+                </div>
                 <div className="p-5">
                     <div className="flex justify-between items-center">
                         <div>
-                            <p className="text-gray-500 text-sm uppercase mt-2">${ido.tokenSymbol}</p>
-                            <p className="text-white" style={titleSize}>{ido.project}</p>
+                            <p className="text-gray-500 text-sm uppercase mt-2">${ido.projectSymbol}</p>
+                            <p className="text-white" style={titleSize}>{ido.projectName}</p>
                         </div>
                         <div>
-                            <ChainIcon chainId={ido.chainId} />
+                            <ChainIcon chainId={getChainIdFromName(ido.blockchain)} />
                         </div>
                     </div>
                     <p className="text-gray-500 mt-5" style={descSize}>Total Raise:{' '}
-                        <span className="text-white">${ido.totalRaise?.toLocaleString()}</span>
+                        <span className="text-white">${ido.totalRaiseHardCap.toLocaleString()}</span>
                     </p>
                     <p className="text-gray-500 my-2" style={descSize}>Allocations:{' '}
-                        <span className="text-white">{ido.allocationMin === "TBD" ? ido.allocationMin : `$${ido.allocationMin} - $${ido.allocationMax}`}</span>
+                        <span className="text-white">{`$${ido.tierAllocation7} - $${ido.tierAllocation1}`}</span>
                     </p>
                 </div>
             </div>
         </div>
-        // </Link>
     )
 }
