@@ -1,5 +1,6 @@
 import useFund from "@app/lib/hooks/useFund";
 import { useEthers } from "@usedapp/core";
+import { ethers } from "ethers";
 
 export default function FundCard() {
 
@@ -13,6 +14,8 @@ export default function FundCard() {
         totalInvestors
     } = useFund();
 
+    const totalInvestorsFormatted = ethers.utils.formatUnits(totalInvestors, 0);
+
     return (
         <>
             {(!account) && (
@@ -21,7 +24,7 @@ export default function FundCard() {
                     <p className=""><span className="text-[#867EE8]">Earn Up to 10%</span> Monthly ROI</p>
                     <hr className="border-[#112B40] my-4" />
                     <div className="flex flex-col space-y-2 text-sm">
-                        <p>Current Investors: <span className="text-[#867EE8]">{totalInvestors}</span></p>
+                        <p>Current Investors: <span className="text-[#867EE8]">{totalInvestorsFormatted}</span></p>
                         <p>Profit to Date: <span className="text-[#867EE8]">{roiToDate}</span></p>
                         <p>Total Invested to Date: <span className="text-[#867EE8]">{currentInvestment}</span></p>
                     </div>
