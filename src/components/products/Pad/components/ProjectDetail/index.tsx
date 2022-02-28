@@ -1,35 +1,35 @@
-import React, { useMemo, useState, useEffect, useRef  } from 'react'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
 import BuyButton from "@app/components/common/BuyButton"
 import GoBack from "../Buttons/GoBack"
 import WhiteListOpenButton from '../Buttons/WhiteListOpen'
 import { useRouter } from 'next/router'
-import Indicators from './Indicators'
-import Detail from './Detail'
-import About from './About'
-import FeaturedProjects from '../FeaturedProjects'
+import Indicators from "@app/components/products/Pad/components/ProjectDetail/Indicators"
+import Detail from '@app/components/products/Pad/components/ProjectDetail/Detail'
+import About from '@app/components/products/Pad/components/ProjectDetail/About'
+import FeaturedProjects from '@app/components/products/Pad/components/FeaturedProjects'
 import { fetchProjectList } from 'src/state/Pad/hooks'
-import JoinPresaleModal from './JoinPresaleModal'
+import JoinPresaleModal from '@app/components/products/Pad/components/ProjectDetail/JoinPresaleModal'
 
-export default function ProjectDetail({project}:{project:any}) {    
-    const [IdoList, setIdoList] = useState<any>()  
-    const [IdoProject, setIdoProject] =useState<any>()
+export default function ProjectDetail({ project }: { project: any }) {
+    const [IdoList, setIdoList] = useState<any>()
+    const [IdoProject, setIdoProject] = useState<any>()
     const [isOpenJoinPresale, setIsOpenJoinPresale] = useState(false);
-    const hideTierCard=useRef(null)
-    const router=useRouter()
+    const hideTierCard = useRef(null)
+    const router = useRouter()
 
     const handleBackClick = () => {
         router.back()
     }
-    
-    useEffect(() => {
-        fetchProjectList().then(res => {            
-          if (res) setIdoList(res.data)      
-        })    
-    },[])
 
     useEffect(() => {
-        if (IdoList){
-            setIdoProject(IdoList.filter((item: any) => item.projectName===project)[0])
+        fetchProjectList().then(res => {
+            if (res) setIdoList(res.data)
+        })
+    }, [])
+
+    useEffect(() => {
+        if (IdoList) {
+            setIdoProject(IdoList.filter((item: any) => item.projectName === project)[0])
         }
     }, [IdoList])
 
@@ -52,7 +52,7 @@ export default function ProjectDetail({project}:{project:any}) {
                 <div className="flex flex-row items-center justify-between">
                     <h1 className="text-[32px] font-medium">OrbitPad</h1>
                     <BuyButton />
-                </div>   
+                </div>
                 {IdoProject && (<>
                     <div className="flex flex-col md:flex-row items-center justify-between mt-10">
                         <div>
@@ -63,20 +63,20 @@ export default function ProjectDetail({project}:{project:any}) {
                         <div className="flex flex-row justify-center mt-8 md:mt-0">
                             <WhiteListOpenButton url={IdoProject.whitelist ?? ''} />
                         </div>
-                    </div>   
+                    </div>
                     <div className='mt-10'>
                         <div className='flex flex-col gap-6 lg:flex-row'>
                             <div className='flex flex-col space-y-6'>
                                 <Indicators ido={IdoProject} hideTierCard={hideTierCard} />
-                                <Detail ido={IdoProject} />                        
+                                <Detail ido={IdoProject} />
                             </div>
                             <div className='flex-1'><About ido={IdoProject} handleClickJoinPresale={handleClickJoinPresale} /></div>
                         </div>
                     </div>
                 </>)}
-                <div className="mt-8">            
+                <div className="mt-8">
                     <h1 className="text-white text-[24px]">Featured projects</h1>
-                    <FeaturedProjects />            
+                    <FeaturedProjects />
                 </div>
             </div>
         </>
