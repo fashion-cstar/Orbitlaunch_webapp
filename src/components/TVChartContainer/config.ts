@@ -1,4 +1,4 @@
-import { RESOLUTION_TO_INTERVAL } from "@app/shared/AppConstant";
+import { AppTokenAddress, RESOLUTION_TO_INTERVAL } from "@app/shared/AppConstant";
 import axios from "axios";
 import {
   DatafeedConfiguration,
@@ -28,7 +28,12 @@ export default (baseCurrency: string = "BNB"): IBasicDataFeed => ({
     }
   },
   async getBars(symbolInfo, resolution, periodParams, onResult, onError) {
+
     try {
+
+      const priceData = await axios.get(`/api/tokenPrice?baseCurrency=${AppTokenAddress}`)
+      .then(data => data);
+
       const {
         data: { data: bars },
       } = await axios.post("/api/bars", {
@@ -40,6 +45,15 @@ export default (baseCurrency: string = "BNB"): IBasicDataFeed => ({
         countBack: periodParams.countBack,
         firstDataRequest: periodParams.firstDataRequest,
       });
+
+      const bnbPrice = priceData.data.bnbPrice;
+      bars.map((bar) => {
+        bar.low = bar.low * bnbPrice
+        bar.high = bar.high * bnbPrice
+        bar.open = bar.open * bnbPrice
+        bar.close = bar.close * bnbPrice
+        return bar;
+      })
 
       if (bars.length) {
         onResult(bars, { noData: false });

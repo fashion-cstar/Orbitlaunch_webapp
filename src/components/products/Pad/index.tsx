@@ -67,7 +67,7 @@ export default function Pad() {
             </div>
             <div className="mt-8">
                 <h1 className="text-white text-[24px]">Featured projects</h1>
-                <FeaturedList IdoUpcomingFiltered={IdoUpcomingFiltered} cardIndex={cardIndex} onDetail={onDetail} />     
+                <FeaturedList IdoUpcomingFiltered={IdoUpcomingFiltered} cardIndex={cardIndex} onDetail={onDetail} options={null} />     
                     <div className='flex justify-end mt-4 w-full mr-8'>
                         <div className="flex flex-row gap-8">
                             <LeftArrow handleLeftClick={handleLeftClick} />
