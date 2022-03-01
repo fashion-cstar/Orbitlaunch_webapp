@@ -8,7 +8,7 @@ export default function Home() {
   const router = useRouter()
   const {
     query: { project },
-  } = router
+  } = router  
   return (
     <>
       <Head>

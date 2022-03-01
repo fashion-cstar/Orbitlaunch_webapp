@@ -17,8 +17,9 @@ export default function ProjectDetail({ project }: { project: any }) {
     const hideTierCard = useRef(null)
     const router = useRouter()
 
-    const handleBackClick = () => {
-        router.back()
+    const handleBackClick = async () => {
+        // router.back()        
+        await router.push('/pad')
     }
 
     useEffect(() => {
@@ -27,11 +28,11 @@ export default function ProjectDetail({ project }: { project: any }) {
         })
     }, [])
 
-    useEffect(() => {
+    useEffect(() => {        
         if (IdoList) {
             setIdoProject(IdoList.filter((item: any) => item.projectName === project)[0])
         }
-    }, [IdoList])
+    }, [IdoList, project])
 
     const handleClickJoinPresale = () => {
         setIsOpenJoinPresale(true);

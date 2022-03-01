@@ -85,7 +85,7 @@ export default function Indicators({ ido, hideTierCard }: { ido: any, hideTierCa
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>Documents</span>
                         </div>
-                        <a href={ido.whitepaper} className="text-xl text-white underline">Whitepaper</a>
+                        <a href={ido.whitepaper} target="_blank" className="text-xl text-white underline">Whitepaper</a>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4 basis-1/2 w-full">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">

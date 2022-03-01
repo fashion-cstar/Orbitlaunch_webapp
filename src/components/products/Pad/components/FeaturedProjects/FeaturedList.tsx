@@ -4,7 +4,7 @@ export default function FeaturedList({ IdoUpcomingFiltered, cardIndex, onDetail,
     { IdoUpcomingFiltered: any, cardIndex: number, onDetail: (ido: any) => void, options: any }) {
     return (
         <div className='overflow-hidden'>
-            <div className="mt-4 block whitespace-nowrap overflow-visible relative w-1">
+            <div className="mt-4 mb-2 mx-2 block whitespace-nowrap overflow-visible relative w-1">
                 {IdoUpcomingFiltered && IdoUpcomingFiltered.map((item: any, index: number) => {
                     return (
                         <div key={index} className='inline-block'>
