@@ -4,10 +4,10 @@ module.exports = {
   webpack5: false,  
   env: {
     email_service: {
-      service_id: 'service_dcua6vi',
-      template_id: 'template_51h5coh',
-      user_id: 'user_3wmEsh0wKIP6I8OSMqdBO',
+      service_id: 'service_zbtrz86',
+      template_id: 'template_gg2ywxe',
+      user_id: 'JmJk_zGxc2Dzyoq1a',
     },
-    ReCAPTCHA_key: '6LfKFI8eAAAAAERwV3epJMyO-t8wm9afBrZrtEWL'
+    ReCAPTCHA_key: '6LdkZaoeAAAAAJvN6EnW_KtWvNXRxkTviZU0y92Z'
   },
 };
