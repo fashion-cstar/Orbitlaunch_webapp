@@ -24,7 +24,7 @@ export default function Indicators({ ido, hideTierCard }: { ido: any, hideTierCa
         setTier(currentTierNo)
     }, [currentTierNo])
     const onSelectTier = (tier: number) => {
-        setTier(tier)
+        // setTier(tier)
         HideTierCard()
     }
     const ShowTierCard = () => {
@@ -34,8 +34,7 @@ export default function Indicators({ ido, hideTierCard }: { ido: any, hideTierCa
             SetShowTierCard('block')
         }
     }
-    const HideTierCard = () => {
-        console.log(TierCardDisplay)
+    const HideTierCard = () => {        
         if (TierCardDisplay === 'block') {
             SetShowTierCard('none')
         }
@@ -70,8 +69,8 @@ export default function Indicators({ ido, hideTierCard }: { ido: any, hideTierCa
                                 )
                             }
                             <div className="w-6 cursor-pointer" onClick={ShowTierCard}><QuestionMark /></div>
-                        </div>
-                        <div className="relative"><PickTierCard ido={ido} display={TierCardDisplay} onSelectTier={onSelectTier} /></div>
+                        </div>                        
+                        <div className="relative"><PickTierCard ido={ido} display={TierCardDisplay} onSelectTier={onSelectTier} handleClose={HideTierCard} /></div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4 basis-1/2 w-full">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">

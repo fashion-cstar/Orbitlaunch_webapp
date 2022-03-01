@@ -1,11 +1,11 @@
-export default function PickTierCard({ido, display, onSelectTier}:
-    {ido:any, display:string, onSelectTier:(tier:number) => void}){
+export default function PickTierCard({ido, display, onSelectTier, handleClose}:
+    {ido:any, display:string, onSelectTier:(tier:number) => void, handleClose: () => void}){
     const getAllocPercent = (index: number) => {
         return Math.round(Number(ido[`tierAllocation${(index+1)}`])/Number(ido[`tierAllocation1`])*1000)/10
     }
     return (        
-        <div className="absolute" style={{display:`${display}`}}>            
-            <div className="flex flex-col rounded-2xl items-center justify-between w-[360px] h-[240px] border border-[#112B40] bg-[#001926] p-4 z-10">
+        <div className="absolute" style={{display:`${display}`}} >                        
+            <div className="flex flex-col rounded-2xl items-center justify-between w-[360px] h-[240px] border border-[#112B40] bg-[#001926] p-4 z-10" onClick={handleClose}>
                 {
                     [0,1,2,3,4,5,6].map((index) => {
                         return (
@@ -21,6 +21,7 @@ export default function PickTierCard({ido, display, onSelectTier}:
                     })
                 }   
             </div>
+            <div className="w-screen h-screen bg-white fixed left-0 top-0 opacity-0" style={{display: display}} onClick={handleClose}></div>    
         </div>
     )
 }
