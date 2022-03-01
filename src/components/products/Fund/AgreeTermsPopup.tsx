@@ -1,6 +1,6 @@
 import Popup from "@app/components/common/Popup";
-import { CONSTANT, ConstantItem } from "@app/constants/constant";
-import { agreeToTerms } from "@app/lib/contract/abis/consumers/fundService";
+import { CONSTANT, ConstantItem } from "@app/constants/constant"
+import useFund from "@app/lib/hooks/useFund";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { Button } from "@mui/material";
 
@@ -17,6 +17,7 @@ export default function AgreeTermsPopup({
 }: AgreeTermsPopupProps) {
     const agreeTermsModalId = "agree-terms-modal";
     const snackbar = useSnackbar();
+    const { agreeToTerms } = useFund();
 
     const handleCloseAgreeTermsModal = () => {
         const modal = document.getElementById(agreeTermsModalId);
@@ -43,7 +44,7 @@ export default function AgreeTermsPopup({
             <div className="p-4">
                 {CONSTANT[ConstantItem.AGREE_TO_TERMS]}
 
-                <br/><br/>
+                <br /><br />
                 <Button
                     variant="contained"
                     className="w-full rounded-lg text-sm py-2.5 text-center"

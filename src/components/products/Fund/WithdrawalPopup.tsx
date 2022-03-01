@@ -1,8 +1,7 @@
 import DepositInput from "@app/components/common/DepositInput";
 import Popup from "@app/components/common/Popup";
-import { approveBusd, approveOrbitStableCoin, depositBusd, userAgreed } from "@app/lib/contract/abis/consumers/fundService";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
-import { MockOrbitFundContractAddress } from "@app/shared/AppConstant";
+import { OrbitFundContractAddress } from "@app/shared/AppConstant";
 import { useEthers } from "@usedapp/core";
 import { useState } from "react";
 
@@ -29,13 +28,13 @@ export default function WithdrawalPopup({
     }
 
     const handleWithdrawalSubmit = async (e: any, amount: any) => {
-        // const approveOrbitResult = await approveOrbitStableCoin({ spender: MockOrbitFundContractAddress, value: amount });
+        // const approveOrbitResult = await approveOrbitStableCoin({ spender: OrbitFundContractAddress, value: amount });
         // if (!approveOrbitResult.ok && !approveOrbitResult.returnedModel) {
         //     snackbar.snackbar.show(approveOrbitResult.message, "error");
         //     return;
         // }
 
-        // const withdrawalResult = await withdrawInvestment({ amount: amount });
+        // const withdrawalResult = await withdraw(amount);
         // if (!withdrawalResult.ok) {
         //     snackbar.snackbar.show(withdrawalResult.message, "error");
         //     return;

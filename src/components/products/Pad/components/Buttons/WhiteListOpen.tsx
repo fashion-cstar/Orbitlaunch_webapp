@@ -1,6 +1,6 @@
 import { Button } from "@mui/material";
 import ShareIcon from "../svgs/ShareIcon";
-export default function WhiteListOpenButton({url}:{url:string}) {
+export default function WhiteListOpenButton({url}:{url:string}) {    
     return (
         <>
             <div className="flex space-x-4 items-center">

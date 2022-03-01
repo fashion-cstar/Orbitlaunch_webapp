@@ -1,10 +1,7 @@
 import DepositInput from "@app/components/common/DepositInput";
 import Popup from "@app/components/common/Popup";
-import { approveBusd, depositBusd, userAgreed } from "@app/lib/contract/abis/consumers/fundService";
+import useFund from "@app/lib/hooks/useFund";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
-import {  MockOrbitFundContractAddress } from "@app/shared/AppConstant";
-import { useEthers } from "@usedapp/core";
-import { ethers } from "ethers";
 import { useState } from "react";
 import AgreeTermsPopup from "./AgreeTermsPopup";
 
@@ -20,7 +17,7 @@ export default function DepositPopup({
     onClose
 }: DepositPopupProps) {
     const snackbar = useSnackbar();
-    const { account } = useEthers();
+    const { userAgreed, depositBusd } = useFund();
     const agreeTermsModalId = "agree-terms-modal";
     const [disableDepositButton, setDisableDepositButton] = useState(true);
     const [depositAmount, setDepositAmount] = useState('');
@@ -36,7 +33,7 @@ export default function DepositPopup({
     }
 
     const deposit = async () => {
-        const depositResult = await depositBusd({ amount: depositAmount });
+        const depositResult = await depositBusd(depositAmount);
         if (!depositResult.ok) {
             console.error(depositResult.message);
             return;
@@ -49,7 +46,7 @@ export default function DepositPopup({
     }
 
     const handleDepositSubmit = async (e: any, amount: any) => {
-        const userAgreedResult = await userAgreed({ address: account });
+        const userAgreedResult = await userAgreed();
         if (userAgreedResult.ok) {
             //If user agreement has not been done, open the agreement modal
             if (!userAgreedResult.returnedModel) {
