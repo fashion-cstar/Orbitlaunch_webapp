@@ -1,5 +1,5 @@
-export default function PickTierCard({ido, display, onSelectTier, handleClose}:
-    {ido:any, display:string, onSelectTier:(tier:number) => void, handleClose: () => void}){
+export default function PickTierCard({ido, launchTokenPrice, display, onSelectTier, handleClose}:
+    {ido:any, launchTokenPrice:number, display:string, onSelectTier:(tier:number) => void, handleClose: () => void}){
     const getAllocPercent = (index: number) => {
         return Math.round(Number(ido[`tierAllocation${(index+1)}`])/Number(ido[`tierAllocation1`])*1000)/10
     }
