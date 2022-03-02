@@ -3,16 +3,20 @@ import { AppTokenAddress } from '@app/shared/AppConstant';
 
 const buyM31viaPCS = 'https://pancakeswap.finance/swap?outputCurrency=' + AppTokenAddress;
 
-export default function BuyButton() {
+interface BuyButtonProps {
+    className?: string;
+}
+
+export default function BuyButton({ className }: BuyButtonProps) {
     return (
-        <>
-            <Button
-                variant="contained"
-                href={buyM31viaPCS}
-                target="_blank"
-                sx={{minWidth:"90px", borderRadius:"12px"}}>
-                Buy M31
-            </Button>
-        </>
+        <Button
+            variant="contained"
+            className={className}
+            href={buyM31viaPCS}
+            target="_blank"
+            sx={{ minWidth: "90px", borderRadius: "12px" }}
+        >
+            Buy M31
+        </Button>
     )
 }
