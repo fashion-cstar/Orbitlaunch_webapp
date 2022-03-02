@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef  } from 'react'
 import UploadIcon from '../svgs/UploadIcon'
-export default function UploadFile({name, placeholder, onChange}:
-    {name:string, placeholder:string, onChange:(val:any) => void}){
+export default function UploadFile({name, placeholder, id, onChange}:
+    {name:string, placeholder:string, id:string, onChange:(val:any) => void}){
     const fileRef = useRef(null);        
     const [isBorder, setIsBorder] = useState(false)
     const [file, setFile] = useState<any>()
@@ -23,6 +23,7 @@ export default function UploadFile({name, placeholder, onChange}:
             </div>
             <div className="flex w-full">
                 <input
+                id={id}                
                 className="bg-[#001926] text-white text-[16px] rounded-lg block w-full p-0 focus:outline-none"
                 aria-disabled
                 value={file?`${file.name}-${file.type}`:""}

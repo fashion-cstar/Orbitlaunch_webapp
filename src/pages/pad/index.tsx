@@ -6,16 +6,14 @@ import { useRouter } from 'next/router'
 
 export default function Home() {
   const router = useRouter()
-  const {
-    query: { project },
-  } = router
+  const {query: { project }} = router
   return (
     <>
       <Head>
         <title>OrbitPad</title>
         <link rel="icon" href="/favicon.ico" />
-      </Head>      
-      {project?project=="register"?<ExtendedProjectSubmit />:<ProjectDetail project={project}></ProjectDetail>:<Pad></Pad>}
+      </Head>
+      {project ? project == "register" ? <ExtendedProjectSubmit /> : <ProjectDetail project={project}></ProjectDetail> : <Pad></Pad>}
     </>
   );
 }

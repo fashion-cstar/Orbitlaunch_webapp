@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef  } from 'react'
-export default function TextArea({name, value, placeholder, required, onChange}:
-    {name:string, value:string, placeholder:string, required:boolean, onChange:(val: any) => void}){
-    const [isBorder, setIsBorder] = useState(false)
+export default function TextArea({name, value, placeholder, required, id, onChange}:
+    {name:string, value:string, placeholder:string, required:boolean, id:string, onChange:(val: any) => void}){
+    const [isBorder, setIsBorder] = useState(false)    
     const handleFocus = () => {
         setIsBorder(true)
     }
@@ -15,6 +15,7 @@ export default function TextArea({name, value, placeholder, required, onChange}:
                 <span>{name}</span>{(required && <span className='text-[#ff0000]'>*</span>)}
             </div>            
             <textarea 
+                id={id}
                 className="bg-[#001926] text-white text-[16px] rounded-lg block w-full pt-1.5 focus:outline-none" rows={5} 
                 placeholder={placeholder}
                 onFocus={handleFocus}
