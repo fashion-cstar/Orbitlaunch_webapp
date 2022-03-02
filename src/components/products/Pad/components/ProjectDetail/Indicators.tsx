@@ -32,10 +32,6 @@ export default function Indicators({ ido, launchTokenPrice, hideTierCard }: { id
             }
         }
     }, [currentTierNo, account, launchTokenPrice])
-    const onSelectTier = (tier: number) => {
-        // setTier(tier)
-        HideTierCard()
-    }
 
     const ShowTierCard = () => {
         if (TierCardDisplay === 'block') {
