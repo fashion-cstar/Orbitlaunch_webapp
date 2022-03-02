@@ -3,30 +3,36 @@ import QuestionMark from "../svgs/QuestionMark";
 import TwitterIcon from "@app/components/svgs/socials/TwitterIcon";
 import TelegramIcon from "@app/components/svgs/socials/TelegramIcon";
 import PickTierCard from "../PickTierCard";
-
 import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
 import { Button } from "@mui/material";
 import { useEthers } from "@usedapp/core";
 import useFund from "@app/lib/hooks/useFund";
 
-export default function Indicators({ ido, hideTierCard }: { ido: any, hideTierCard: any }) {
+export default function Indicators({ ido, launchTokenPrice, hideTierCard }: { ido: any, launchTokenPrice:number, hideTierCard: any }) {
 
     const activateProvider = Web3ModalButton();
     const { account } = useEthers();
     const {
         currentTierNo,
-    } = useFund();
-
+    } = useFund(); 
     const [TierCardDisplay, SetShowTierCard] = useState('none')
     const [tier, setTier] = useState(0)
+    const [maxAllocation, setMaxAllocation] = useState(0)
+
     useEffect(() => {
         hideTierCard.current = HideTierCard;
         setTier(currentTierNo)
     }, [currentTierNo])
-    const onSelectTier = (tier: number) => {
-        setTier(tier)
-        HideTierCard()
-    }
+
+    useEffect(() => {
+        if (launchTokenPrice && account){
+            if (currentTierNo>0){
+                let max=Number(ido[`tierAllocation4${currentTierNo}`])/launchTokenPrice
+                setMaxAllocation(max)
+            }
+        }
+    }, [currentTierNo, account, launchTokenPrice])
+
     const ShowTierCard = () => {
         if (TierCardDisplay === 'block') {
             SetShowTierCard('none')
@@ -34,30 +40,38 @@ export default function Indicators({ ido, hideTierCard }: { ido: any, hideTierCa
             SetShowTierCard('block')
         }
     }
-    const HideTierCard = () => {
-        console.log(TierCardDisplay)
+
+    const HideTierCard = () => {        
         if (TierCardDisplay === 'block') {
             SetShowTierCard('none')
         }
     }
+
     return (
         <div className="flex flex-col space-y-4">
             <div className="flex flex-col gap-4 xl:flex-row">
                 <div className="flex gap-4 flex-col md:flex-row basis-1/2">
                     <div className='flex basis-1/2'>
-                        <div className="flex rounded-2xl items-center justify-between bg-[#001926] p-4 w-full">
+                        <div className="flex rounded-2xl items-center justify-between bg-[#001926] gap-2 p-4 w-full">
 
                             {!!account
                                 ? (<>
                                     <div className="flex-1 rounded-2xl bg-[#001926]">
-                                        <div className="flex items-center space-x-5 text-[18px] font-bold uppercase text-app-primary mb-2">
+                                        <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                             <span>{`Tier ${currentTierNo}`}</span>
                                         </div>
-                                        {/* <div className="text-xl text-white">{ido[`tierAllocation${tier}`]}{'% Max Allocation'}</div> */}
+                                        <div className="flex w-full justify-between flex-col 2xl:flex-row">                                            
+                                            <div className="text-xl text-white">
+                                                Maximum
+                                            </div>
+                                            <div className="text-xl text-white">
+                                                {` ${maxAllocation} ${ido.projectSymbol}`}
+                                            </div>      
+                                        </div>                                                 
                                     </div>
                                 </>)
                                 : (
-                                    <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">
+                                    <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">                                        
                                         <Button
                                             variant="outlined"
                                             onClick={activateProvider}
@@ -70,8 +84,8 @@ export default function Indicators({ ido, hideTierCard }: { ido: any, hideTierCa
                                 )
                             }
                             <div className="w-6 cursor-pointer" onClick={ShowTierCard}><QuestionMark /></div>
-                        </div>
-                        <div className="relative"><PickTierCard ido={ido} display={TierCardDisplay} onSelectTier={onSelectTier} /></div>
+                        </div>                        
+                        <div className="relative"><PickTierCard ido={ido} launchTokenPrice={launchTokenPrice} display={TierCardDisplay} handleClose={HideTierCard} /></div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4 basis-1/2 w-full">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
@@ -85,7 +99,7 @@ export default function Indicators({ ido, hideTierCard }: { ido: any, hideTierCa
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>Documents</span>
                         </div>
-                        <a href={ido.whitepaper} className="text-xl text-white underline">Whitepaper</a>
+                        <a href={ido.whitepaper} target="_blank" className="text-xl text-white underline">Whitepaper</a>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4 basis-1/2 w-full">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">

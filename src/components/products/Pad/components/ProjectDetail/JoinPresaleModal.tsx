@@ -5,7 +5,7 @@ import InputBox from '../Common/InputBox';
 import FundTokenInput from '../Common/FundTokenInput'
 import ProjectTokenInput from '../Common/ProjectTokenInput'
 import { useEthers, useToken, ChainId } from "@usedapp/core";
-import { useJoinPresaleCallback, usePadApproveCallback, useLaunchTokenPrice } from 'src/state/Pad/hooks'
+import { useJoinPresaleCallback, usePadApproveCallback } from 'src/state/Pad/hooks'
 import { AddressZero } from '@ethersproject/constants'
 import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
@@ -14,36 +14,23 @@ import { formatEther } from 'src/utils'
 
 interface PresaleModalProps {
     isOpen: boolean
+    launchTokenPrice: number
     handleClose:() => void
     project: any
 }
 
-export default function JoinPresaleModal({isOpen, handleClose, project}:PresaleModalProps) {
+export default function JoinPresaleModal({isOpen, launchTokenPrice, handleClose, project}:PresaleModalProps) {
     const [hash, setHash] = useState<string | undefined>()
     const [attempting, setAttempting] = useState(false)
     const { library, account, chainId } = useEthers()  
     const [fundTokenAmount, setFundTokenAmount] = useState(0)
     const [projectTokenAmount, setProjectTokenAmount] = useState(0)
     const { joinPresaleCallback } = useJoinPresaleCallback()
-    const { padApproveCallback } = usePadApproveCallback()
-    const { launchTokenPriceCallback} = useLaunchTokenPrice()
+    const { padApproveCallback } = usePadApproveCallback()    
     const [isApproved, setIsApproved] = useState(false)
-    const [isDeposited, setDeposited] = useState(false)  
-    const [launchTokenPrice, setLaunchTokenPrice] = useState(0)
+    const [isDeposited, setDeposited] = useState(false)      
     const tokenAddress='0xcbdeb985e2189e615eae14f5784733c0122c253c'
-    
-    useEffect(() => {            
-        try{        
-            launchTokenPriceCallback(project.contractAddress).then((res:BigNumber) => {
-                setLaunchTokenPrice(formatEther(res, 18, 5))
-        }).catch((error:any) => {              
-            console.log(error)
-        })  
-        }catch(error){
-            console.debug('Failed to approve token', error)            
-        }
-    }, [account])
-
+        
     async function onApprove() {     
         // if (tokenAddress===AddressZero){          
         //     setIsApproved(true)

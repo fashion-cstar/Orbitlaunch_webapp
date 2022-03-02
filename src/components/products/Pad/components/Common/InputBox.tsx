@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useEffect, useRef  } from 'react'
 import InputBoxContainer from './InputBoxContainer'
 
-export default function InputBox({name, type, value, placeholder, required, onChange}:
-    {name:string, type:string, value:any, placeholder:string, required:boolean, onChange:(val:any) => void}){
+export default function InputBox({name, type, value, placeholder, required, id, onChange}:
+    {name:string, type:string, value:any, placeholder:string, required:boolean, id: string, onChange:(val:any) => void}){
     const [isBorder, setIsBorder] = useState(false)
     const handleFocus = () => {
         setIsBorder(true)
@@ -18,6 +18,7 @@ export default function InputBox({name, type, value, placeholder, required, onCh
             </div>
             <InputBoxContainer>
                 <input
+                id={id}
                 type={type}
                 className="bg-[#001926] text-white text-[16px] rounded-lg block w-full p-0 focus:outline-none"
                 placeholder={placeholder}

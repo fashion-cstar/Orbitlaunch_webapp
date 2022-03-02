@@ -12,10 +12,10 @@ interface UpcomingCardProps {
 export default function FeaturedCard({ ido, firstCardIndex, onDetail, options }: UpcomingCardProps) {
 
     let bgColor = (!!options && !!options.bgCard) ? options.bgCard : '#001926';
-    let width = (!!options && !!options.width) ? options.width : '450px';
+    let width = (!!options && !!options.width) ? options.width : '420px';
     let titleFontSize = (!!options && !!options.titleFontSize) ? options.titleFontSize : '24px';
     let descFontSize = (!!options && !!options.descFontSize) ? options.descFontSize : '16px';
-    let imgHeight = (!!options && !!options.imgHeight) ? options.imgHeight : '160px';
+    let imgHeight = (!!options && !!options.imgHeight) ? options.imgHeight : (!!options && !!options.width) ? options.width*16/45 : '150px';
     const styling = {
         backgroundColor: bgColor,
         width
@@ -31,7 +31,7 @@ export default function FeaturedCard({ ido, firstCardIndex, onDetail, options }:
     
     return (              
         <div className="pr-6" style={{ transform: `translateX(-${firstCardIndex * 100}%)`, transition: "transform 500ms ease 0s" }} onClick={() => onDetail(ido)}>
-            <div className="rounded-2xl cursor-pointer hover:shadow-md hover:border-slate-400 hover:border" style={styling}>
+            <div className="rounded-2xl cursor-pointer hover:shadow-xl hover:scale-[1.038] hover:border-slate-400 hover:border" style={styling}>
                 <div className="overflow-hidden" style={{ height: imgHeight }}>
                     <img className="w-full rounded-t-2xl" src={ido.projectBanner} alt={ido.projectName} />
                 </div>
