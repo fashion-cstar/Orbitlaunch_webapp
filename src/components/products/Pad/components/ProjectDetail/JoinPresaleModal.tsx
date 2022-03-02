@@ -43,8 +43,7 @@ export default function JoinPresaleModal({isOpen, launchTokenPrice, currentTierN
         if (max<0) max=0        
         setUserMaxAllocation(max)
     }, [userDepositedAmount])
-
-    console.log(parseEther(10.34, 3))
+    
     async function onApprove() {             
         try{                    
             padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount).then((hash:string) => {
