@@ -75,7 +75,7 @@ export default function Indicators({ ido, launchTokenPrice, hideTierCard }: { id
                                     </div>
                                 </>)
                                 : (
-                                    <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">
+                                    <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">                                        
                                         <Button
                                             variant="outlined"
                                             onClick={activateProvider}
@@ -89,7 +89,7 @@ export default function Indicators({ ido, launchTokenPrice, hideTierCard }: { id
                             }
                             <div className="w-6 cursor-pointer" onClick={ShowTierCard}><QuestionMark /></div>
                         </div>                        
-                        <div className="relative"><PickTierCard ido={ido} launchTokenPrice={launchTokenPrice} display={TierCardDisplay} onSelectTier={onSelectTier} handleClose={HideTierCard} /></div>
+                        <div className="relative"><PickTierCard ido={ido} launchTokenPrice={launchTokenPrice} display={TierCardDisplay} handleClose={HideTierCard} /></div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4 basis-1/2 w-full">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">

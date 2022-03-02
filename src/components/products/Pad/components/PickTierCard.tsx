@@ -1,5 +1,5 @@
-export default function PickTierCard({ido, launchTokenPrice, display, onSelectTier, handleClose}:
-    {ido:any, launchTokenPrice:number, display:string, onSelectTier:(tier:number) => void, handleClose: () => void}){
+export default function PickTierCard({ido, launchTokenPrice, display, handleClose}:
+    {ido:any, launchTokenPrice:number, display:string, handleClose: () => void}){
     const getAllocPercent = (index: number) => {
         return Math.round(Number(ido[`tierAllocation${(index+1)}`])/Number(ido[`tierAllocation1`])*1000)/10
     }
@@ -9,7 +9,7 @@ export default function PickTierCard({ido, launchTokenPrice, display, onSelectTi
                 {
                     [0,1,2,3,4,5,6].map((index) => {
                         return (
-                            <div key={index} className="flex w-full justify-between cursor-pointer" onClick={() => onSelectTier(index+1)}>                                            
+                            <div key={index} className="flex w-full justify-between cursor-pointer">                                            
                                 <div className="text-white text-[14px]">
                                     {`Tier ${index+1} - ${getAllocPercent(index)}% max allocation`}
                                 </div>
