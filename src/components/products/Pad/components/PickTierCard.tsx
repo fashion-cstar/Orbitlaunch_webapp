@@ -14,7 +14,7 @@ export default function PickTierCard({ido, launchTokenPrice, display, handleClos
                                     {`Tier ${index+1} - ${getAllocPercent(index)}% max allocation`}
                                 </div>
                                 <div className="text-[#BAB8CC] text-[14px] text-right">
-                                    {`${Number(ido.totalRaiseHardCap * getAllocPercent(index)/100).toLocaleString()} ${ido.projectSymbol}`}
+                                    {`${Math.round(Number(ido[`tierAllocation${(index+1)}`])/launchTokenPrice)} ${ido.projectSymbol}`}
                                 </div>      
                             </div>                      
                         )                                

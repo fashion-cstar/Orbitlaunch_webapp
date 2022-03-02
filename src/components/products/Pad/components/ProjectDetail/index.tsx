@@ -13,6 +13,7 @@ import { useLaunchTokenPrice } from 'src/state/Pad/hooks'
 import { BigNumber } from '@ethersproject/bignumber';
 import { formatEther } from 'src/utils'
 import { useEthers, useToken, ChainId } from "@usedapp/core";
+import { useFundTier } from "src/state/Pad/hooks";
 
 export default function ProjectDetail({ project }: { project: any }) {
     const [IdoList, setIdoList] = useState<any>()
@@ -23,18 +24,19 @@ export default function ProjectDetail({ project }: { project: any }) {
     const { library, account, chainId } = useEthers()
     const hideTierCard = useRef(null)
     const router = useRouter()
-
+    const currentTierNo = useFundTier(); 
+    
     useEffect(() => {            
         try{        
-            launchTokenPriceCallback(project.contractAddress).then((res:BigNumber) => {
+            launchTokenPriceCallback(IdoProject.contractAddress).then((res:BigNumber) => {
                 setLaunchTokenPrice(formatEther(res, 18, 5))
-        }).catch((error:any) => {              
-            console.log(error)
-        })  
+            }).catch((error:any) => {              
+                console.log(error)
+            })  
         }catch(error){
-            console.debug('Failed to approve token', error)            
+            console.debug('Failed to get launch price', error)            
         }
-    }, [account])
+    }, [account, IdoProject])
 
 
     const handleBackClick = async () => {
@@ -68,7 +70,9 @@ export default function ProjectDetail({ project }: { project: any }) {
 
     return (
         <>
-            {IdoProject && (<JoinPresaleModal project={IdoProject} isOpen={isOpenJoinPresale} launchTokenPrice={launchTokenPrice} handleClose={handleCloseJoinPresale} />)}
+            {IdoProject && (<JoinPresaleModal project={IdoProject} 
+                            isOpen={isOpenJoinPresale} launchTokenPrice={launchTokenPrice} 
+                            currentTierNo={currentTierNo} handleClose={handleCloseJoinPresale} />)}
             <div className="w-full" onClick={(e) => handleHideTierCard(e)} >
                 <div className="flex flex-row items-center justify-between">
                     <h1 className="text-[32px] font-medium">OrbitPad</h1>
@@ -88,7 +92,7 @@ export default function ProjectDetail({ project }: { project: any }) {
                     <div className='mt-10'>
                         <div className='flex flex-col gap-6 lg:flex-row'>
                             <div className='flex flex-col space-y-6'>
-                                <Indicators ido={IdoProject} launchTokenPrice={launchTokenPrice} hideTierCard={hideTierCard} />
+                                <Indicators ido={IdoProject} launchTokenPrice={launchTokenPrice} currentTierNo={currentTierNo} hideTierCard={hideTierCard} />
                                 <Detail ido={IdoProject} />
                             </div>
                             <div className='flex-1'><About ido={IdoProject} handleClickJoinPresale={handleClickJoinPresale} /></div>

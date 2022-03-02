@@ -11,15 +11,19 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
 import { BigNumber } from '@ethersproject/bignumber';
 import { formatEther } from 'src/utils'
+import { BUSDTokenAddress } from "@app/shared/PadConstant";
+import { useDepositInfo, useTokenBalance } from 'src/state/Pad/hooks'
+import { parseEther } from 'src/utils'
 
 interface PresaleModalProps {
     isOpen: boolean
     launchTokenPrice: number
+    currentTierNo: number
     handleClose:() => void
     project: any
 }
 
-export default function JoinPresaleModal({isOpen, launchTokenPrice, handleClose, project}:PresaleModalProps) {
+export default function JoinPresaleModal({isOpen, launchTokenPrice, currentTierNo, handleClose, project}:PresaleModalProps) {
     const [hash, setHash] = useState<string | undefined>()
     const [attempting, setAttempting] = useState(false)
     const { library, account, chainId } = useEthers()  
@@ -28,36 +32,40 @@ export default function JoinPresaleModal({isOpen, launchTokenPrice, handleClose,
     const { joinPresaleCallback } = useJoinPresaleCallback()
     const { padApproveCallback } = usePadApproveCallback()    
     const [isApproved, setIsApproved] = useState(false)
-    const [isDeposited, setDeposited] = useState(false)      
-    const tokenAddress='0xcbdeb985e2189e615eae14f5784733c0122c253c'
-        
-    async function onApprove() {     
-        // if (tokenAddress===AddressZero){          
-        //     setIsApproved(true)
-        // }else{          
-        try{        
-            padApproveCallback(project.contractAddress, tokenAddress, fundTokenAmount).then((hash:string) => {
+    const [isDeposited, setDeposited] = useState(false)          
+    const [userMaxAllocation, setUserMaxAllocation] = useState(0)
+    let userDepositedAmount = useDepositInfo(project.contractAddress)
+    const userBUSDBalance = useTokenBalance(BUSDTokenAddress[chainId])
+
+    useEffect(() => {
+        let max = currentTierNo ? Number(project[`tierAllocation${currentTierNo}`]) : 0        
+        if (max>0) max=(max-formatEther(userDepositedAmount, 18, 5))
+        if (max<0) max=0        
+        setUserMaxAllocation(max)
+    }, [userDepositedAmount])
+
+    console.log(parseEther(10.34, 3))
+    async function onApprove() {             
+        try{                    
+            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount).then((hash:string) => {
             setIsApproved(true)
-            onDeposit()
         }).catch((error:any) => {              
             console.log(error)
         })  
         }catch(error){
-            console.debug('Failed to approve token', error)            
+            console.log(error)            
         }
-        // }
         return null;
       }
       
       const successDeposited=() => {
-        
+        userDepositedAmount=userDepositedAmount.add(parseEther(fundTokenAmount, 18))
       }
 
       async function onDeposit() {    
         try{      
             setAttempting(true)        
-            console.log("AAAAAAAAAAAAAAA")        
-            joinPresaleCallback(project.contractAddress, tokenAddress,  fundTokenAmount).then((hash:string) => {
+            joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId],  fundTokenAmount).then((hash:string) => {
                 setHash(hash)
                 successDeposited()
             }).catch(error => {
@@ -87,8 +95,17 @@ export default function JoinPresaleModal({isOpen, launchTokenPrice, handleClose,
         }
     }
 
-    const onMax = () => {
+    const getDepositAvailable = () => {
+        let max=formatEther(userBUSDBalance, 18, 5)>userMaxAllocation ? userMaxAllocation : formatEther(userBUSDBalance, 18, 2)
+        return max
+    }
 
+    const onMax = () => {
+        let max=getDepositAvailable()
+        setFundTokenAmount(max)
+        if (launchTokenPrice){
+            setProjectTokenAmount(max/launchTokenPrice)
+        }
     }
 
     const onclose = () => {        
@@ -115,14 +132,32 @@ export default function JoinPresaleModal({isOpen, launchTokenPrice, handleClose,
                             value={fundTokenAmount} name="BUSD" icon="./images/launchpad/TokenIcons/busd.svg" />
                         <ProjectTokenInput onChange={(val:any) => onProjectTokenChange(val)} onMax={onMax}
                             value={projectTokenAmount} name={project.projectSymbol} icon={project.projectIcon} />
-                        <Button
-                            variant="contained"
-                            sx={{width:"100%", borderRadius:"12px"}}
-                            onClick={onApprove}
-                            disabled={!account}
-                        >
-                            Reserve your tokens now
-                        </Button>
+                        <div className='text-white text-[14px] flex justify-between'>
+                            <div>Max Allocation</div>
+                            <div>${userMaxAllocation}</div>
+                        </div>
+                        <div className='text-white text-[14px] flex justify-between'>
+                            <div>BUSD Balance</div>
+                            <div>{`${formatEther(userBUSDBalance, 18, 2)} BUSD`}</div>
+                        </div>
+                        <div className='flex gap-4'>
+                            <Button
+                                variant="contained"
+                                sx={{width:"100%", borderRadius:"12px"}}
+                                onClick={onApprove}
+                                disabled={!account || !launchTokenPrice || !getDepositAvailable()}
+                            >
+                                Approve
+                            </Button>
+                            <Button
+                                variant="contained"
+                                sx={{width:"100%", borderRadius:"12px"}}
+                                onClick={onDeposit}
+                                disabled={!isApproved}
+                            >
+                                Deposit
+                            </Button>
+                        </div>                        
                     </div>
                 </div>)}
                 {attempting && !hash && (

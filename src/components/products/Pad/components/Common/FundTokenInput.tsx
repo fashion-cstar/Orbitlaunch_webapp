@@ -19,13 +19,13 @@ export default function FundTokenInput({value, icon, name, onChange}:
             <div className='flex space-x-2'>
                 <InputBoxContainer>
                     <input
-                    type="number"                
+                    type="text"                
                     className="bg-[#001926] text-white text-[24px] rounded-lg block w-full p-0 focus:outline-none"
                     placeholder="0.0"
                     onFocus={handleFocus}
                     onBlur={handleBlur}
                     onChange={(event) => onChange(event.target.value)}
-                    value={value ?? ''}
+                    value={Number(value)===0? '' : Number(value)}
                     required={true}
                     />
                 </InputBoxContainer>

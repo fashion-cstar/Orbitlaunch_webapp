@@ -19,7 +19,7 @@ export default function Pad() {
     const [IdoEndedProjects, setEndedProjects] = useState<any>()
     const router = useRouter()
     const widthRef = useRef<any>();    
-   
+
     const handleTabClick = (id:number) => {
         setChainId(id)
     }        
