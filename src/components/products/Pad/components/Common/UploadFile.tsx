@@ -1,14 +1,8 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import UploadIcon from '../svgs/UploadIcon'
-<<<<<<< HEAD
 export default function UploadFile({ name, placeholder, id, onChange }:
     { name: string, placeholder: string, id: string, onChange: (val: any) => void }) {
     const fileRef = useRef(null);
-=======
-export default function UploadFile({name, placeholder, id, onChange}:
-    {name:string, placeholder:string, id:string, onChange:(val:any) => void}){
-    const fileRef = useRef(null);        
->>>>>>> b73b559341ff3feeddb8fd671aa543dc7feae7a5
     const [isBorder, setIsBorder] = useState(false)
     const [file, setFile] = useState<any>()
     const handleChange = (e) => {

@@ -68,7 +68,7 @@ export default function Indicators({ ido, launchTokenPrice, currentTierNo, hideT
                                     </div>
                                 </>)
                                 : (
-                                    <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">                                        
+                                    <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">
                                         <Button
                                             variant="outlined"
                                             onClick={activateProvider}
