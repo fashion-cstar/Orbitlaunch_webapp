@@ -1,4 +1,5 @@
-import { PropsWithChildren } from "react";
+import React, { PropsWithChildren } from "react";
+import BottomNav from "./BottomNav";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
@@ -10,19 +11,15 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
   return (
     <>
       <Header />
-      <div className="tempmobile">
-        <div className="grid place-items-center h-screen text-center text-[18px] p-8">
-          We're working to release the responsive versions of the Fund/Pad/Dashboard over the next few days.<br /><br />
-          To access this immediately please visit on a laptop/desktop device.
-        </div>
-      </div>
-
-      <div className="tempdesktop">
-        <div className="flex items-start py-[64px] z-[1300]" style={gradientColor}>
+      <div className="flex flex-column items-start py-[64px] z-[1300]" style={gradientColor}>
+        <div className="tempdesktop">
           <Sidebar isOpen />
-          <div className="p-10 grow">
-            {children}
-          </div>
+        </div>
+        <div className="p-10 grow">
+          {children}
+        </div>
+        <div className="tempmobile fixed bottom-0 w-full h-[45px] border-t border-t-[#112b40]" style={gradientColor}>
+          <BottomNav />
         </div>
       </div>
     </>
