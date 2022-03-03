@@ -37,7 +37,7 @@ export default function FeaturedProjects({ options }: { options: any }) {
         else setCardIndex(0)
     }
 
-    const onDetail = (ido: any) => {                
+    const onDetail = (ido: any) => {
         router.push({
             pathname: '/pad',
             query: { project: ido.projectName },

@@ -20,21 +20,21 @@ export default function ProjectDetail({ project }: { project: any }) {
     const [IdoProject, setIdoProject] = useState<any>()
     const [isOpenJoinPresale, setIsOpenJoinPresale] = useState(false);
     const [launchTokenPrice, setLaunchTokenPrice] = useState(0)
-    const { launchTokenPriceCallback} = useLaunchTokenPrice()
+    const { launchTokenPriceCallback } = useLaunchTokenPrice()
     const { library, account, chainId } = useEthers()
     const hideTierCard = useRef(null)
     const router = useRouter()
-    const currentTierNo = useFundTier(); 
-    
-    useEffect(() => {            
-        try{        
-            launchTokenPriceCallback(IdoProject.contractAddress).then((res:BigNumber) => {
+    const currentTierNo = useFundTier();
+
+    useEffect(() => {
+        try {
+            launchTokenPriceCallback(IdoProject.contractAddress).then((res: BigNumber) => {
                 setLaunchTokenPrice(formatEther(res, 18, 5))
-            }).catch((error:any) => {              
+            }).catch((error: any) => {
                 console.log(error)
-            })  
-        }catch(error){
-            console.debug('Failed to get launch price', error)            
+            })
+        } catch (error) {
+            console.debug('Failed to get launch price', error)
         }
     }, [account, IdoProject])
 
@@ -50,7 +50,7 @@ export default function ProjectDetail({ project }: { project: any }) {
         })
     }, [])
 
-    useEffect(() => {        
+    useEffect(() => {
         if (IdoList) {
             setIdoProject(IdoList.filter((item: any) => item.projectName === project)[0])
         }
@@ -70,9 +70,9 @@ export default function ProjectDetail({ project }: { project: any }) {
 
     return (
         <>
-            {IdoProject && (<JoinPresaleModal project={IdoProject} 
-                            isOpen={isOpenJoinPresale} launchTokenPrice={launchTokenPrice} 
-                            currentTierNo={currentTierNo} handleClose={handleCloseJoinPresale} />)}
+            {IdoProject && (<JoinPresaleModal project={IdoProject}
+                isOpen={isOpenJoinPresale} launchTokenPrice={launchTokenPrice}
+                currentTierNo={currentTierNo} handleClose={handleCloseJoinPresale} />)}
             <div className="w-full" onClick={(e) => handleHideTierCard(e)} >
                 <div className="flex flex-row items-center justify-between">
                     <h1 className="text-[32px] font-medium">OrbitPad</h1>
