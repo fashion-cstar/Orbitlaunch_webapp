@@ -50,7 +50,7 @@ export default function ProjectDetail({ project }: { project: any }) {
         })
     }, [])
 
-    useEffect(() => {
+    useEffect(() => {        
         if (IdoList) {
             setIdoProject(IdoList.filter((item: any) => item.projectName === project)[0])
         }
