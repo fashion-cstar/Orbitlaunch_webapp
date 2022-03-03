@@ -69,18 +69,25 @@ export default function Pad() {
         <>
             <ProjectSubmitModal isOpen={isOpenProjectSubmit} handleClose={handleCloseProjectSubmit} />
             <div className="w-full" ref={widthRef}>
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                    <h1 className="text-[40px] font-medium">OrbitPad</h1>
-                    <div className='flex flex-col md:flex-row gap-4 justify-center items-center'>
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+                    <div className="flex justify-between w-full lg:w-auto">
+                        <h1 className="text-[35px] md:text-[40px] font-medium">OrbitPad</h1>
+                        <div className="md:hidden">
+                            <BuyButton />
+                        </div>
+                    </div>
+                    <div className='w-full flex flex-col md:flex-row gap-4 justify-start lg:justify-center items-start md:items-center'>
                         <ConnectTier />
-                        <BuyButton />
-                        <Button variant="outlined" sx={{ minWidth: "160px", borderRadius: "12px" }} onClick={handleClickProjectSubmit}>
-                            Submit your project
-                        </Button>
+                        <div className="hidden md:block"><BuyButton /></div>
+                        <div className="hidden md:block">
+                            <Button variant="outlined" sx={{ minWidth: "160px", borderRadius: "12px" }} onClick={handleClickProjectSubmit}>
+                                Submit your project
+                            </Button>
+                        </div>
                     </div>
                 </div>
                 <div className="mt-8">
-                    <h1 className="text-white text-[24px]">Featured projects</h1>
+                    <h1 className="text-white text-[21px] md:text-[24px]">Featured projects</h1>
                     <FeaturedProjects options={null} />
                 </div>
                 {IdoEndedProjects &&
@@ -89,6 +96,11 @@ export default function Pad() {
                         <EndedIdoTable idos={IdoEndedProjects} width={tableWidth} />
                     </>
                 }
+                <div className="block md:hidden mt-4">
+                    <Button variant="outlined" sx={{ minWidth: "160px", borderRadius: "12px" }} onClick={handleClickProjectSubmit}>
+                        Submit your project
+                    </Button>
+                </div>
             </div>
         </>
     )
