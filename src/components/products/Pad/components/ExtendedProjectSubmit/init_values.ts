@@ -1,8 +1,8 @@
 export const init_project_values = {
-    project: '', 
-    symbol: '', 
-    contractAddr: '', 
-    KYCofDev: '', 
+    project: '',
+    symbol: '',
+    contractAddr: '',
+    KYCofDev: '',
     logo: null,
     banner: null,
     maxPerWallet: 0,

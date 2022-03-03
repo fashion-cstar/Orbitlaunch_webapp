@@ -17,10 +17,10 @@ const Container = styled.div`
     align-items: center;
 `
 
-export default function InputBoxContainer({children}: {children: ReactNode}) {      
+export default function InputBoxContainer({ children }: { children: ReactNode }) {
     return (
-        <Container>           
-            {children}               
+        <Container>
+            {children}
         </Container>
     )
 }

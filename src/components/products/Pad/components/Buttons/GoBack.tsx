@@ -1,7 +1,7 @@
 import GoBackIcon from "@app/components/products/Pad/components/svgs/GoBackIcon"
 import { useRouter } from "next/router";
 
-export default function GoBack({handleClick}:{handleClick:()=>void}) {
+export default function GoBack({ handleClick }: { handleClick: () => void }) {
     const router = useRouter();
 
     return (

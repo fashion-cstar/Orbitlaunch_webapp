@@ -2,15 +2,13 @@ import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
 import { Button } from "@mui/material";
 import { useEthers } from "@usedapp/core";
 import QuestionMark from "../svgs/QuestionMark"
-import useFund from "@app/lib/hooks/useFund";
+import { useFundTier } from "src/state/Pad/hooks";
 
 export default function ConnectTier() {
 
     const activateProvider = Web3ModalButton();
     const { account } = useEthers();
-    const {
-        currentTierNo,
-    } = useFund();
+    const currentTierNo = useFundTier();
 
     return (
         <div className="flex items-center space-x-5 text-[14px] font-bold uppercase text-app-primary">
@@ -29,6 +27,6 @@ export default function ConnectTier() {
                     </Button>
                 )
             }
-        </div>        
+        </div>
     )
 }

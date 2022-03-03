@@ -23,7 +23,7 @@ interface PopupProps {
     children?: React.ReactNode,
     header?: string,
     backgroundColorModal?: any,
-    handleClose:() => void
+    handleClose: () => void
 }
 
 const gradientColor = {
@@ -35,20 +35,20 @@ export default function Modal({
     header,
     children,
     handleClose
-}: PopupProps) {      
+}: PopupProps) {
 
     const handleWindowClick = (event) => {
         const modal = document.getElementById("orbit-pad-modal");
         if (event.target == modal) {
-          handleClose()
+            handleClose()
         }
     }
     return (
-        <ModalContainer        
-            id="orbit-pad-modal"    
+        <ModalContainer
+            id="orbit-pad-modal"
             aria-hidden="true"
             role="dialog"
-            style={{backgroundColor: '#ffffff20', display:isOpen?"flex":"none"}}
+            style={{ backgroundColor: '#ffffff20', display: isOpen ? "flex" : "none" }}
             className="overflow-y-auto overflow-x-hidden fixed right-0 left-0 z-50 justify-center items-center h-modal h-full inset-0"
             onClick={(e) => handleWindowClick(e)}
         >
@@ -61,7 +61,7 @@ export default function Modal({
                         <div className='text-white text-[24px] md:text-[32px] ml-6'>
                             {header}
                         </div>
-                        <div className="flex justify-end p-2">                            
+                        <div className="flex justify-end p-2">
                             <button
                                 type="button"
                                 className="text-gray-400 bg-transparent hover:bg-black-400 hover:text-gray-500 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
