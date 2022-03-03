@@ -51,7 +51,7 @@ function BalanceAndDisconnect({ isMobile }: { isMobile: boolean }) {
         <div className="flex flex-col flex-1 rounded-md bg-[#001926] p-4">
           <div className="flex flex-col mb-[10px] text-gray-400">
             <div className="flex justify-center text-xs">Available Balance</div>
-            <BalanceAmount isMobile />
+            <BalanceAmount isMobile={isMobile} />
           </div>
 
           <Button
@@ -85,7 +85,7 @@ export default function Wallet({ isMobile }: { isMobile: boolean }) {
           )}
         </Button>
       )}
-      {isConnected && <BalanceAndDisconnect isMobile />}
+      {isConnected && <BalanceAndDisconnect isMobile={isMobile} />}
     </div>
   );
 }
