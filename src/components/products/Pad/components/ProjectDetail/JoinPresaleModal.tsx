@@ -140,7 +140,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                             <div>{`${formatEther(userBUSDBalance, 18, 2)} BUSD`}</div>
                         </div>
                         <div className='flex gap-4'>
-                            <Button
+                            {/* <Button
                                 variant="contained"
                                 sx={{ width: "100%", borderRadius: "12px" }}
                                 onClick={onApprove}
@@ -155,6 +155,14 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 disabled={!isApproved}
                             >
                                 Deposit
+                            </Button> */}
+                            <Button
+                                variant="contained"
+                                sx={{ width: "100%", borderRadius: "12px" }}
+                                onClick={onApprove}
+                                disabled={true}
+                            >
+                                Reserve Your Tokens Now
                             </Button>
                         </div>
                     </div>

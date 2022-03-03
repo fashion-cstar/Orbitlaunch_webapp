@@ -25,7 +25,7 @@ export default function About({ ido, handleClickJoinPresale }: { ido: any, handl
                 <Button
                     variant="contained"
                     sx={{ width: "100%", borderRadius: "12px" }}
-                    onClick={handleClickJoinPresale}
+                    onClick={handleClickJoinPresale}                    
                 >
                     Join Presale Now
                 </Button>
