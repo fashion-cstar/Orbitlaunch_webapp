@@ -62,21 +62,19 @@ export default function Fund() {
                             ? (<>
                                 <Button
                                     type="button"
-                                    color="inherit"
                                     disabled={disableWithdraw || currentTierNo === 0}
                                     variant="outlined"
                                     onClick={disableWithdraw ? null : async () => await handleWithdrawalSubmit()}
-                                    sx={{ borderRadius: "12px", border: `2px solid ${theme.palette.primary.main}` }}
+                                    sx={{ borderRadius: "12px" }}
                                 >
                                     Withdrawal
                                 </Button>
                                 <Button
                                     type="button"
-                                    color="inherit"
                                     disabled={disableDeposit || currentTierNo === 0}
                                     onClick={(disableDeposit || currentTierNo === 0) ? null : handleOpenDepositModal}
                                     variant="outlined"
-                                    sx={{ borderRadius: "12px", border: `2px solid ${theme.palette.primary.main}` }}
+                                    sx={{ borderRadius: "12px" }}
                                 >
                                     {disableDeposit ? 'Deposit window closed' : 'Deposit BUSD'}
                                 </Button>
@@ -84,10 +82,9 @@ export default function Fund() {
                             : (
                                 <Button
                                     variant="outlined"
-                                    color="inherit"
                                     onClick={activateProvider}
                                     className="relative"
-                                    sx={{ borderRadius: "12px", border: `2px solid ${theme.palette.primary.main}` }}
+                                    sx={{ borderRadius: "12px" }}
                                 >
                                     Connect to Deposit
                                 </Button>
@@ -194,33 +191,29 @@ export default function Fund() {
             <div className="fund-mobile flex flex-col space-y-4 w-full">
                 <div className="flex flex-row items-center">
                     <h1 className="text-[24px] font-medium">OrbitFund</h1>
+                    <div className="absolute right-10"><BuyButton /></div>
                 </div>
                 <div className="flex flex-row items-center space-x-4">
-                    <BuyButton className="w-full text-[12px]"></BuyButton>
                     {!!account
                         ? (
                             <>
                                 <Button
                                     type="button"
                                     disabled={disableWithdraw || currentTierNo === 0}
-                                    color="inherit"
                                     className="w-full"
                                     variant="outlined"
                                     onClick={disableWithdraw ? null : async () => await handleWithdrawalSubmit()}
-                                    sx={{
-                                        borderRadius: "12px", border: `2px solid ${theme.palette.primary.main}`
-                                    }}
+                                    sx={{ borderRadius: "12px" }}
                                 >
                                     Withdrawal
                                 </Button>
                                 <Button
                                     type="button"
                                     className="w-full"
-                                    color="inherit"
                                     disabled={disableDeposit || currentTierNo === 0}
                                     onClick={(disableDeposit || currentTierNo === 0) ? null : handleOpenDepositModal}
                                     variant="outlined"
-                                    sx={{ borderRadius: "12px", border: `2px solid ${theme.palette.primary.main}` }}
+                                    sx={{ borderRadius: "12px" }}
                                 >
                                     {disableDeposit ? 'Deposit window closed' : 'Deposit BUSD'}
                                 </Button>
@@ -229,10 +222,9 @@ export default function Fund() {
                         : (
                             <Button
                                 variant="outlined"
-                                color="inherit"
                                 className="relative w-full"
                                 onClick={activateProvider}
-                                sx={{ borderRadius: "12px", border: `2px solid ${theme.palette.primary.main}` }}
+                                sx={{ borderRadius: "12px" }}
                             >
                                 Connect to Deposit
                             </Button>
