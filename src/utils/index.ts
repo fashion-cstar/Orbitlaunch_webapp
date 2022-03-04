@@ -3,6 +3,7 @@ import { JsonRpcSigner, Web3Provider, JsonRpcProvider } from '@ethersproject/pro
 import { AddressZero } from '@ethersproject/constants'
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
+import { parseUnits } from '@ethersproject/units'
 import { getAddress } from '@ethersproject/address'
 import { utils } from 'ethers'
 import { ChainId } from "@usedapp/core";
@@ -93,8 +94,8 @@ export const formatEther = (amount: BigNumber, decimals: number, toFixed: number
     return (temp.toNumber())/(10**toFixed)
 }
 
-export const parseEther = (n: number, decimals: number): BigNumber => {
-    return BigNumber.from(utils.parseUnits(n.toString(), decimals))    
+export const parseEther = (n: number, decimals: number): BigNumber => {    
+    return utils.parseUnits(n.toString(), decimals)
 }
 
 export const getChainIdFromName = (name: string): number => {

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef  } from 'react'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
 import ChainIcon from "../ChainIcon"
 import { getChainIdFromName } from 'src/utils'
 
@@ -15,7 +15,8 @@ export default function FeaturedCard({ ido, firstCardIndex, onDetail, options }:
     let width = (!!options && !!options.width) ? options.width : '420px';
     let titleFontSize = (!!options && !!options.titleFontSize) ? options.titleFontSize : '24px';
     let descFontSize = (!!options && !!options.descFontSize) ? options.descFontSize : '16px';
-    let imgHeight = (!!options && !!options.imgHeight) ? options.imgHeight : (!!options && !!options.width) ? options.width*16/45 : '150px';
+    let imgHeight = (!!options && !!options.imgHeight) ? options.imgHeight : (!!options && !!options.width) ? `${Number(options.width.substr(0, options.width.length - 2)) * 16 / 45}px` : '150px';
+
     const styling = {
         backgroundColor: bgColor,
         width
@@ -28,8 +29,8 @@ export default function FeaturedCard({ ido, firstCardIndex, onDetail, options }:
     const descSize = {
         fontSize: descFontSize
     }
-    
-    return (              
+
+    return (
         <div className="pr-6" style={{ transform: `translateX(-${firstCardIndex * 100}%)`, transition: "transform 500ms ease 0s" }} onClick={() => onDetail(ido)}>
             <div className="rounded-2xl cursor-pointer hover:shadow-xl hover:scale-[1.038] hover:border-slate-400 hover:border" style={styling}>
                 <div className="overflow-hidden" style={{ height: imgHeight }}>

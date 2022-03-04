@@ -20,28 +20,28 @@ const CopiedContainer = styled.div`
     }
 `
 
-export default function WhiteListOpenButton({url}:{url:string}) {   
+export default function WhiteListOpenButton({ url }: { url: string }) {
     const [isCopied, setIsCopied] = useState(false);
-    const copyTextToClipboard = async (text:string) => {
+    const copyTextToClipboard = async (text: string) => {
         if ('clipboard' in navigator) {
-          return await navigator.clipboard.writeText(text);
+            return await navigator.clipboard.writeText(text);
         } else {
-          return document.execCommand('copy', true, text);          
+            return document.execCommand('copy', true, text);
         }
     }
-    
+
     const handleShareClick = () => {
-        copyTextToClipboard(document.URL)        
-        .then(() => {
-            // If successful, update the isCopied state value
-            setIsCopied(true);
-            setTimeout(() => {
-            setIsCopied(false);
-            }, 3000);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+        copyTextToClipboard(document.URL)
+            .then(() => {
+                // If successful, update the isCopied state value
+                setIsCopied(true);
+                setTimeout(() => {
+                    setIsCopied(false);
+                }, 3000);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
     return (
         <div>
@@ -49,7 +49,7 @@ export default function WhiteListOpenButton({url}:{url:string}) {
                 <a
                     // href={url}
                     target="_blank"
-                    className="w-36 h-8 cursor-pointer flex items-center text-black text-[14px] hover:bg-[#10b9b0] justify-center bg-[#29D9D0] rounded-lg"                   
+                    className="w-36 h-8 cursor-pointer flex items-center text-black text-[14px] hover:bg-[#10b9b0] justify-center bg-[#29D9D0] rounded-lg"
                 >
                     WHITELIST OPEN
                 </a>

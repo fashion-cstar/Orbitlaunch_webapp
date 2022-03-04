@@ -1,11 +1,11 @@
-import React, { useMemo, useState, useEffect, useRef  } from 'react'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
 
-export default function Detail({ido}:{ido:any}) {    
-   
+export default function Detail({ ido }: { ido: any }) {
+
     return (
         <div className="w-full">
             <div>
-                <img src={ido.projectBanner} className='w-full rounded-2xl'/>
+                <img src={ido.projectBanner} className='w-full rounded-2xl' />
             </div>
             <div className="rounded-2xl bg-[#001926] mt-6 p-4">
                 <div className="text-[11px] font-bold uppercase text-app-primary">
@@ -27,7 +27,7 @@ export default function Detail({ido}:{ido:any}) {
                     </div>
                     <div className='mt-4'>
                         <div className='text-[#919699] text-[16px]'>
-                            <p>{ido.featureText1}</p>   
+                            <p>{ido.featureText1}</p>
                         </div>
                         <div className='flex items-center justify-start mt-6'>
                             <img src={ido.featureImage1} className='w-[480px] rounded-2xl' />
@@ -35,7 +35,7 @@ export default function Detail({ido}:{ido:any}) {
                     </div>
                     <div className='mt-4'>
                         <div className='text-[#919699] text-[16px]'>
-                            <p>{ido.featureText2}</p>   
+                            <p>{ido.featureText2}</p>
                         </div>
                         <div className='flex items-center justify-start mt-6'>
                             <img src={ido.featureImage2} className='w-[480px] rounded-2xl' />
@@ -43,7 +43,7 @@ export default function Detail({ido}:{ido:any}) {
                     </div>
                     <div className='mt-4'>
                         <div className='text-[#919699] text-[16px]'>
-                            <p>{ido.featureText3}</p>   
+                            <p>{ido.featureText3}</p>
                         </div>
                         <div className='flex items-center justify-start mt-6'>
                             <img src={ido.featureImage3} className='w-[480px] rounded-2xl' />

@@ -6,15 +6,12 @@ import PickTierCard from "../PickTierCard";
 import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
 import { Button } from "@mui/material";
 import { useEthers } from "@usedapp/core";
-import useFund from "@app/lib/hooks/useFund";
 
-export default function Indicators({ ido, launchTokenPrice, hideTierCard }: { ido: any, launchTokenPrice:number, hideTierCard: any }) {
+export default function Indicators({ ido, launchTokenPrice, currentTierNo, hideTierCard }:
+    { ido: any, launchTokenPrice: number, currentTierNo: number, hideTierCard: any }) {
 
     const activateProvider = Web3ModalButton();
     const { account } = useEthers();
-    const {
-        currentTierNo,
-    } = useFund(); 
     const [TierCardDisplay, SetShowTierCard] = useState('none')
     const [tier, setTier] = useState(0)
     const [maxAllocation, setMaxAllocation] = useState(0)
@@ -25,9 +22,9 @@ export default function Indicators({ ido, launchTokenPrice, hideTierCard }: { id
     }, [currentTierNo])
 
     useEffect(() => {
-        if (launchTokenPrice && account){
-            if (currentTierNo>0){
-                let max=Number(ido[`tierAllocation4${currentTierNo}`])/launchTokenPrice
+        if (launchTokenPrice && account) {
+            if (currentTierNo > 0) {
+                let max = Number(ido[`tierAllocation${currentTierNo}`]) / launchTokenPrice
                 setMaxAllocation(max)
             }
         }
@@ -41,7 +38,7 @@ export default function Indicators({ ido, launchTokenPrice, hideTierCard }: { id
         }
     }
 
-    const HideTierCard = () => {        
+    const HideTierCard = () => {
         if (TierCardDisplay === 'block') {
             SetShowTierCard('none')
         }
@@ -60,18 +57,18 @@ export default function Indicators({ ido, launchTokenPrice, hideTierCard }: { id
                                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                             <span>{`Tier ${currentTierNo}`}</span>
                                         </div>
-                                        <div className="flex w-full justify-between flex-col 2xl:flex-row">                                            
-                                            <div className="text-xl text-white">
-                                                Maximum
+                                        <div className="flex w-full justify-between">
+                                            <div className="text-xl text-white mr-1">
+                                                Max
                                             </div>
                                             <div className="text-xl text-white">
                                                 {` ${maxAllocation} ${ido.projectSymbol}`}
-                                            </div>      
-                                        </div>                                                 
+                                            </div>
+                                        </div>
                                     </div>
                                 </>)
                                 : (
-                                    <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">                                        
+                                    <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">
                                         <Button
                                             variant="outlined"
                                             onClick={activateProvider}
@@ -84,7 +81,7 @@ export default function Indicators({ ido, launchTokenPrice, hideTierCard }: { id
                                 )
                             }
                             <div className="w-6 cursor-pointer" onClick={ShowTierCard}><QuestionMark /></div>
-                        </div>                        
+                        </div>
                         <div className="relative"><PickTierCard ido={ido} launchTokenPrice={launchTokenPrice} display={TierCardDisplay} handleClose={HideTierCard} /></div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4 basis-1/2 w-full">

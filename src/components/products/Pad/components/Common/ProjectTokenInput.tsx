@@ -1,8 +1,8 @@
-import React, { useMemo, useState, useEffect, useRef  } from 'react'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
 import InputBoxContainer from './InputBoxContainer'
 
-export default function ProjectTokenInput({value, icon, name, onChange, onMax}:
-    {value:any, icon:string, name:string, onChange:(val:any) => void, onMax:() => void}){
+export default function ProjectTokenInput({ value, icon, name, onChange, onMax }:
+    { value: any, icon: string, name: string, onChange: (val: any) => void, onMax: () => void }) {
     const [isBorder, setIsBorder] = useState(false)
     const handleFocus = () => {
         setIsBorder(true)
@@ -12,7 +12,7 @@ export default function ProjectTokenInput({value, icon, name, onChange, onMax}:
         setIsBorder(false)
     }
     return (
-        <div className="flex-1 rounded-2xl bg-[#001926] py-4 px-6" style={{border: isBorder?"1px solid white":"none"}}>
+        <div className="flex-1 rounded-2xl bg-[#001926] py-4 px-6" style={{ border: isBorder ? "1px solid white" : "none" }}>
             <div className="flex items-center space-x-3 justify-between text-[12px] font-bold uppercase text-app-primary mb-2">
                 <span>Amount</span>
                 <div className='cursor-pointer' onClick={onMax}>
@@ -22,13 +22,13 @@ export default function ProjectTokenInput({value, icon, name, onChange, onMax}:
             <div className='flex space-x-2'>
                 <InputBoxContainer>
                     <input
-                        type="number"
+                        type="text"
                         className="bg-[#001926] text-white text-[24px] rounded-lg block w-full p-0 focus:outline-none"
                         placeholder="0.0"
                         onFocus={handleFocus}
                         onBlur={handleBlur}
                         onChange={(event) => onChange(event.target.value)}
-                        value={value ?? ''}
+                        value={Number(value) === 0 ? '' : Number(value)}
                         required={true}
                     />
                 </InputBoxContainer>
