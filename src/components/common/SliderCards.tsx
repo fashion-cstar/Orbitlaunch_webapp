@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RightArrow from '../products/Pad/components/Buttons/RightArrow';
 import LeftArrow from '../products/Pad/components/Buttons/LeftArrow';
 import { ethers } from "ethers";
@@ -22,7 +22,7 @@ const styleCircle = {
 }
 
 export default function SliderCards({ cardInformationList, selectedCardIndex }: SliderCardsProps) {
-    const [cardIndex, setCardIndex] = useState(0);
+    const [cardIndex, setCardIndex] = useState(selectedCardIndex ?? 0);
 
     const handleLeftClick = () => {
         if (cardIndex === 0) {
@@ -40,6 +40,11 @@ export default function SliderCards({ cardInformationList, selectedCardIndex }: 
         setCardIndex(cardIndex + 1);
     }
 
+    useEffect(() => {
+        const currentSelectedCardIndex = selectedCardIndex < 0 ? 0 : selectedCardIndex;
+        setCardIndex(currentSelectedCardIndex);
+    }, [selectedCardIndex])
+
     return (
         <>
             <div className='overflow-hidden'>
@@ -51,7 +56,7 @@ export default function SliderCards({ cardInformationList, selectedCardIndex }: 
                                     <div
                                         className='rounded-2xl bg-[#001926] w-[320px] h-[200px] flex-col justify-center items-start'
                                         style={{
-                                            border: `1px solid ${selectedCardIndex === index ? '#867EE8' : 'none'}`,
+                                            border: `${selectedCardIndex === index ? '1px solid #867EE8' : 'none'}`,
                                             background: `${selectedCardIndex === index ? 'linear-gradient(90deg, rgba(134, 126, 232, 0.156) 0%, rgba(134, 126, 232, 0) 100%), linear-gradient(0deg, #06111C, #06111C)' : '#06111C'}`
                                         }}
                                     >

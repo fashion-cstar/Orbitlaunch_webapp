@@ -19,8 +19,8 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
   }, [])
 
   const router = useRouter();
-  const goToPad = () => {
-    router.push({ pathname: '/pad' })
+  const goToPath = (path: string) => {
+    router.push({ pathname: path })
   };
   const goToMain = () => {
     setAlreadyWarn('true');
@@ -46,7 +46,7 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
         <div className="tempdesktop">
           <Sidebar isOpen />
         </div>
-        {(router.pathname === '/pad') ? (
+        {(router.pathname === '/pad' || router.pathname === '/fund') ? (
           <div className="p-10 grow">
             {children}
           </div>
@@ -59,15 +59,23 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
 
               <br />
               Good news!<br />
-              OrbitPad is already compatible with mobile.<br /><br />
+              OrbitPad and OrbitFund are already compatible with mobile.<br /><br />
 
               <Button
                 variant="outlined"
-                onClick={goToPad}
+                onClick={() => goToPath('/pad')}
                 className="relative"
                 sx={{ borderRadius: "12px" }}
               >
-                Navigate to OrbitPad
+                Go to OrbitPad
+              </Button> &nbsp;&nbsp;
+              <Button
+                variant="outlined"
+                onClick={() => goToPath('/fund')}
+                className="relative"
+                sx={{ borderRadius: "12px" }}
+              >
+                Go to OrbitFund
               </Button>
             </div>
             <div className="hidden md:block lg:block p-10 grow">
