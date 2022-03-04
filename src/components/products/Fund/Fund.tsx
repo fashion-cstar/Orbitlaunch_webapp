@@ -54,7 +54,7 @@ export default function Fund() {
             <div className="fund-desktop flex flex-col space-y-4 w-full">
 
                 <div className="flex flex-row items-center">
-                    <h1 className="text-[32px] font-medium">OrbitFund</h1>
+                    <h1 className="text-[40px] font-medium">OrbitFund</h1>
                     <div className="absolute right-10 space-x-3">
                         <BuyButton></BuyButton>
                         {!!account
@@ -189,7 +189,7 @@ export default function Fund() {
 
             <div className="fund-mobile flex flex-col space-y-4 w-full">
                 <div className="flex flex-row items-center">
-                    <h1 className="text-[24px] font-medium">OrbitFund</h1>
+                    <h1 className="text-[35px] font-medium">OrbitFund</h1>
                     <div className="absolute right-10"><BuyButton /></div>
                 </div>
                 <div className="flex flex-row items-center space-x-4">
