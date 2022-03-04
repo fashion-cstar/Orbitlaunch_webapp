@@ -9,7 +9,6 @@ import { ethers } from "ethers";
 import BuyButton from "../../common/BuyButton";
 import SliderCards from "../../common/SliderCards";
 import DepositPopup from "./DepositPopup";
-// import fundRepresentationVideo from "../../../../public/videos/OrbitFundEasyDemo.mp4"
 
 export default function Fund() {
     const activateProvider = Web3ModalButton();
@@ -55,7 +54,7 @@ export default function Fund() {
             <div className="fund-desktop flex flex-col space-y-4 w-full">
 
                 <div className="flex flex-row items-center">
-                    <h1 className="text-[40px] font-medium">OrbitFund</h1>
+                    <h1 className="text-[32px] font-medium">OrbitFund</h1>
                     <div className="absolute right-10 space-x-3">
                         <BuyButton></BuyButton>
                         {!!account
@@ -157,10 +156,10 @@ export default function Fund() {
                                         </div>
                                         <hr style={{ borderColor: "#112B40" }} />
                                     </div>
-                                    <div className="flex justify-center items-center flex-1 rounded-2xl bg-[#001926] p-4 text-gray-400">
+                                    <div className="flex justify-center items-center flex-1 rounded-2xl bg-[#001926] text-gray-400">
                                         <div className="grid grid-cols-2 pt-2">
                                             <div className="ml-0 col-span-1">
-                                                <iframe src=""//{fundRepresentationVideo}
+                                                <iframe src="videos/OrbitFundEasyDemo.mp4"
                                                     width="100%"
                                                     height="70%"
                                                     frameBorder="0"
@@ -291,20 +290,19 @@ export default function Fund() {
                                     </div>
                                     <hr style={{ borderColor: "#112B40" }} />
                                 </div>
-                                <div className="flex justify-center items-center flex-1 rounded-2xl bg-[#001926] p-4 text-gray-400">
-                                    OrbitFund Video Coming Soon
-                                </div>
-                                {/* <div className="grid grid-cols-2 pt-2">
-                                    <div className="ml-0 col-span-1">
-                                        <iframe src="https://player.vimeo.com/video/146022717?color=0c88dd&title=0&byline=0&portrait=0&badge=0"
-                                            width="100%"
-                                            height="70%"
-                                            frameBorder="0"
-                                            allow="autoplay; picture-in-picture"
-                                            allowFullScreen={true}>
-                                        </iframe>
+                                <div className="flex justify-center items-center flex-1 rounded-2xl bg-[#001926] text-gray-400 w-full">
+                                    <div className="grid grid-cols-2 pt-2">
+                                        <div className="ml-0 col-span-2">
+                                            <iframe src="videos/OrbitFundEasyDemo.mp4"
+                                                width="100%"
+                                                height="70%"
+                                                frameBorder="0"
+                                                allow="autoplay; picture-in-picture"
+                                                allowFullScreen={true}>
+                                            </iframe>
+                                        </div>
                                     </div>
-                                </div> */}
+                                </div>
                             </div>
                         )
                         : null
