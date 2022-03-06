@@ -7,14 +7,14 @@ import { formatEther } from 'src/utils'
 import { getChainIdFromName } from 'src/utils'
 
 export default function EndedIdoRow({ ido }: { ido: any }) {
-    const depositedAmount = useDepositInfo(ido.contractAddress)
-    const investedAmount = useTotalInvestedAmount(ido.contractAddress)
-    const totalInvestors = useGetTotalInvestors(ido.contractAddress)
+    const depositedAmount = useDepositInfo(ido.contractAddress, ido.blockchain)
+    const investedAmount = useTotalInvestedAmount(ido.contractAddress, ido.blockchain)
+    const totalInvestors = useGetTotalInvestors(ido.contractAddress, ido.blockchain)
     const [totalInvestedAmount, setTotalInvestedAmount] = useState(0)
     const [userDepositedAmount, setUserDepositedAmount] = useState(0)
     const [launchTokenPrice, setLaunchTokenPrice] = useState(0)
-    const tokenPrice = useLaunchTokenPrice(ido.contractAddress)
-    const tokenDecimals = uselaunchTokenDecimals(ido.contractAddress)
+    const tokenPrice = useLaunchTokenPrice(ido.contractAddress, ido.blockchain)
+    const tokenDecimals = uselaunchTokenDecimals(ido.contractAddress, ido.blockchain)
 
     useEffect(() => {
         if (tokenDecimals.toNumber()>0 && tokenPrice) setLaunchTokenPrice(formatEther(tokenPrice, tokenDecimals.toNumber(), 4))

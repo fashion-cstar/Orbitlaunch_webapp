@@ -34,9 +34,9 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const [isApproved, setIsApproved] = useState(false)
     const [isDeposited, setDeposited] = useState(false)
     const [userMaxAllocation, setUserMaxAllocation] = useState(0)
-    let userDepositedAmount = useDepositInfo(project.contractAddress)
-    const tokenDecimals = uselaunchTokenDecimals(project.contractAddress)
-    const userBUSDBalance = useTokenBalance(BUSDTokenAddress[chainId])
+    let userDepositedAmount = useDepositInfo(project.contractAddress, project.blockchain)
+    const tokenDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
+    const userBUSDBalance = useTokenBalance(BUSDTokenAddress[chainId], project.blockchain)
 
     useEffect(() => {
         if (tokenDecimals){
@@ -49,7 +49,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
 
     async function onApprove() {
         try {
-            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount).then((hash: string) => {
+            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
                 setIsApproved(true)
             }).catch((error: any) => {
                 console.log(error)
@@ -67,7 +67,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     async function onDeposit() {
         try {
             setAttempting(true)
-            joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount).then((hash: string) => {
+            joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
                 setHash(hash)
                 successDeposited()
             }).catch(error => {
