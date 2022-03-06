@@ -226,3 +226,32 @@ body {
     display: none;
   }
 }
+
+.pad-modal-fadeIn {  
+  -webkit-animation-name: fadeIn;
+  -webkit-animation-duration: 4s;
+  animation-name: fadeIn;
+  animation-duration: 4s;
+
+  @-webkit-keyframes fadeIn {
+      from {opacity: 0} 
+      to {opacity: 1}
+  }
+  
+  @keyframes fadeIn {
+      from {opacity: 0} 
+      to {opacity: 1}
+  }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
