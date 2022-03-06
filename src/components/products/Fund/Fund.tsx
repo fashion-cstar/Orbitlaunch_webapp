@@ -132,8 +132,8 @@ export default function Fund() {
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                             <div className="space-y-4">
                                 <div className="items-center text-l text-white font-bold">
-                                    Deposit Window Closes on <span className="text-app-primary">{startInvestmentPeriodDate}</span><br/>
-                                    (Trading period lasts 4 weeks/28 days)<br/>
+                                    Deposit Window Closes on <span className="text-app-primary">{startInvestmentPeriodDate}</span><br />
+                                    (Trading period lasts 4 weeks/28 days)<br />
                                     Withdrawal Window Opens on <span className="text-app-primary">{endInvestmentPeriodDate}</span>
                                 </div>
                                 <hr style={{ borderColor: "#112B40" }} />
@@ -149,25 +149,22 @@ export default function Fund() {
                         </div>
                         {!account
                             ? (
-                                <div className="flex-1 rounded-2xl bg-[#001926] p-4">
+                                <div className="flex-1 rounded-2xl bg-[#001926] p-4 min-h-[250px]">
                                     <div className="space-y-4">
                                         <div className="items-center text-l text-white font-bold">
                                             Learn About OrbitFund (Andromeda M31)
                                         </div>
                                         <hr style={{ borderColor: "#112B40" }} />
                                     </div>
-                                    <div className="flex justify-center items-center flex-1 rounded-2xl bg-[#001926] text-gray-400">
-                                        <div className="grid grid-cols-2 pt-2">
-                                            <div className="ml-0 col-span-1">
-                                                <iframe src="videos/OrbitFundEasyDemo.mp4"
-                                                    width="100%"
-                                                    height="70%"
-                                                    frameBorder="0"
-                                                    allow="autoplay; picture-in-picture"
-                                                    allowFullScreen={true}>
-                                                </iframe>
-                                            </div>
-                                        </div>
+                                    <div className="flex-1 justify-center items-center bg-[#001926] text-gray-400 w-full">
+                                        <iframe src="videos/OrbitFundEasyDemo.mp4"
+                                            className="min-h-[250px]"
+                                            width="100%"
+                                            height="100%"
+                                            frameBorder="0"
+                                            allow="autoplay; picture-in-picture"
+                                            allowFullScreen={true}>
+                                        </iframe>
                                     </div>
                                 </div>
                             )
@@ -266,8 +263,8 @@ export default function Fund() {
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="space-y-4">
                             <div className="items-center text-l text-white font-bold">
-                                Deposit Window Closes on <span className="text-app-primary">{startInvestmentPeriodDate}</span><br/>
-                                (Trading period lasts 4 weeks/28 days)<br/>
+                                Deposit Window Closes on <span className="text-app-primary">{startInvestmentPeriodDate}</span><br />
+                                (Trading period lasts 4 weeks/28 days)<br />
                                 Withdrawal Window Opens on <span className="text-app-primary">{endInvestmentPeriodDate}</span>
                             </div>
                             <hr style={{ borderColor: "#112B40" }} />
@@ -284,32 +281,29 @@ export default function Fund() {
 
                 </div>
                 <div className="flex flex-row space-x-4">
-                {!account
-                    ? (
-                        <div className="flex-1 rounded-2xl bg-[#001926] p-4">
-                            <div className="space-y-4">
-                                <div className="items-center text-l text-white font-bold">
-                                    Learn About OrbitFund (Andromeda M31)
-                                </div>
-                                <hr style={{ borderColor: "#112B40" }} />
-                            </div>
-                            <div className="flex justify-center items-center flex-1 rounded-2xl bg-[#001926] text-gray-400 w-full">
-                                <div className="grid grid-cols-2 pt-2">
-                                    <div className="ml-0 col-span-2">
-                                        <iframe src="videos/OrbitFundEasyDemo.mp4"
-                                            width="100%"
-                                            height="70%"
-                                            frameBorder="0"
-                                            allow="autoplay; picture-in-picture"
-                                            allowFullScreen={true}>
-                                        </iframe>
+                    {!account
+                        ? (
+                            <div className="flex-1 rounded-2xl bg-[#001926] p-4">
+                                <div className="space-y-4">
+                                    <div className="items-center text-l text-white font-bold">
+                                        Learn About OrbitFund (Andromeda M31)
                                     </div>
+                                    <hr style={{ borderColor: "#112B40" }} />
+                                </div>
+                                <div className="flex-1 justify-center items-center rounded-2xl bg-[#001926] text-gray-400 w-full">
+                                    <iframe src="videos/OrbitFundEasyDemo.mp4"
+                                        className="min-h-[250px]"
+                                        width="100%"
+                                        height="100%"
+                                        frameBorder="0"
+                                        allow="autoplay; picture-in-picture"
+                                        allowFullScreen={true}>
+                                    </iframe>
                                 </div>
                             </div>
-                        </div>
-                    )
-                    : null
-                }
+                        )
+                        : null
+                    }
                 </div>
                 <div className="flex flex-row space-x-4">
                     <div className="rounded-2xl bg-[#001926] p-4 w-full">
