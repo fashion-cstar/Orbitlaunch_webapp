@@ -1,4 +1,6 @@
+import { JsonRpcProvider } from "@ethersproject/providers";
 import { ChainId } from "@usedapp/core";
+import { ethers } from "ethers"
 
 export const WBNBTokenAddress: { [chainId in ChainId]?: string } = {
     [ChainId.BSC]: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
@@ -20,4 +22,11 @@ export const USDTokenAddress: { [chainId in ChainId]?: string } = {
 export const M31TokenAddress: { [chainId in ChainId]?: string } = {
     [ChainId.BSC]: "0xB46aCB1f8D0fF6369C2f00146897aeA1dFCf2414",
     [ChainId.BSCTestnet]: "0x8401e6e7ba1a1ec011bdf34cd59fb11545fae523"
+}
+
+export const RpcProviders: { [chainId in ChainId]?: JsonRpcProvider } = {
+    [ChainId.Mainnet]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/eth/mainnet'),    
+    [ChainId.Rinkeby]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/eth/rinkeby'),
+    [ChainId.BSC]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/bsc/mainnet'),
+    [ChainId.BSCTestnet]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/bsc/testnet')
 }
