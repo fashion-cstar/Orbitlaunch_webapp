@@ -30,7 +30,7 @@ export default function ProjectDetail({ project }: { project: any }) {
         if (IdoProject){
             try {
                 launchTokenDecimalsCallback(IdoProject.contractAddress, IdoProject.blockchain).then((res: BigNumber) => {
-                    setLaunchTokenDecimals(res.toNumber())
+                    setLaunchTokenDecimals(res?res.toNumber():0)
                 }).catch((error: any) => {
                     console.log(error)
                 })
