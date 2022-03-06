@@ -71,10 +71,7 @@ export default function ProjectSubmitModal({ isOpen, handleClose }: { isOpen: bo
                 header="Submit your project"
                 handleClose={handleClose}
             >
-                <div className='m-6 md:w-[600px] lg:w-[700px]'>
-                    {/* <div className='text-white text-[] mt-6'>
-                        Submit your project
-                    </div> */}
+                <div className='m-6 md:w-[600px] lg:w-[700px]'>    
                     <div className='flex flex-col space-y-4 mt-6'>
                         <div className="flex flex-col md:flex-row gap-4 justify-center">
                             <InputBox onChange={(val: any) => setProjectValues({ ...project_values, project: val })}
