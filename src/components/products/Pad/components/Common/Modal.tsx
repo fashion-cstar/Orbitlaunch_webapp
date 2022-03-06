@@ -1,22 +1,3 @@
-import LogoHorizontal from '@app/components/svgs/LogoHorizontal';
-import styled from 'styled-components'
-
-const ModalContainer = styled.div`
-    -webkit-animation-name: fadeIn; /* Fade in the background */
-    -webkit-animation-duration: 0.4s;
-    animation-name: fadeIn;
-    animation-duration: 0.4s
-
-    @-webkit-keyframes fadeIn {
-        from {opacity: 0} 
-        to {opacity: 1}
-    }
-    
-    @keyframes fadeIn {
-        from {opacity: 0} 
-        to {opacity: 1}
-    }
-`
 
 interface PopupProps {
     isOpen?: boolean,
@@ -44,12 +25,12 @@ export default function Modal({
         }
     }
     return (
-        <ModalContainer
+        <div
             id="orbit-pad-modal"
             aria-hidden="true"
             role="dialog"
             style={{ backgroundColor: '#ffffff20', display: isOpen ? "flex" : "none" }}
-            className="overflow-y-auto overflow-x-hidden fixed right-0 left-0 z-50 justify-center items-center h-modal h-full inset-0"
+            className="pad-modal-fadeIn overflow-y-auto overflow-x-hidden fixed right-0 left-0 z-50 justify-center items-center h-modal h-full inset-0"
             onClick={(e) => handleWindowClick(e)}
         >
             <div className="px-4 w-full w-auto h-full md:h-auto mt-8">
@@ -73,6 +54,6 @@ export default function Modal({
                     {children}
                 </div>
             </div>
-        </ModalContainer>
+        </div>
     )
 }

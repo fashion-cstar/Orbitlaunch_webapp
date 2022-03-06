@@ -24,7 +24,7 @@ export default function UploadFile({ name, placeholder, id, onChange }:
             <div className="flex w-full">
                 <input
                     id={id}
-                    className="bg-[#001926] text-white text-[16px] rounded-lg block w-full p-0 focus:outline-none"
+                    className="bg-[#001926] text-white text-[16px] rounded-md block w-full p-0 focus:outline-none"
                     aria-disabled
                     value={file ? `${file.name}-${file.type}` : ""}
                     placeholder={placeholder}

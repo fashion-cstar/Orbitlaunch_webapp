@@ -7,7 +7,7 @@ export default function SelectBox({ name, value, source, onChange }:
             <div className="flex items-center space-x-3 text-[12px] font-bold uppercase text-app-primary mb-2">
                 <span>{name}</span><span className='text-[#ff0000]'>*</span>
             </div>
-            <select className='bg-[#001926] text-white text-[16px] rounded-lg block w-full p-0 focus:outline-none'>
+            <select className='bg-[#001926] text-white text-[16px] rounded-md block w-full p-0 focus:outline-none'>
                 {
                     source.map((item) => {
                         return <option value={item.value} selected={item.value === value ? true : false}>{item.label}</option>

@@ -9,35 +9,50 @@ import About from '@app/components/products/Pad/components/ProjectDetail/About'
 import FeaturedProjects from '@app/components/products/Pad/components/FeaturedProjects'
 import { fetchProjectList } from 'src/state/Pad/hooks'
 import JoinPresaleModal from '@app/components/products/Pad/components/ProjectDetail/JoinPresaleModal'
-import { useLaunchTokenPrice } from 'src/state/Pad/hooks'
-import { BigNumber } from '@ethersproject/bignumber';
+import { useLaunchTokenCallback, useFundTier, useLaunchTokenPrice } from 'src/state/Pad/hooks'
+import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther } from 'src/utils'
-import { useEthers, useToken, ChainId } from "@usedapp/core";
-import { useFundTier } from "src/state/Pad/hooks";
+import { useEthers, useToken, ChainId } from "@usedapp/core"
 
 export default function ProjectDetail({ project }: { project: any }) {
     const [IdoList, setIdoList] = useState<any>()
     const [IdoProject, setIdoProject] = useState<any>()
     const [isOpenJoinPresale, setIsOpenJoinPresale] = useState(false);
     const [launchTokenPrice, setLaunchTokenPrice] = useState(0)
-    const { launchTokenPriceCallback } = useLaunchTokenPrice()
+    const [launchTokenDecimals, setLaunchTokenDecimals] = useState(0)
+    const { launchTokenPriceCallback, launchTokenDecimalsCallback } = useLaunchTokenCallback() 
     const { library, account, chainId } = useEthers()
     const hideTierCard = useRef(null)
     const router = useRouter()
     const currentTierNo = useFundTier();
 
     useEffect(() => {
-        try {
-            launchTokenPriceCallback(IdoProject.contractAddress).then((res: BigNumber) => {
-                setLaunchTokenPrice(formatEther(res, 18, 5))
-            }).catch((error: any) => {
-                console.log(error)
-            })
-        } catch (error) {
-            console.debug('Failed to get launch price', error)
+        if (IdoProject){
+            try {
+                launchTokenDecimalsCallback(IdoProject.contractAddress, IdoProject.blockchain).then((res: BigNumber) => {
+                    setLaunchTokenDecimals(res.toNumber())
+                }).catch((error: any) => {
+                    console.log(error)
+                })
+            } catch (error) {
+                console.debug('Failed to get launch decimals', error)
+            } 
         }
-    }, [account, IdoProject])
+    }, [IdoProject])
 
+    useEffect(() => {
+        if (launchTokenDecimals>0) {
+            try {
+                launchTokenPriceCallback(IdoProject.contractAddress, IdoProject.blockchain).then((res: BigNumber) => {
+                    setLaunchTokenPrice(formatEther(res, 18, 5))
+                }).catch((error: any) => {
+                    console.log(error)
+                })
+            } catch (error) {
+                console.debug('Failed to get launch price', error)
+            }
+        }
+    }, [launchTokenDecimals, IdoProject])
 
     const handleBackClick = async () => {
         // router.back()        

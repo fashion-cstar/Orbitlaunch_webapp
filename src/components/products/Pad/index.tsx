@@ -72,13 +72,13 @@ export default function Pad() {
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
                     <div className="flex justify-between w-full lg:w-auto">
                         <h1 className="text-[35px] md:text-[40px] font-medium">OrbitPad</h1>
-                        <div className="md:hidden pt-2">
+                        <div className="md:hidden">
                             <BuyButton />
                         </div>
                     </div>
-                    <div className='w-full flex flex-col md:flex-row gap-4 justify-start lg:justify-end items-start md:items-center'>
-                        <div className="hidden md:block"><BuyButton /></div>
+                    <div className='w-full flex flex-col md:flex-row gap-4 justify-start lg:justify-center items-start md:items-center'>
                         <ConnectTier />
+                        <div className="hidden md:block"><BuyButton /></div>
                         <div className="hidden md:block">
                             <Button variant="outlined" sx={{ minWidth: "160px", borderRadius: "12px" }} onClick={handleClickProjectSubmit}>
                                 Submit your project

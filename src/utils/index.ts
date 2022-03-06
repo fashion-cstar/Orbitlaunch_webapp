@@ -102,17 +102,16 @@ export const getChainIdFromName = (name: string): number => {
     let chainId = 1
     switch(name.toLowerCase()){
         case 'eth':
-            chainId = 1;
+            if (process.env.network==='mainnet') chainId = 1; //ethereum mainnet
+            else if (process.env.network==='testnet') chainId = 4; //ethereum rinkeby
             break;
         case 'bsc':
-            chainId = 56;
-            break;
-        case 'rinkeby':
-            chainId = 4;
-            break;
-        case 'bsctest':
-            chainId = 97;
-            break;
+            if (process.env.network==='mainnet') chainId = 56; //bsc mainnet
+            else if (process.env.network==='testnet') chainId = 97; //bsc testnet            
+            break;  
+        default:
+            if (process.env.network==='mainnet') chainId = 56; //bsc mainnet
+            else if (process.env.network==='testnet') chainId = 97; //bsc testnet            
     }    
     return chainId
 }

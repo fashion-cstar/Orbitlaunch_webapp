@@ -5,7 +5,7 @@ import InputBox from '../Common/InputBox';
 import FundTokenInput from '../Common/FundTokenInput'
 import ProjectTokenInput from '../Common/ProjectTokenInput'
 import { useEthers, useToken, ChainId } from "@usedapp/core";
-import { useJoinPresaleCallback, usePadApproveCallback } from 'src/state/Pad/hooks'
+import { useJoinPresaleCallback, usePadApproveCallback, uselaunchTokenDecimals } from 'src/state/Pad/hooks'
 import { AddressZero } from '@ethersproject/constants'
 import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
@@ -34,19 +34,22 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const [isApproved, setIsApproved] = useState(false)
     const [isDeposited, setDeposited] = useState(false)
     const [userMaxAllocation, setUserMaxAllocation] = useState(0)
-    let userDepositedAmount = useDepositInfo(project.contractAddress)
-    const userBUSDBalance = useTokenBalance(BUSDTokenAddress[chainId])
+    let userDepositedAmount = useDepositInfo(project.contractAddress, project.blockchain)
+    const tokenDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
+    const userBUSDBalance = useTokenBalance(BUSDTokenAddress[chainId], project.blockchain)
 
     useEffect(() => {
-        let max = currentTierNo ? Number(project[`tierAllocation${currentTierNo}`]) : 0
-        if (max > 0) max = (max - formatEther(userDepositedAmount, 18, 5))
-        if (max < 0) max = 0
-        setUserMaxAllocation(max)
-    }, [userDepositedAmount])
+        if (tokenDecimals){
+            let max = currentTierNo ? Number(project[`tierAllocation${currentTierNo}`]) : 0
+            if (max > 0) max = (max - formatEther(userDepositedAmount, tokenDecimals.toNumber(), 5))
+            if (max < 0) max = 0
+            setUserMaxAllocation(max)
+        }
+    }, [userDepositedAmount, tokenDecimals])
 
     async function onApprove() {
         try {
-            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount).then((hash: string) => {
+            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
                 setIsApproved(true)
             }).catch((error: any) => {
                 console.log(error)
@@ -64,7 +67,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     async function onDeposit() {
         try {
             setAttempting(true)
-            joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount).then((hash: string) => {
+            joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
                 setHash(hash)
                 successDeposited()
             }).catch(error => {
@@ -83,7 +86,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         else setFundTokenAmount(0)
         if (launchTokenPrice) {
             setProjectTokenAmount(Number(val) / launchTokenPrice)
-        }
+        }        
     }
 
     const onProjectTokenChange = (val: any) => {
