@@ -16,7 +16,7 @@ export default function TextArea({ name, value, placeholder, required, id, onCha
             </div>
             <textarea
                 id={id}
-                className="bg-[#001926] text-white text-[16px] rounded-lg block w-full pt-1.5 focus:outline-none" rows={5}
+                className="bg-[#001926] text-white text-[16px] rounded-md block w-full pt-1.5 focus:outline-none" rows={5}
                 placeholder={placeholder}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
