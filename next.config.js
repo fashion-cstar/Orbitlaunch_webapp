@@ -8,6 +8,7 @@ module.exports = {
       template_id: 'template_gg2ywxe',
       user_id: 'JmJk_zGxc2Dzyoq1a',
     },
-    ReCAPTCHA_key: '6LdkZaoeAAAAAJvN6EnW_KtWvNXRxkTviZU0y92Z'
+    ReCAPTCHA_key: '6LdkZaoeAAAAAJvN6EnW_KtWvNXRxkTviZU0y92Z',
+    network: 'mainnet'
   },
 };
