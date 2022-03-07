@@ -1,13 +1,17 @@
 import { BNB_TOKEN_ADDRESS, NETWORK_BSC } from "./AppConstant";
 
-export const queryGetSymbols = (baseCurrency: string, network?: string) => `
+export const queryGetSymbols = (
+  baseCurrency: string,
+  network?: string,
+  quoteCurrency?: string
+) => `
 {
   ethereum(network: ${network || NETWORK_BSC}) {
     dexTrades(
       options: {desc: ["block.height", "transaction.index"], limit: 1}
       exchangeName: {in: ["Pancake", "Pancake v2", "Uniswap"]}
       baseCurrency: {is: "${baseCurrency}"}
-      quoteCurrency: {is: "${BNB_TOKEN_ADDRESS}"}
+      quoteCurrency: {is: "${quoteCurrency || BNB_TOKEN_ADDRESS}"}
     ) 
     {
       block {
@@ -37,40 +41,33 @@ query getBars(
 	$limit: Int!
 	$quoteCurrency: String!
 	$baseCurrency: String!
-  $network: EthereumNetwork!
+	$network: EthereumNetwork!
 	$interval: Int!
 ) {
-  ethereum(network: $network) {
-    dexTrades(
-      options: {limit: $limit, asc: "timeInterval.minute"}
-      date: {since: $from, till: $to}
-			exchangeName: { in: ["Pancake", "Pancake v2", "Uniswap"] }
-      baseCurrency: {is: $baseCurrency}
-      quoteCurrency: {is: $quoteCurrency}
-    ) {
-      timeInterval {
-        minute(count: $interval, format: "%Y-%m-%dT%H:%M:%SZ")
-      }
-      baseCurrency {
-        symbol
-        address
-      }
-      baseAmount
-      quoteCurrency {
-        symbol
-        address
-      }
+	ethereum(network: $network) {
+		dexTrades(
+			options: { asc: "timeInterval.minute", limit: $limit }
+			time: { between: [$from, $to] }
+			baseCurrency: { is: $baseCurrency }
+			quoteCurrency: { is: $quoteCurrency }
+      priceAsymmetry: { lt: 0.7 }
+      any: [
+        {tradeAmountUsd: { gt: 0.00001 }},
+        {tradeAmountUsd: { is: 0 }}
+      ]
+		) {
+			timeInterval {
+				minute(count: $interval, format: "%Y-%m-%dT%H:%M:%SZ")
+			}
       volume: quoteAmount
       trades: count
-      quotePrice
       high: quotePrice(calculate: maximum)
       low: quotePrice(calculate: minimum)
       open: minimum(of: block, get: quote_price)
       close: maximum(of: block, get: quote_price)
-    }
-  }
+		}
+	}
 }
-
 `;
 
 export const queryGetBUSDPriceOf = `
@@ -183,4 +180,127 @@ query getBalancesByAddress($address: String!) {
     }
   }
 }
+`;
+
+export const getSubscriptionId = `
+  subscription (
+    $network: EthereumNetwork!
+    $from: ISO8601DateTime
+    $baseAddress: String
+    $quoteAddress: String
+  ) {
+    ethereum(network: $network) {
+      dexTrades(
+      options: {desc: ["block.height", "tradeIndex"]}
+      baseCurrency: {is: $baseAddress}
+      quoteCurrency: {is: $quoteAddress}
+      time: {since: $from}
+      priceAsymmetry: { lt: 0.7 }
+      any: [
+        {tradeAmountUsd: { gt: 0.00001 }},
+        {tradeAmountUsd: { is: 0 }}
+      ]
+      ) {
+      block {
+        timestamp {
+        time(format: "%FT%TZ")
+        }
+        height
+      }
+      tradeIndex
+      protocol
+      high: quotePrice(calculate: maximum)
+      low: quotePrice(calculate: minimum)
+      open: minimum(of: block, get: quote_price)
+      close: maximum(of: block, get: quote_price)
+      volume: quoteAmount
+      exchange {
+        fullName
+      }
+      smartContract {
+        address {
+        address
+        annotation
+        }
+      }
+      baseAmount
+      baseCurrency {
+        address
+        symbol
+      }
+      quoteAmount
+      quoteCurrency {
+        address
+        symbol
+      }
+      transaction {
+        hash
+      }
+      quotePrice
+      }
+    }
+  }
+`;
+
+export const getWBNBBusdPrice = `
+  query {
+    ethereum(network: bsc) {
+      dexTrades(
+        baseCurrency: {is: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"}
+        quoteCurrency: {is: "0xe9e7cea3dedca5984780bafc599bd69add087d56"}
+        options: {desc: ["block.height", "transaction.index"], limit: 1}
+      ) {
+        block {
+          height
+          timestamp {
+            time(format: "%Y-%m-%d %H:%M:%S")
+          }
+        }
+        transaction {
+          index
+        }
+        baseCurrency {
+          symbol
+        }
+        quoteCurrency {
+          symbol
+        }
+        quotePrice
+      }
+    }
+  }
+`;
+export const queryGetBarsWithoutFrom = `
+  query getBars(
+    $to: ISO8601DateTime!
+    $limit: Int!
+    $quoteCurrency: String!
+    $baseCurrency: String!
+    $network: EthereumNetwork!
+    $interval: Int!
+  ) {
+    ethereum(network: $network) {
+      dexTrades(
+        options: { desc: "timeInterval.minute", limit: $limit }
+        time: { before: $to }
+        baseCurrency: { is: $baseCurrency }
+        quoteCurrency: { is: $quoteCurrency }
+        priceAsymmetry: { lt: 0.7 }
+        any: [
+          {tradeAmountUsd: { gt: 0.00001 }},
+          {tradeAmountUsd: { is: 0 }}
+        ]
+      ) {
+        timeInterval {
+          minute(count: $interval, format: "%Y-%m-%dT%H:%M:%SZ")
+        }
+        volume: quoteAmount
+        trades: count
+        high: quotePrice(calculate: maximum)
+        low: quotePrice(calculate: minimum)
+        open: minimum(of: block, get: quote_price)
+        close: maximum(of: block, get: quote_price)
+      }
+    }
+  }
 `;

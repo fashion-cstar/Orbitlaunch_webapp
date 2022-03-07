@@ -1,8 +1,9 @@
 import { BigNumberish } from "@ethersproject/bignumber";
 import { Contract } from "@ethersproject/contracts";
 import { JsonRpcSigner } from "@ethersproject/providers";
-import { formatUnits } from "@ethersproject/units";
+import { formatUnits, parseUnits } from "@ethersproject/units";
 import pancakeSwapAbi from "@app/lib/contract/abis/pancake.json";
+import Web3 from "web3";
 import {
   BUSD_TOKEN_ADDRESS,
   PancakeSwapContractAddress,
@@ -71,4 +72,20 @@ export async function getTokenPrice({
       usdt: "0",
     };
   }
+}
+
+export async function getBNBPrice() {
+  const binanceProvider = new Web3.providers.HttpProvider(
+    process.env.NEXT_PUBLIC_BINANCE_NODE
+  );
+  const BinanceWeb3Service = new Web3(binanceProvider);
+
+  const pancakeSwap = new BinanceWeb3Service.eth.Contract(
+    pancakeSwapAbi as any,
+    PancakeSwapContractAddress
+  );
+  const [_, bnbPriceInBusd] = await pancakeSwap.methods
+    .getAmountsOut(parseUnits("1", 18), [BNB_TOKEN_ADDRESS, BUSD_TOKEN_ADDRESS])
+    .call();
+  return Number(formatUnits(bnbPriceInBusd, 18));
 }

@@ -19,14 +19,14 @@ export const ETH_TOKEN_ADDRESS = "0x2170ed0880ac9a755fd29b2688956bd959f933f8";
 export const BTC_TOKEN_ADDRESS = "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c";
 export const BUSD_TOKEN_ADDRESS = "0xe9e7cea3dedca5984780bafc599bd69add087d56";//mainet: "0xe9e7cea3dedca5984780bafc599bd69add087d56"; testnet: 0x8301F2213c0eeD49a7E28Ae4c3e91722919B8B47
 export const RESOLUTION_TO_INTERVAL = {
-  1: 60,
-  5: 300,
-  15: 900,
-  30: 1800,
-  60: 3600,
-  "1D": 86400,
-  "1W": 604800,
-  "1M": 2592000,
+  1: 1,
+  5: 5,
+  15: 15,
+  30: 30,
+  60: 60,
+  "1D": 1440,
+  "1W": 10080,
+  "1M": 43200,
 };
 
 export const TV_CHART_CONTAINER_ID = "tv-chart-container";

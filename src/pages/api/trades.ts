@@ -1,8 +1,14 @@
 import axios from "axios";
-import { configurationData } from "@app/components/TVChartContainer/bitquery";
+import { configurationData } from "@app/components/Chart/bitquery";
 import { NextApiRequest, NextApiResponse } from "next";
 import { queryGetSymbols } from "@app/shared/Queries";
-import { BITQUERY_HEADERS, CORS, NETWORK_BSC } from "@app/shared/AppConstant";
+import {
+  BITQUERY_HEADERS,
+  BNB_TOKEN_ADDRESS,
+  BUSD_TOKEN_ADDRESS,
+  CORS,
+  NETWORK_BSC,
+} from "@app/shared/AppConstant";
 import { getTimeZone } from "@app/shared/helpers/time";
 
 export default async function apiGetDexTrades(
@@ -16,10 +22,20 @@ export default async function apiGetDexTrades(
   try {
     const { baseCurrency, tokenAddress } = req.query;
 
+    let _quoteCurrency = BNB_TOKEN_ADDRESS;
+
+    if ((tokenAddress as string)?.toLowerCase() === BNB_TOKEN_ADDRESS) {
+      _quoteCurrency = BUSD_TOKEN_ADDRESS;
+    }
+
     const response = await axios.post(
       process.env.NEXT_PUBLIC_BITQUERY_API_URL || "https://graphql.bitquery.io",
       {
-        query: queryGetSymbols(baseCurrency as string, NETWORK_BSC),
+        query: queryGetSymbols(
+          baseCurrency as string,
+          NETWORK_BSC,
+          _quoteCurrency
+        ),
         mode: CORS,
       },
       {
@@ -41,10 +57,9 @@ export default async function apiGetDexTrades(
         pricescale: 10000000,
         has_intraday: true,
         intraday_multipliers: ["1", "5", "15", "30", "60"],
-        has_empty_bars: true,
+        has_empty_bars: false,
         has_weekly_and_monthly: false,
         supported_resolutions: configurationData.supported_resolutions,
-        volume_precision: 1,
         data_status: "streaming",
       };
       res.status(200).json({ data: symbol });
