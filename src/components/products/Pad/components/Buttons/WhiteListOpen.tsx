@@ -32,8 +32,7 @@ export default function WhiteListOpenButton({ status }: { status: string }) {
 
     const handleShareClick = () => {
         copyTextToClipboard(document.URL)
-            .then(() => {
-                // If successful, update the isCopied state value
+            .then(() => {                
                 setIsCopied(true);
                 setTimeout(() => {
                     setIsCopied(false);
