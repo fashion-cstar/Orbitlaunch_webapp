@@ -74,14 +74,14 @@ export default function Indicators({ ido, launchTokenPrice, currentTierNo, hideT
                                             variant="outlined"
                                             onClick={activateProvider}
                                             className="relative"
-                                            sx={{ borderRadius: "12px" }}
+                                            sx={{ borderRadius: "12px"}}
                                         >
                                             Connect to view your tier
                                         </Button>
                                     </div>
                                 )
                             }
-                            <div className="w-6 cursor-pointer" onClick={ShowTierCard}><QuestionMark /></div>                            
+                            <div className="w-6 cursor-pointer" onClick={ShowTierCard}><QuestionMark /></div>
                         </div>
                         <div className="relative hidden sm:block"><PickTierCard ido={ido} launchTokenPrice={launchTokenPrice} display={TierCardDisplay} handleClose={HideTierCard} /></div>
                     </div>

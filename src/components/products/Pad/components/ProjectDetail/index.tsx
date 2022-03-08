@@ -96,10 +96,10 @@ export default function ProjectDetail({ project }: { project: any }) {
                     <BuyButton />
                 </div>
                 {IdoProject && (<>
-                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between mt-10">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between mt-10 ml-4 md:ml-0">
                         <div>
                             <GoBack handleClick={handleBackClick} />
-                            <p className='text-white text-[48px] font-normal mt-2'>{IdoProject.projectName}</p>
+                            <p className='text-white text-[40px] md:text-[48px] font-normal mt-2'>{IdoProject.projectName}</p>
                             <p className='text-[#7A7A7A] text-[14px]'>Category</p>
                             <p className='text-white text-[14px]'>{IdoProject.category}</p>
                         </div>

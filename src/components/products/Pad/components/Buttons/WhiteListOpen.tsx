@@ -46,7 +46,7 @@ export default function WhiteListOpenButton({ status }: { status: string }) {
     return (
         <div>
             <div className="flex space-x-4 items-center">
-                <div className="px-4 h-8 flex items-center text-black text-[14px] justify-center bg-[#29D9D0] rounded-lg uppercase">
+                <div className="w-auto whitespace-nowrap px-4 h-8 flex items-center text-black text-[14px] justify-center bg-[#29D9D0] rounded-lg uppercase">
                     {status}
                 </div>
                 <div className="w-6 cursor-pointer" onClick={handleShareClick}><ShareIcon /></div>

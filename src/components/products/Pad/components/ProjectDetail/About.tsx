@@ -4,7 +4,7 @@ import { getJoinPresaleButtonActive } from 'src/utils'
 
 export default function About({ ido, projectStatus, handleClickJoinPresale }: { ido: any, projectStatus: number, handleClickJoinPresale: () => void }) {
     return (
-        <div className="min-w-[360px] rounded-2xl bg-[#001926] p-4">
+        <div className="min-w-[300px] rounded-2xl bg-[#001926] p-4">
             <div className='text-[#919699] text-[14px]'>
                 <p>Allocations</p>
             </div>
