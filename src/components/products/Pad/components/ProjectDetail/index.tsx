@@ -9,10 +9,11 @@ import About from '@app/components/products/Pad/components/ProjectDetail/About'
 import FeaturedProjects from '@app/components/products/Pad/components/FeaturedProjects'
 import { fetchProjectList } from 'src/state/Pad/hooks'
 import JoinPresaleModal from '@app/components/products/Pad/components/ProjectDetail/JoinPresaleModal'
-import { useLaunchTokenCallback, useFundTier, useLaunchTokenPrice } from 'src/state/Pad/hooks'
+import { useLaunchTokenCallback, useFundTier, useProjectStatus } from 'src/state/Pad/hooks'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther } from 'src/utils'
 import { useEthers, useToken, ChainId } from "@usedapp/core"
+import { getProjectStatusText } from 'src/utils'
 
 export default function ProjectDetail({ project }: { project: any }) {
     const [IdoList, setIdoList] = useState<any>()
@@ -22,6 +23,7 @@ export default function ProjectDetail({ project }: { project: any }) {
     const [launchTokenDecimals, setLaunchTokenDecimals] = useState(0)
     const { launchTokenPriceCallback, launchTokenDecimalsCallback } = useLaunchTokenCallback() 
     const { library, account, chainId } = useEthers()
+    const projectStatus=useProjectStatus(IdoProject)
     const hideTierCard = useRef(null)
     const router = useRouter()
     const currentTierNo = useFundTier();
@@ -94,14 +96,15 @@ export default function ProjectDetail({ project }: { project: any }) {
                     <BuyButton />
                 </div>
                 {IdoProject && (<>
-                    <div className="flex flex-col md:flex-row items-center justify-between mt-10">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between mt-10">
                         <div>
                             <GoBack handleClick={handleBackClick} />
                             <p className='text-white text-[48px] font-normal mt-2'>{IdoProject.projectName}</p>
-                            <p className='text-[#7A7A7A] text-[14px]'>Created by {IdoProject.createdBy ?? ''}</p>
+                            <p className='text-[#7A7A7A] text-[14px]'>Category</p>
+                            <p className='text-white text-[14px]'>{IdoProject.category}</p>
                         </div>
                         <div className="flex flex-row justify-center mt-8 md:mt-0">
-                            <WhiteListOpenButton url={IdoProject.whitelist ?? ''} />
+                            <WhiteListOpenButton status={getProjectStatusText(projectStatus)} />
                         </div>
                     </div>
                     <div className='mt-10'>
@@ -110,14 +113,14 @@ export default function ProjectDetail({ project }: { project: any }) {
                                 <Indicators ido={IdoProject} launchTokenPrice={launchTokenPrice} currentTierNo={currentTierNo} hideTierCard={hideTierCard} />
                                 <Detail ido={IdoProject} />
                             </div>
-                            <div className='flex-1'><About ido={IdoProject} handleClickJoinPresale={handleClickJoinPresale} /></div>
+                            <div className='flex-1'><About ido={IdoProject} projectStatus={projectStatus} handleClickJoinPresale={handleClickJoinPresale} /></div>
                         </div>
-                    </div>
+                    </div>           
                 </>)}
                 <div className="mt-8">
                     <h1 className="text-white text-[24px]">Featured projects</h1>
                     <FeaturedProjects options={null} />
-                </div>
+                </div>                
             </div>
         </>
     )

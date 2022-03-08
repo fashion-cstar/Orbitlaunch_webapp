@@ -55,7 +55,7 @@ export function getEtherscanLink(
 }
 
 export function calculateGasMargin(value: BigNumber): BigNumber {
-    return value.mul(BigNumber.from(10000).add(BigNumber.from(1000))).div(BigNumber.from(10000))
+  return value.mul(BigNumber.from(10000).add(BigNumber.from(1000))).div(BigNumber.from(10000))
 }
 
 export function shortenAddress(address: string, chars = 4): string {
@@ -85,33 +85,61 @@ export function getContract(address: string, ABI: any, library: JsonRpcProvider,
 export const wait = (time: number) =>
   new Promise(resolve => {
     setTimeout(resolve, time * 1000)
-})
+  })
 
 export const formatEther = (amount: BigNumber, decimals: number, toFixed: number): number => {
-    let temp:BigNumber=amount.mul(BigNumber.from(10).pow(toFixed))
-    temp=temp.div(BigNumber.from(10).pow(decimals))
+  let temp: BigNumber = amount.mul(BigNumber.from(10).pow(toFixed))
+  temp = temp.div(BigNumber.from(10).pow(decimals))
 
-    return (temp.toNumber())/(10**toFixed)
+  return (temp.toNumber()) / (10 ** toFixed)
 }
 
-export const parseEther = (n: number, decimals: number): BigNumber => {    
-    return utils.parseUnits(n.toString(), decimals)
+export const parseEther = (n: number, decimals: number): BigNumber => {
+  return utils.parseUnits(n.toString(), decimals)
 }
 
 export const getChainIdFromName = (name: string): number => {
-    let chainId = 1
-    switch(name.toLowerCase()){
-        case 'eth':
-            if (process.env.network==='mainnet') chainId = 1; //ethereum mainnet
-            else if (process.env.network==='testnet') chainId = 4; //ethereum rinkeby
-            break;
-        case 'bsc':
-            if (process.env.network==='mainnet') chainId = 56; //bsc mainnet
-            else if (process.env.network==='testnet') chainId = 97; //bsc testnet            
-            break;  
-        default:
-            if (process.env.network==='mainnet') chainId = 56; //bsc mainnet
-            else if (process.env.network==='testnet') chainId = 97; //bsc testnet            
-    }    
-    return chainId
+  let chainId = 1
+  switch (name.toLowerCase()) {
+    case 'ethereum':
+      if (process.env.network === 'mainnet') chainId = 1; //ethereum mainnet
+      else if (process.env.network === 'testnet') chainId = 4; //ethereum rinkeby
+      break;
+    case 'bsc':
+      if (process.env.network === 'mainnet') chainId = 56; //bsc mainnet
+      else if (process.env.network === 'testnet') chainId = 97; //bsc testnet            
+      break;
+    case 'polygon':
+      if (process.env.network === 'mainnet') chainId = 137; //polygon mainnet
+      else if (process.env.network === 'testnet') chainId = 80001; //mumbai testnet            
+      break;
+    default:
+      if (process.env.network === 'mainnet') chainId = 56; //bsc mainnet
+      else if (process.env.network === 'testnet') chainId = 97; //bsc testnet            
+  }
+  return chainId
+}
+
+export const getProjectStatusText = (ps: number): string => {
+  switch (ps) {
+    case 0:
+      return ''
+    case 1:
+      return 'presale opening soon'
+    case 2:
+      return 'presale open'
+    case 3:
+      return 'presale closed'
+    case 4:
+      return 'public presale open'
+    case 5:
+      return 'public presale closed'
+    case 6:
+      return 'project launched'
+  }
+}
+
+export const getJoinPresaleButtonActive = (ps: number): boolean => {
+  if (ps === 2 || ps === 4) return true
+  return false
 }

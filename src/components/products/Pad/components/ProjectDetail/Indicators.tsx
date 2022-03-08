@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect, useRef } from 'react'
 import QuestionMark from "../svgs/QuestionMark";
 import TwitterIcon from "@app/components/svgs/socials/TwitterIcon";
 import TelegramIcon from "@app/components/svgs/socials/TelegramIcon";
+import MediumIcon from "@app/components/svgs/socials/MediumIcon";
 import PickTierCard from "../PickTierCard";
 import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
 import { Button } from "@mui/material";
@@ -80,9 +81,9 @@ export default function Indicators({ ido, launchTokenPrice, currentTierNo, hideT
                                     </div>
                                 )
                             }
-                            <div className="w-6 cursor-pointer" onClick={ShowTierCard}><QuestionMark /></div>
+                            <div className="w-6 cursor-pointer" onClick={ShowTierCard}><QuestionMark /></div>                            
                         </div>
-                        <div className="relative"><PickTierCard ido={ido} launchTokenPrice={launchTokenPrice} display={TierCardDisplay} handleClose={HideTierCard} /></div>
+                        <div className="relative hidden sm:block"><PickTierCard ido={ido} launchTokenPrice={launchTokenPrice} display={TierCardDisplay} handleClose={HideTierCard} /></div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4 basis-1/2 w-full">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
@@ -105,6 +106,7 @@ export default function Indicators({ ido, launchTokenPrice, currentTierNo, hideT
                         <div className="flex space-x-4 items-center">
                             <a className="w-6" href={ido.twitter} target="_blank"><TwitterIcon /></a>
                             <a className="w-6" href={ido.telegram} target="_blank"><TelegramIcon /></a>
+                            <a className="w-6" href={ido.medium} target="_blank"><MediumIcon /></a>
                         </div>
                     </div>
                 </div>

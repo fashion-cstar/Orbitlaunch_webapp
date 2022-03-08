@@ -15,9 +15,7 @@ export default function Detail({ ido }: { ido: any }) {
                     <div className='text-white text-[24px]'>
                         <span>About the project</span>
                     </div>
-                    <div className='text-[#919699] text-[16px] mt-2'>
-                        <p>{ido.shortDescription}</p>
-                        <br />
+                    <div className='text-[#919699] text-[16px] mt-2'>          
                         <p>{ido.description}</p>
                     </div>
                 </div>
@@ -50,16 +48,9 @@ export default function Detail({ ido }: { ido: any }) {
                         </div>
                     </div>
                 </div>
-                <div className='mt-12'>
-                    <div className="text-[11px] font-bold uppercase text-app-primary mt-2">
-                        <span>Creators</span>
-                    </div>
-                    {/* <div className='text-[#919699] text-[16px] mt-4'>
-                        <li>{ido.creator1}</li>
-                        <li>{ido.creator2}</li>
-                        <li>{ido.creator3}</li>
-                        <li>{ido.creator4}</li>
-                    </div> */}
+                <div className='mt-12 mb-2'>                                   
+                    {ido.kycStatus?<p className='text-[11px] font-bold uppercase text-app-primary'>KYC Provided To 3rd Party By Creator</p>:
+                    <p className='text-[11px] font-bold uppercase text-app-primary'>KYC Not Provided By Creator</p>}                        
                 </div>
             </div>
         </div>
