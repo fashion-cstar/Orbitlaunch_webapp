@@ -52,7 +52,7 @@ export default function EndedIdoRow({ ido }: { ido: any }) {
                 </div>
             </div>
             <div className="min-w-[140px] justify-end text-[16px] flex items-center" style={{ width: "15%" }}>{moment(ido.launchDate * 1000).format("MMM Do YY")}</div>
-            <div className="min-w-[70px] justify-end flex items-center" style={{ width: "7%" }}><ChainIcon chainId={getChainIdFromName(ido.blockchain)} /></div>
+            <div className="min-w-[70px] justify-end flex items-center" style={{ width: "7%" }}><ChainIcon blockchain={ido.blockchain} /></div>
         </div>
     )
 }

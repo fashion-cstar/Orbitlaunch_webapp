@@ -9,10 +9,9 @@ import ConnectTier from './components/Buttons/ConnectTier'
 import { Button } from "@mui/material";
 import ProjectSubmitModal from './components/ProjectSubmitModal'
 import { fetchProjectList } from 'src/state/Pad/hooks'
-import { getChainIdFromName } from 'src/utils'
 
 export default function Pad() {
-    const [filterChain, setChainId] = useState(0)
+    const [filterChain, setChainName] = useState('all')
     const [tableWidth, setTableWidth] = useState(1)
     const [isOpenProjectSubmit, setIsOpenProjectSubmit] = useState(false);
     const [IdoList, setIdoList] = useState<any>()
@@ -20,8 +19,8 @@ export default function Pad() {
     const router = useRouter()
     const widthRef = useRef<any>();
 
-    const handleTabClick = (id: number) => {
-        setChainId(id)
+    const handleTabClick = (chainName: string) => {
+        setChainName(chainName)
     }
 
     useEffect(() => {
@@ -32,8 +31,8 @@ export default function Pad() {
 
     useEffect(() => {
         if (IdoList) {
-            if (filterChain === 0) setEndedProjects(IdoList.filter(item => moment((item?.launchEndDate * 1000) ?? '').isBefore(moment.now())))
-            else setEndedProjects(IdoList.filter(item => moment((item?.launchEndDate * 1000) ?? '').isBefore(moment.now()) && getChainIdFromName(item.blockchain) === filterChain))
+            if (filterChain === 'all') setEndedProjects(IdoList.filter(item => moment((item?.launchEndDate * 1000) ?? '').isBefore(moment.now())))
+            else setEndedProjects(IdoList.filter(item => moment((item?.launchEndDate * 1000) ?? '').isBefore(moment.now()) && item.blockchain.toLowerCase() === filterChain))
         }
     }, [IdoList, filterChain])
 
@@ -76,7 +75,7 @@ export default function Pad() {
                             <BuyButton />
                         </div>
                     </div>
-                    <div className='w-full flex flex-col md:flex-row gap-4 justify-start lg:justify-center items-start md:items-center'>
+                    <div className='w-full flex flex-col md:flex-row gap-4 justify-start lg:justify-end items-start md:items-center'>
                         <ConnectTier />
                         <div className="hidden md:block"><BuyButton /></div>
                         <div className="hidden md:block">

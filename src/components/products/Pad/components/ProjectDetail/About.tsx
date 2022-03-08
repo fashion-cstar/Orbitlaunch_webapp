@@ -1,8 +1,8 @@
 import ChainIcon from "../ChainIcon";
 import { Button } from "@mui/material";
-import { getChainIdFromName } from 'src/utils'
+import { getJoinPresaleButtonActive } from 'src/utils'
 
-export default function About({ ido, handleClickJoinPresale }: { ido: any, handleClickJoinPresale: () => void }) {
+export default function About({ ido, projectStatus, handleClickJoinPresale }: { ido: any, projectStatus: number, handleClickJoinPresale: () => void }) {
     return (
         <div className="min-w-[360px] rounded-2xl bg-[#001926] p-4">
             <div className='text-[#919699] text-[14px]'>
@@ -13,19 +13,18 @@ export default function About({ ido, handleClickJoinPresale }: { ido: any, handl
                     <span>{`$${ido.tierAllocation7} - $${ido.tierAllocation1}`}</span>
                 </div>
                 <div>
-                    <ChainIcon chainId={getChainIdFromName(ido.blockchain)} />
+                    <ChainIcon blockchain={ido.blockchain} />
                 </div>
             </div>
             <div className='text-[#919699] text-[14px] mt-6'>
                 <p>{ido.shortDescription}</p>
-                <br />
-                <p>{ido.description}</p>
             </div>
             <div className="mt-12">
                 <Button
                     variant="contained"
                     sx={{ width: "100%", borderRadius: "12px" }}
-                    onClick={handleClickJoinPresale}                    
+                    onClick={handleClickJoinPresale}
+                    disabled={!getJoinPresaleButtonActive(projectStatus)}
                 >
                     Join Presale Now
                 </Button>

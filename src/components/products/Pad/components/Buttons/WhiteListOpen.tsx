@@ -20,7 +20,7 @@ const CopiedContainer = styled.div`
     }
 `
 
-export default function WhiteListOpenButton({ url }: { url: string }) {
+export default function WhiteListOpenButton({ status }: { status: string }) {
     const [isCopied, setIsCopied] = useState(false);
     const copyTextToClipboard = async (text: string) => {
         if ('clipboard' in navigator) {
@@ -46,13 +46,9 @@ export default function WhiteListOpenButton({ url }: { url: string }) {
     return (
         <div>
             <div className="flex space-x-4 items-center">
-                <a
-                    // href={url}
-                    target="_blank"
-                    className="w-36 h-8 cursor-pointer flex items-center text-black text-[14px] hover:bg-[#10b9b0] justify-center bg-[#29D9D0] rounded-lg"
-                >
-                    WHITELIST OPEN
-                </a>
+                <div className="px-4 h-8 flex items-center text-black text-[14px] justify-center bg-[#29D9D0] rounded-lg uppercase">
+                    {status}
+                </div>
                 <div className="w-6 cursor-pointer" onClick={handleShareClick}><ShareIcon /></div>
             </div>
             <div className='flex justify-end mt-2'>

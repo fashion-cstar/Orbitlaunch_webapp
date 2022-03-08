@@ -13,6 +13,7 @@ import { AddressZero } from '@ethersproject/constants'
 import { M31TokenAddress, RpcProviders } from "@app/shared/PadConstant"
 import { getTierValues } from '@app/shared/TierLevels'
 import { getChainIdFromName } from 'src/utils'
+import moment from 'moment'
 
 export function fetchProjectList(): Promise<any | null> {
   return (fetch(`https://backend-api-pi.vercel.app/api/getProjects`)
@@ -103,7 +104,7 @@ export function uselaunchTokenDecimals(padContractAddress: string, blockchain: s
   const chainId = getChainIdFromName(blockchain);
 
   useEffect(() => {
-    const fetchLaunchTokenDecimals = async () => {      
+    const fetchLaunchTokenDecimals = async () => {
       const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
       const decimals = await padContract.launchTokenDecimals()
       return decimals
@@ -429,6 +430,55 @@ export function useEndTimeForNonM31(padContractAddress: string, blockchain: stri
   }, [padContractAddress])
 
   return endTimeForNonM31
+}
+
+export function useOpenedToNonM31Holders(padContractAddress: string, blockchain: string): boolean {
+  const { account } = useEthers()
+  const [openedToNonM31, setOpenedToNonM31] = useState(false)
+  const chainId = getChainIdFromName(blockchain);
+
+  useEffect(() => {
+    const fetchOpenedToNonM31Holders = async () => {
+      const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
+      const opened = await padContract.openedToNonM31Holders()
+      return opened
+    }
+    if (padContractAddress) {
+      fetchOpenedToNonM31Holders().then(result => {
+        setOpenedToNonM31(result)
+      }).catch(console.error)
+    }
+  }, [padContractAddress])
+
+  return openedToNonM31
+}
+
+export function useProjectStatus(ido: any): number {
+  const startTime: BigNumber = useStartTime(ido ? ido.padContractAddress : '', ido ? ido.blockchain : '')
+  const endTime: BigNumber = useStartTime(ido ? ido.padContractAddress : '', ido ? ido.blockchain : '')
+  const startTimeForNonM31: BigNumber = useStartTime(ido ? ido.padContractAddress : '', ido ? ido.blockchain : '')
+  const endTimeForNonM31: BigNumber = useStartTime(ido ? ido.padContractAddress : '', ido ? ido.blockchain : '')
+  const openedToNonM31: boolean = useOpenedToNonM31Holders(ido ? ido.padContractAddress : '', ido ? ido.blockchain : '')
+  const [projectStatus, setProjectStatus] = useState(0)
+  useEffect(() => {
+    if (ido) {
+      if (moment(moment.now()).isAfter(ido?.launchDate * 1000)) {
+        setProjectStatus(6) // project launched
+      }
+    }
+    if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31) {      
+      if (moment(moment.now()).isBefore(startTime.toNumber() * 1000)) setProjectStatus(1) // presale opening soon
+      if (moment(moment.now()).isSameOrAfter(startTime.toNumber() * 1000)
+        && moment(moment.now()).isBefore(endTime.toNumber() * 1000)) setProjectStatus(2) // presale open
+      if (moment(moment.now()).isSameOrAfter(endTime.toNumber() * 1000)) setProjectStatus(3) // presale closed
+      if (openedToNonM31) {
+        if (moment(moment.now()).isSameOrAfter(startTimeForNonM31.toNumber() * 1000)
+          && moment(moment.now()).isBefore(endTimeForNonM31.toNumber() * 1000)) setProjectStatus(4) // public presale open
+        if (moment(moment.now()).isSameOrAfter(endTimeForNonM31.toNumber() * 1000)) setProjectStatus(5) // public presale closed
+      }
+    }
+  }, [ido, startTime, endTime, startTimeForNonM31, endTimeForNonM31, openedToNonM31])
+  return projectStatus
 }
 
 export function useMaxAllocationNonM31(padContractAddress: string, blockchain: string): BigNumber {
