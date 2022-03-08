@@ -12,12 +12,12 @@ interface UpcomingCardProps {
 
 export default function FeaturedCard({ ido, firstCardIndex, onDetail, options }: UpcomingCardProps) {
     const projectStatus=useProjectStatus(ido)
-    let bgColor = (!!options && !!options.bgCard) ? options.bgCard : '#001926';
-    let width = (!!options && !!options.width) ? options.width : '420px';
-    let titleFontSize = (!!options && !!options.titleFontSize) ? options.titleFontSize : '24px';
-    let descFontSize = (!!options && !!options.descFontSize) ? options.descFontSize : '16px';
-    let imgHeight = (!!options && !!options.imgHeight) ? options.imgHeight : (!!options && !!options.width) ? `${Number(options.width.substr(0, options.width.length - 2)) * 16 / 45}px` : '150px';
-
+    let bgColor = (!!options && !!options.bgCard) ? options.bgCard : '#001926'
+    let width = (!!options && !!options.width) ? options.maxWidth : '420px'
+    let titleFontSize = (!!options && !!options.titleFontSize) ? options.titleFontSize : '24px'
+    let descFontSize = (!!options && !!options.descFontSize) ? options.descFontSize : '16px'
+    let imgHeight = (!!options && !!options.imgHeight) ? options.imgHeight : (!!options && !!options.width) ? `${Number(options.width.substr(0, options.width.length - 2)) * 16 / 45}px` : '150px'
+    
     const styling = {
         backgroundColor: bgColor,
         width
