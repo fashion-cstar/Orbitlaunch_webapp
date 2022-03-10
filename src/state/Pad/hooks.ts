@@ -22,7 +22,7 @@ export function fetchProjectList(): Promise<any | null> {
       return data
     })
     .catch(error => {
-      console.error("Failed to get project list: " + error.data?.message)
+      console.error("Failed to get project list: " + error.error?.message)
     }))
 }
 
@@ -59,7 +59,7 @@ export function useLaunchTokenCallback(): {
     return padContract.launchTokenPrice().then((res: BigNumber) => {
       return res
     }).catch((error: any) => {
-      console.error("ERROR: " + error.data?.message)
+      console.error("ERROR: " + error.error?.message)
     })
   }
 
@@ -70,7 +70,7 @@ export function useLaunchTokenCallback(): {
     return padContract.launchTokenDecimals().then((res: BigNumber) => {
       return res
     }).catch((error: any) => {
-      console.error("ERROR: " + error.data?.message)
+      console.error("ERROR: " + error.error?.message)
     })
   }
 
@@ -150,7 +150,7 @@ export function useTokenAllowance(): { tokenAllowanceCallback: (owner: string, s
     return tokenContract.allowance(owner, spender).then((res: BigNumber) => {
       return res
     }).catch((error: any) => {
-      console.error("ERROR: " + error.data?.message)
+      console.error("ERROR: " + error.error?.message)
     })
   }
   return { tokenAllowanceCallback }
@@ -174,7 +174,7 @@ export function usePadApproveCallback(): {
         }).then((response: TransactionResponse) => {
           return response.hash
         }).catch((error: any) => {
-          console.error("Approve Error: " + error.data?.message)
+          console.error("Approve Error: " + error.error?.message)
         })
       }).catch((error: any) => {
         const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGas
@@ -183,11 +183,11 @@ export function usePadApproveCallback(): {
         }).then((response: TransactionResponse) => {
           return response.hash
         }).catch((error: any) => {
-          console.error("Approve Error: " + error.data?.message)
+          console.error("Approve Error: " + error.error?.message)
         })
       })
     }).catch((error: any) => {
-      console.error("Approve Error: " + error.data?.message)
+      console.error("Approve Error: " + error.error?.message)
     })
   }
   return { padApproveCallback }
@@ -215,10 +215,10 @@ export function useJoinPresaleCallback(): {
         }).then((response: TransactionResponse) => {
           return response.hash
         }).catch((error: any) => {
-          console.error("Join Presale Error: " + error.data?.message)
+          console.error("Join Presale Error: " + error.error?.message)
         })
       }).catch((error: any) => {
-        console.error("Join Presale Error: " + error.data?.message)
+        console.error("Join Presale Error: " + error.error?.message)
       })
     } else {
       return padContract.estimateGas.deposit(parseEther(amount, decimals)).then(estimatedGas => {
@@ -229,13 +229,13 @@ export function useJoinPresaleCallback(): {
           }).then((response: TransactionResponse) => {
             return response.hash
           }).catch((error: any) => {
-            console.error("Join Presale Error: " + error.data?.message)
+            console.error("Join Presale Error: " + error.error?.message)
           })
         }).catch((error: any) => {
-          console.error("Join Presale Error: " + error.data?.message)
+          console.error("Join Presale Error: " + error.error?.message)
         })
       }).catch((error: any) => {
-        console.error("Join Presale Error: " + error.data?.message)
+        console.error("Join Presale Error: " + error.error?.message)
       })
     }
   }
@@ -259,7 +259,7 @@ export function useClaimCallback(): {
         .then((response: TransactionResponse) => {
           return response.hash
         }).catch((error: any) => {
-          console.error("Claiming Error: " + error.data?.message);
+          console.error("Claiming Error: " + error.error?.message);
         })
     })
   }
