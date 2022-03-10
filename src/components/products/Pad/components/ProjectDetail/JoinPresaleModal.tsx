@@ -5,7 +5,7 @@ import InputBox from '../Common/InputBox';
 import FundTokenInput from '../Common/FundTokenInput'
 import ProjectTokenInput from '../Common/ProjectTokenInput'
 import { useEthers, ChainId } from "@usedapp/core";
-import { useJoinPresaleCallback, usePadApproveCallback, uselaunchTokenDecimals, useToken, useNativeTokenBalance } from 'src/state/Pad/hooks'
+import { useJoinPresaleCallback, usePadApproveCallback, uselaunchTokenDecimals, useToken, useNativeTokenBalance, useTokenAllowance } from 'src/state/Pad/hooks'
 import { AddressZero } from '@ethersproject/constants'
 import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
@@ -45,6 +45,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const [fundDecimals, setFundDecimals] = useState(18)
     const [depositedAmount, setDepositedAmount] = useState(BigNumber.from(0))
     const [isOverMax, setIsOverMax] = useState(false)
+    const { tokenAllowanceCallback } = useTokenAllowance()
 
     useEffect(() => {
         if (nativeBalance) {
@@ -52,24 +53,25 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         }
     }, [nativeBalance])
 
-    useEffect(() => {
+    useEffect(() => {        
         if (userDepositedAmount) {
             setDepositedAmount(userDepositedAmount)
         }
     }, [userDepositedAmount])
 
-    useEffect(() => {
+    useEffect(() => {        
         let max = currentTierNo ? Number(project[`tierAllocation${currentTierNo}`]) : 0
         if (max > 0) max = (max - formatEther(depositedAmount, fundDecimals, 5))
         if (max < 0) max = 0
         setUserMaxAllocation(max)
-    }, [depositedAmount])
+    }, [depositedAmount, fundDecimals])
 
     useEffect(() => {
         if (tokenDecimals) {
             setFundDecimals(tokenDecimals.toNumber())
         }
     }, [tokenDecimals])
+
     async function onApprove() {
         try {
             padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
@@ -88,19 +90,32 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     }
 
     async function onDeposit() {
-        try {
-            setAttempting(true)
-            joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
-                setHash(hash)
-                successDeposited()
-            }).catch(error => {
-                setAttempting(false)
-                console.log(error)
-            })
-        } catch (error) {
-            setAttempting(false)
-            console.log(error)
+        setAttempting(true)
+        let res = await tokenAllowanceCallback(account, project.contractAddress, BUSDTokenAddress[chainId], project.blockchain)
+        if (res) {
+            try {
+                if (res.gte(parseEther(fundTokenAmount, fundDecimals))) {
+                    try {                        
+                        joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
+                            setHash(hash)
+                            successDeposited()
+                        }).catch(error => {
+                            setAttempting(false)
+                            console.log(error)
+                        })
+                    } catch (error) {
+                        setAttempting(false)
+                        console.log(error)
+                    }
+                    return true
+                } else {
+                    onDeposit()
+                }
+            } catch (ex) {
+                onDeposit()
+            }
         }
+
         return null;
     }
 
@@ -111,9 +126,9 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
             if (launchTokenPrice) {
                 setProjectTokenAmount(Number(val) / launchTokenPrice)
             }
-            if (Number(val)>getDepositAvailable()){
+            if (Number(val) > getDepositAvailable()) {
                 setIsOverMax(true)
-            }else{
+            } else {
                 setIsOverMax(false)
             }
         }
@@ -126,9 +141,9 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
             if (launchTokenPrice) {
                 setFundTokenAmount(Number(val) * launchTokenPrice)
             }
-            if ((Number(val) * launchTokenPrice)>getDepositAvailable()){
+            if ((Number(val) * launchTokenPrice) > getDepositAvailable()) {
                 setIsOverMax(true)
-            }else{
+            } else {
                 setIsOverMax(false)
             }
         }
