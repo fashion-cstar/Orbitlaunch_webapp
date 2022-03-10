@@ -356,7 +356,9 @@ export function useStartTime(padContractAddress: string, blockchain: string): Bi
   useEffect(() => {
     const fetchStartTime = async () => {
       const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
+      console.log(padContractAddress)      
       const timeat = await padContract.startTime()
+      console.log(timeat)
       return timeat
     }
     if (padContractAddress) {
@@ -364,6 +366,7 @@ export function useStartTime(padContractAddress: string, blockchain: string): Bi
         setStartTime(result)
       }).catch(console.error)
     }
+    console.log(padContractAddress)
   }, [padContractAddress])
 
   return startTime
@@ -454,18 +457,21 @@ export function useOpenedToNonM31Holders(padContractAddress: string, blockchain:
 }
 
 export function useProjectStatus(ido: any): number {
-  const startTime: BigNumber = useStartTime(ido ? ido.padContractAddress : '', ido ? ido.blockchain : '')
-  const endTime: BigNumber = useStartTime(ido ? ido.padContractAddress : '', ido ? ido.blockchain : '')
-  const startTimeForNonM31: BigNumber = useStartTime(ido ? ido.padContractAddress : '', ido ? ido.blockchain : '')
-  const endTimeForNonM31: BigNumber = useStartTime(ido ? ido.padContractAddress : '', ido ? ido.blockchain : '')
-  const openedToNonM31: boolean = useOpenedToNonM31Holders(ido ? ido.padContractAddress : '', ido ? ido.blockchain : '')
+  const startTime: BigNumber = useStartTime(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
+  const endTime: BigNumber = useStartTime(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
+  const startTimeForNonM31: BigNumber = useStartTime(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
+  const endTimeForNonM31: BigNumber = useStartTime(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
+  const openedToNonM31: boolean = useOpenedToNonM31Holders(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const [projectStatus, setProjectStatus] = useState(0)
+  
   useEffect(() => {
+      
     if (ido) {
       if (moment(moment.now()).isAfter(ido?.launchDate * 1000)) {
         setProjectStatus(6) // project launched
       }
     }
+    console.log(startTime+" "+endTime+" "+startTimeForNonM31+" "+endTimeForNonM31)
     if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31) {      
       if (moment(moment.now()).isBefore(startTime.toNumber() * 1000)) setProjectStatus(1) // presale opening soon
       if (moment(moment.now()).isSameOrAfter(startTime.toNumber() * 1000)
