@@ -44,15 +44,16 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const [ethBalance, setEthBalance] = useState(0)
     const [fundDecimals, setFundDecimals] = useState(18)
     const [depositedAmount, setDepositedAmount] = useState(BigNumber.from(0))
+    const [isOverMax, setIsOverMax] = useState(false)
 
     useEffect(() => {
-        if (nativeBalance){
-           setEthBalance(formatEther(nativeBalance, 18, 5))
+        if (nativeBalance) {
+            setEthBalance(formatEther(nativeBalance, 18, 5))
         }
     }, [nativeBalance])
 
     useEffect(() => {
-        if (userDepositedAmount){
+        if (userDepositedAmount) {
             setDepositedAmount(userDepositedAmount)
         }
     }, [userDepositedAmount])
@@ -65,13 +66,13 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     }, [depositedAmount])
 
     useEffect(() => {
-        if (tokenDecimals){
+        if (tokenDecimals) {
             setFundDecimals(tokenDecimals.toNumber())
         }
     }, [tokenDecimals])
     async function onApprove() {
         try {
-            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {                
+            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
                 setIsApproved(true)
             }).catch((error: any) => {
                 console.log(error)
@@ -104,18 +105,32 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     }
 
     const onFundTokenChange = (val: any) => {
-        if (Number(val) !== NaN) setFundTokenAmount(Number(val))
-        else setFundTokenAmount(0)
-        if (launchTokenPrice) {
-            setProjectTokenAmount(Number(val) / launchTokenPrice)
-        }        
+        if (!isApproved) {
+            if (Number(val) !== NaN) setFundTokenAmount(Number(val))
+            else setFundTokenAmount(0)
+            if (launchTokenPrice) {
+                setProjectTokenAmount(Number(val) / launchTokenPrice)
+            }
+            if (Number(val)>getDepositAvailable()){
+                setIsOverMax(true)
+            }else{
+                setIsOverMax(false)
+            }
+        }
     }
 
     const onProjectTokenChange = (val: any) => {
-        if (Number(val) !== NaN) setProjectTokenAmount(Number(val))
-        else setFundTokenAmount(0)
-        if (launchTokenPrice) {
-            setFundTokenAmount(Number(val) * launchTokenPrice)
+        if (!isApproved) {
+            if (Number(val) !== NaN) setProjectTokenAmount(Number(val))
+            else setFundTokenAmount(0)
+            if (launchTokenPrice) {
+                setFundTokenAmount(Number(val) * launchTokenPrice)
+            }
+            if ((Number(val) * launchTokenPrice)>getDepositAvailable()){
+                setIsOverMax(true)
+            }else{
+                setIsOverMax(false)
+            }
         }
     }
 
@@ -171,7 +186,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
                                     onClick={onApprove}
-                                    disabled={!account || !launchTokenPrice || !getDepositAvailable() || ethBalance<=0 || fundTokenAmount===0}
+                                    disabled={!account || !launchTokenPrice || isOverMax || ethBalance <= 0 || fundTokenAmount === 0}
                                 >
                                     Approve
                                 </Button>
@@ -210,8 +225,8 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 <TaskAltIcon sx={{ fontSize: 120, color: '#00aa00' }} />
                             </div>
                             <div className='flex flex-col gap-2'>
-                            <div className='text-[16px] text-[#aaaaaa] text-center'>Transaction submitted</div>
-                            <div className='text-[16px] text-[#aaaaaa] text-center'>{'Hash: ' + hash.slice(0, 10) + '...' + hash.slice(56, 65)}</div>
+                                <div className='text-[16px] text-[#aaaaaa] text-center'>Transaction submitted</div>
+                                <div className='text-[16px] text-[#aaaaaa] text-center'>{'Hash: ' + hash.slice(0, 10) + '...' + hash.slice(56, 65)}</div>
                                 {chainId && (
                                     <a className='text-[16px] mt-4 text-[#aaaaee] underline text-center' href={getEtherscanLink(chainId, hash, 'transaction')}>
                                         {chainId && `View on ${CHAIN_LABELS[chainId]}`}
