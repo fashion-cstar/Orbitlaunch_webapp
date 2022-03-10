@@ -495,15 +495,15 @@ export function useProjectStatus(ido: any): number {
       console.log(startTimeForNonM31.toNumber())
       console.log(endTimeForNonM31.toNumber())
       console.log(openedToNonM31)      
-      if (moment(moment.now()).isBefore(startTime.toNumber() * 1000)) setProjectStatus(1) // presale opening soon
-      if (moment(moment.now()).isSameOrAfter(startTime.toNumber() * 1000)
-        && moment(moment.now()).isBefore(endTime.toNumber() * 1000)) setProjectStatus(2) // presale open
-      if (moment(moment.now()).isSameOrAfter(endTime.toNumber() * 1000)) setProjectStatus(3) // presale closed
       if (openedToNonM31) {
         if (moment(moment.now()).isSameOrAfter(startTimeForNonM31.toNumber() * 1000)
           && moment(moment.now()).isBefore(endTimeForNonM31.toNumber() * 1000)) setProjectStatus(4) // public presale open
         if (moment(moment.now()).isSameOrAfter(endTimeForNonM31.toNumber() * 1000)) setProjectStatus(5) // public presale closed
       }
+      if (moment(moment.now()).isBefore(startTime.toNumber() * 1000)) setProjectStatus(1) // presale opening soon
+      if (moment(moment.now()).isSameOrAfter(startTime.toNumber() * 1000)
+        && moment(moment.now()).isBefore(endTime.toNumber() * 1000)) setProjectStatus(2) // presale open
+      if (moment(moment.now()).isSameOrAfter(endTime.toNumber() * 1000)) setProjectStatus(3) // presale closed      
     }    
   }, [ido, startTime, endTime, startTimeForNonM31, endTimeForNonM31, openedToNonM31])
   useEffect(() => {
