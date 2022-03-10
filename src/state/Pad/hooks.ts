@@ -478,9 +478,9 @@ export function useOpenedToNonM31Holders(padContractAddress: string, blockchain:
 
 export function useProjectStatus(ido: any): number {
   const startTime: BigNumber = useStartTime(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
-  const endTime: BigNumber = useStartTime(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
-  const startTimeForNonM31: BigNumber = useStartTime(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
-  const endTimeForNonM31: BigNumber = useStartTime(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
+  const endTime: BigNumber = useEndTime(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
+  const startTimeForNonM31: BigNumber = useStartTimeForNonM31(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
+  const endTimeForNonM31: BigNumber = useEndTimeForNonM31(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const openedToNonM31: boolean = useOpenedToNonM31Holders(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const [projectStatus, setProjectStatus] = useState(0)
 
@@ -492,6 +492,9 @@ export function useProjectStatus(ido: any): number {
     }
 
     if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31) {
+      console.log(startTimeForNonM31.toNumber())
+      console.log(endTimeForNonM31.toNumber())
+      console.log(openedToNonM31)      
       if (moment(moment.now()).isBefore(startTime.toNumber() * 1000)) setProjectStatus(1) // presale opening soon
       if (moment(moment.now()).isSameOrAfter(startTime.toNumber() * 1000)
         && moment(moment.now()).isBefore(endTime.toNumber() * 1000)) setProjectStatus(2) // presale open
@@ -501,8 +504,11 @@ export function useProjectStatus(ido: any): number {
           && moment(moment.now()).isBefore(endTimeForNonM31.toNumber() * 1000)) setProjectStatus(4) // public presale open
         if (moment(moment.now()).isSameOrAfter(endTimeForNonM31.toNumber() * 1000)) setProjectStatus(5) // public presale closed
       }
-    }
+    }    
   }, [ido, startTime, endTime, startTimeForNonM31, endTimeForNonM31, openedToNonM31])
+  useEffect(() => {
+    console.log(projectStatus)
+  }, [projectStatus])
   return projectStatus
 }
 
