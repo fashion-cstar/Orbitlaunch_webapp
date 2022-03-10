@@ -5,7 +5,7 @@ import InputBox from '../Common/InputBox';
 import FundTokenInput from '../Common/FundTokenInput'
 import ProjectTokenInput from '../Common/ProjectTokenInput'
 import { useEthers, ChainId } from "@usedapp/core";
-import { useJoinPresaleCallback, usePadApproveCallback, uselaunchTokenDecimals, useToken } from 'src/state/Pad/hooks'
+import { useJoinPresaleCallback, usePadApproveCallback, uselaunchTokenDecimals, useToken, useNativeTokenBalance } from 'src/state/Pad/hooks'
 import { AddressZero } from '@ethersproject/constants'
 import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
@@ -15,7 +15,7 @@ import { BUSDTokenAddress } from "@app/shared/PadConstant";
 import { useDepositInfo, useTokenBalance } from 'src/state/Pad/hooks'
 import { parseEther } from 'src/utils'
 import TaskAltIcon from '@mui/icons-material/TaskAlt'
-import { getEtherscanLink, CHAIN_LABELS } from 'src/utils'
+import { getEtherscanLink, CHAIN_LABELS, getNativeSymbol } from 'src/utils'
 
 interface PresaleModalProps {
     isOpen: boolean
@@ -40,19 +40,38 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const tokenDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
     const userDepositToken = useToken(BUSDTokenAddress[chainId], project.blockchain)
     const userBUSDBalance = useTokenBalance(BUSDTokenAddress[chainId], project.blockchain)
+    const nativeBalance = useNativeTokenBalance(project.blockchain)
+    const [ethBalance, setEthBalance] = useState(0)
+    const [fundDecimals, setFundDecimals] = useState(18)
+    const [depositedAmount, setDepositedAmount] = useState(BigNumber.from(0))
+
+    useEffect(() => {
+        if (nativeBalance){
+           setEthBalance(formatEther(nativeBalance, 18, 5))
+        }
+    }, [nativeBalance])
+
+    useEffect(() => {
+        if (userDepositedAmount){
+            setDepositedAmount(userDepositedAmount)
+        }
+    }, [userDepositedAmount])
+
+    useEffect(() => {
+        let max = currentTierNo ? Number(project[`tierAllocation${currentTierNo}`]) : 0
+        if (max > 0) max = (max - formatEther(depositedAmount, fundDecimals, 5))
+        if (max < 0) max = 0
+        setUserMaxAllocation(max)
+    }, [depositedAmount])
 
     useEffect(() => {
         if (tokenDecimals){
-            let max = currentTierNo ? Number(project[`tierAllocation${currentTierNo}`]) : 0
-            if (max > 0) max = (max - formatEther(userDepositedAmount, tokenDecimals.toNumber(), 5))
-            if (max < 0) max = 0
-            setUserMaxAllocation(max)
+            setFundDecimals(tokenDecimals.toNumber())
         }
-    }, [userDepositedAmount, tokenDecimals])
-
+    }, [tokenDecimals])
     async function onApprove() {
         try {
-            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
+            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {                
                 setIsApproved(true)
             }).catch((error: any) => {
                 console.log(error)
@@ -64,7 +83,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     }
 
     const successDeposited = () => {
-        userDepositedAmount = userDepositedAmount.add(parseEther(fundTokenAmount, 18))
+        setDepositedAmount(depositedAmount.add(parseEther(fundTokenAmount, fundDecimals)))
     }
 
     async function onDeposit() {
@@ -101,7 +120,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     }
 
     const getDepositAvailable = () => {
-        let max = formatEther(userBUSDBalance, 18, 5) > userMaxAllocation ? userMaxAllocation : formatEther(userBUSDBalance, 18, 2)
+        let max = formatEther(userBUSDBalance, fundDecimals, 5) > userMaxAllocation ? userMaxAllocation : formatEther(userBUSDBalance, fundDecimals, 2)
         return max
     }
 
@@ -141,14 +160,18 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                             </div>
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>BUSD Balance</div>
-                                <div>{`${formatEther(userBUSDBalance, 18, 2)} BUSD`}</div>
+                                <div>{`${formatEther(userBUSDBalance, fundDecimals, 2)} BUSD`}</div>
+                            </div>
+                            <div className='text-white text-[14px] flex justify-between'>
+                                <div>Native Coin Balance</div>
+                                <div>{`${ethBalance} ${getNativeSymbol(project.blockchain)}`}</div>
                             </div>
                             <div className='flex gap-4'>
                                 <Button
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
                                     onClick={onApprove}
-                                    disabled={!account || !launchTokenPrice || !getDepositAvailable()}
+                                    disabled={!account || !launchTokenPrice || !getDepositAvailable() || ethBalance<=0 || fundTokenAmount===0}
                                 >
                                     Approve
                                 </Button>

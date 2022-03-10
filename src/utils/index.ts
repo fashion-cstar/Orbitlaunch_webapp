@@ -129,6 +129,23 @@ export const getChainIdFromName = (name: string): number => {
   return chainId
 }
 
+export const getNativeSymbol = (name: string): string => {
+  let symbol = 'BNB'
+  switch (name.toLowerCase()) {
+    case 'ethereum':
+      symbol="ETH"
+      break;
+    case 'bsc':
+      symbol="BNB"
+      break;
+    case 'polygon':
+      symbol="MATIC"
+      break;
+    default:      
+  }
+  return symbol
+}
+
 export const getProjectStatusText = (ps: number): string => {
   switch (ps) {
     case 0:

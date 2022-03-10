@@ -58,8 +58,6 @@ export function useLaunchTokenCallback(): {
     if (!padContract) return
     return padContract.launchTokenPrice().then((res: BigNumber) => {
       return res
-    }).catch((error: any) => {
-      console.error("ERROR: " + error.error?.message)
     })
   }
 
@@ -69,8 +67,6 @@ export function useLaunchTokenCallback(): {
     if (!padContract) return
     return padContract.launchTokenDecimals().then((res: BigNumber) => {
       return res
-    }).catch((error: any) => {
-      console.error("ERROR: " + error.error?.message)
     })
   }
 
@@ -149,8 +145,6 @@ export function useTokenAllowance(): { tokenAllowanceCallback: (owner: string, s
     const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
     return tokenContract.allowance(owner, spender).then((res: BigNumber) => {
       return res
-    }).catch((error: any) => {
-      console.error("ERROR: " + error.error?.message)
     })
   }
   return { tokenAllowanceCallback }
@@ -163,7 +157,7 @@ export function usePadApproveCallback(): {
   const padApproveCallback = async function (padContractAddress: string, tokenContractAddress: string, amount: number, blockchain: string) {
     const chainId = getChainIdFromName(blockchain);
     const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
-    const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+    const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, library, account ? account : undefined)
     let decimals = await tokenContract.decimals()
     if (!account || !library || !padContract) return
     return tokenContract.estimateGas.approve(padContract.address, MaxUint256).then(estimatedGas => {
@@ -171,10 +165,8 @@ export function usePadApproveCallback(): {
         const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
         return tokenContract.approve(padContract.address, parseEther(amount, decimals), {
           gasLimit: calculateGasMargin(gas)
-        }).then((response: TransactionResponse) => {
+        }).then((response: TransactionResponse) => {          
           return response.hash
-        }).catch((error: any) => {
-          console.error("Approve Error: " + error.error?.message)
         })
       }).catch((error: any) => {
         const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGas
@@ -182,12 +174,8 @@ export function usePadApproveCallback(): {
           gasLimit: calculateGasMargin(gas)
         }).then((response: TransactionResponse) => {
           return response.hash
-        }).catch((error: any) => {
-          console.error("Approve Error: " + error.error?.message)
         })
       })
-    }).catch((error: any) => {
-      console.error("Approve Error: " + error.error?.message)
     })
   }
   return { padApproveCallback }
@@ -200,7 +188,7 @@ export function useJoinPresaleCallback(): {
 
   const joinPresaleCallback = async function (padContractAddress: string, tokenContractAddress: string, amount: number, blockchain: string) {
     const chainId = getChainIdFromName(blockchain);
-    const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
+    const padContract: Contract = getContract(padContractAddress, PAD_ABI, library, account ? account : undefined)
     const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
     let decimals = await tokenContract.decimals()
 
@@ -214,11 +202,7 @@ export function useJoinPresaleCallback(): {
           gasLimit: calculateGasMargin(gas), value: parseEther(amount, decimals)
         }).then((response: TransactionResponse) => {
           return response.hash
-        }).catch((error: any) => {
-          console.error("Join Presale Error: " + error.error?.message)
         })
-      }).catch((error: any) => {
-        console.error("Join Presale Error: " + error.error?.message)
       })
     } else {
       return padContract.estimateGas.deposit(parseEther(amount, decimals)).then(estimatedGas => {
@@ -228,14 +212,8 @@ export function useJoinPresaleCallback(): {
             gasLimit: calculateGasMargin(gas)
           }).then((response: TransactionResponse) => {
             return response.hash
-          }).catch((error: any) => {
-            console.error("Join Presale Error: " + error.error?.message)
           })
-        }).catch((error: any) => {
-          console.error("Join Presale Error: " + error.error?.message)
         })
-      }).catch((error: any) => {
-        console.error("Join Presale Error: " + error.error?.message)
       })
     }
   }
@@ -251,15 +229,13 @@ export function useClaimCallback(): {
   const ClaimCallback = async function (padContractAddress: string, blockchain: string) {
     if (!account || !library || !padContractAddress) return
     const chainId = getChainIdFromName(blockchain);
-    const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
+    const padContract: Contract = getContract(padContractAddress, PAD_ABI, library, account ? account : undefined)
     return padContract.estimateGas.claim().then(estimatedGasLimit => {
       const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
       return padContract
         .claim({ gasLimit: calculateGasMargin(gas) })
         .then((response: TransactionResponse) => {
           return response.hash
-        }).catch((error: any) => {
-          console.error("Claiming Error: " + error.error?.message);
         })
     })
   }
@@ -474,6 +450,24 @@ export function useOpenedToNonM31Holders(padContractAddress: string, blockchain:
   }, [padContractAddress])
 
   return openedToNonM31
+}
+
+export function useNativeTokenBalance(blockchain: string): BigNumber {
+  const { account } = useEthers()
+  const chainId = getChainIdFromName(blockchain);
+  const [balance, setBalance] = useState(BigNumber.from(0))
+  useEffect(() => {
+    const fetchNativeToken = async () => {      
+      const balance = await RpcProviders[chainId].getBalance(account);
+      return balance
+    }
+    if (account) {
+      fetchNativeToken().then(result => {
+        setBalance(result)
+      }).catch(console.error)
+    }
+  }, [account])
+  return balance
 }
 
 export function useProjectStatus(ido: any): number {
