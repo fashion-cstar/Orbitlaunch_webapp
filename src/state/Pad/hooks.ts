@@ -485,7 +485,6 @@ export function useProjectStatus(ido: any): number {
   const [projectStatus, setProjectStatus] = useState(0)
 
   useEffect(() => {
-
     if (ido) {
       if (moment(moment.now()).isAfter(ido?.launchDate * 1000)) {
         setProjectStatus(6) // project launched
