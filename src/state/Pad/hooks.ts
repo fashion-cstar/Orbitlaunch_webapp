@@ -41,6 +41,8 @@ export function useDepositInfo(padContractAddress: string, blockchain: string): 
       fetchUserDeposited().then(result => {
         setUserDeposited(result)
       }).catch(console.error)
+    }else{
+      setUserDeposited(BigNumber.from(0))
     }
   }, [account])
 
@@ -257,6 +259,8 @@ export function useTokenBalance(tokenAddress: string, blockchain: string): BigNu
       fetchUserBalance().then(result => {
         setBalance(result)
       }).catch(console.error)
+    }else{
+      setBalance(BigNumber.from(0))
     }
   }, [account, tokenAddress])
 
@@ -278,6 +282,8 @@ export function useFundTier(): number {
       fetchFundTier().then(result => {
         setCurrentTierNo(result)
       }).catch(console.error)
+    }else{
+      setCurrentTierNo(0)
     }
   }, [account, library, connectedUserBalance])
 
@@ -465,6 +471,8 @@ export function useNativeTokenBalance(blockchain: string): BigNumber {
       fetchNativeToken().then(result => {
         setBalance(result)
       }).catch(console.error)
+    }else{
+      setBalance(BigNumber.from(0))
     }
   }, [account])
   return balance
