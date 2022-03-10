@@ -2,7 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther } from "@ethersproject/units"
 import { Contract } from '@ethersproject/contracts'
 import { useEffect, useMemo, useState } from "react"
-import { useEthers, useToken, ChainId } from "@usedapp/core"
+import { useEthers, ChainId } from "@usedapp/core"
 import { ethers } from "ethers"
 import { getContract, parseEther, calculateGasMargin } from 'src/utils'
 import ERC20_ABI from 'src/lib/contract/abis/erc20.json'
@@ -117,6 +117,29 @@ export function uselaunchTokenDecimals(padContractAddress: string, blockchain: s
   }, [padContractAddress])
 
   return launchTokenDecimals
+}
+
+export function useToken(tokenContractAddress: string, blockchain: string): { name: string, symbol: string, decimals: BigNumber } {
+  const { account, library } = useEthers()
+  const [token, setToken] = useState<any>()
+  const chainId = getChainIdFromName(blockchain);
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+      const name = await tokenContract.name()
+      const decimals = await tokenContract.decimals()
+      const symbol = await tokenContract.symbol()
+      return { name: name, symbol: symbol, decimals: decimals }
+    }
+    if (tokenContractAddress) {
+      fetchToken().then(result => {
+        setToken(result)
+      }).catch(console.error)
+    }
+  }, [tokenContractAddress])
+
+  return token
 }
 
 export function useTokenAllowance(): { tokenAllowanceCallback: (owner: string, spender: string, tokenContractAddress: string, blockchain: string) => Promise<BigNumber> } {
@@ -356,9 +379,7 @@ export function useStartTime(padContractAddress: string, blockchain: string): Bi
   useEffect(() => {
     const fetchStartTime = async () => {
       const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
-      console.log(padContractAddress)      
       const timeat = await padContract.startTime()
-      console.log(timeat)
       return timeat
     }
     if (padContractAddress) {
@@ -366,7 +387,6 @@ export function useStartTime(padContractAddress: string, blockchain: string): Bi
         setStartTime(result)
       }).catch(console.error)
     }
-    console.log(padContractAddress)
   }, [padContractAddress])
 
   return startTime
@@ -463,16 +483,16 @@ export function useProjectStatus(ido: any): number {
   const endTimeForNonM31: BigNumber = useStartTime(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const openedToNonM31: boolean = useOpenedToNonM31Holders(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const [projectStatus, setProjectStatus] = useState(0)
-  
+
   useEffect(() => {
-      
+
     if (ido) {
       if (moment(moment.now()).isAfter(ido?.launchDate * 1000)) {
         setProjectStatus(6) // project launched
       }
     }
-    console.log(startTime+" "+endTime+" "+startTimeForNonM31+" "+endTimeForNonM31)
-    if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31) {      
+
+    if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31) {
       if (moment(moment.now()).isBefore(startTime.toNumber() * 1000)) setProjectStatus(1) // presale opening soon
       if (moment(moment.now()).isSameOrAfter(startTime.toNumber() * 1000)
         && moment(moment.now()).isBefore(endTime.toNumber() * 1000)) setProjectStatus(2) // presale open

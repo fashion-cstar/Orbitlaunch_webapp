@@ -19,6 +19,15 @@ export function isAddress(value: any): string | false {
   return false
 }
 
+export const CHAIN_LABELS: { [chainId in ChainId]?: string } = {
+  [ChainId.Mainnet]: 'Ethereum',
+  [ChainId.Rinkeby]: 'Rinkeby',
+  [ChainId.BSC]: 'Smart Chain',
+  [ChainId.BSCTestnet]: 'Smart Chain Testnet',
+  [ChainId.Polygon]: 'Polygon',
+  [ChainId.Mumbai]: 'Mumbai',
+}
+
 export function getEtherscanLink(
   chainId: number,
   data: string,

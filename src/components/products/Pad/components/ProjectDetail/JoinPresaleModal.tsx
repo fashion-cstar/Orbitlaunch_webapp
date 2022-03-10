@@ -4,8 +4,8 @@ import Modal from '../Common/Modal';
 import InputBox from '../Common/InputBox';
 import FundTokenInput from '../Common/FundTokenInput'
 import ProjectTokenInput from '../Common/ProjectTokenInput'
-import { useEthers, useToken, ChainId } from "@usedapp/core";
-import { useJoinPresaleCallback, usePadApproveCallback, uselaunchTokenDecimals } from 'src/state/Pad/hooks'
+import { useEthers, ChainId } from "@usedapp/core";
+import { useJoinPresaleCallback, usePadApproveCallback, uselaunchTokenDecimals, useToken } from 'src/state/Pad/hooks'
 import { AddressZero } from '@ethersproject/constants'
 import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
@@ -14,6 +14,8 @@ import { formatEther } from 'src/utils'
 import { BUSDTokenAddress } from "@app/shared/PadConstant";
 import { useDepositInfo, useTokenBalance } from 'src/state/Pad/hooks'
 import { parseEther } from 'src/utils'
+import TaskAltIcon from '@mui/icons-material/TaskAlt'
+import { getEtherscanLink, CHAIN_LABELS } from 'src/utils'
 
 interface PresaleModalProps {
     isOpen: boolean
@@ -36,6 +38,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const [userMaxAllocation, setUserMaxAllocation] = useState(0)
     let userDepositedAmount = useDepositInfo(project.contractAddress, project.blockchain)
     const tokenDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
+    const userDepositToken = useToken(BUSDTokenAddress[chainId], project.blockchain)
     const userBUSDBalance = useTokenBalance(BUSDTokenAddress[chainId], project.blockchain)
 
     useEffect(() => {
@@ -125,68 +128,76 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                 header="Join Presale Now"
                 handleClose={onclose}
             >
-                {!attempting && !hash && (<div className='m-4 md:m-6 w-[300px] md:w-[400px]'>
-                    {/* <div className='text-white text-[32px] mt-6'>
-                        Join Presale Now
-                    </div> */}
-                    <div className='flex flex-col space-y-4 mt-6'>
-                        <FundTokenInput onChange={(val: any) => onFundTokenChange(val)}
-                            value={fundTokenAmount} name="BUSD" icon="./images/launchpad/TokenIcons/busd.svg" />
-                        <ProjectTokenInput onChange={(val: any) => onProjectTokenChange(val)} onMax={onMax}
-                            value={projectTokenAmount} name={project.projectSymbol} icon={project.projectIcon} />
-                        <div className='text-white text-[14px] flex justify-between'>
-                            <div>Max Allocation</div>
-                            <div>${userMaxAllocation}</div>
+                <div className='m-4 md:m-6 w-[300px] md:w-[400px]'>
+                    {!attempting && !hash && (
+                        <div className='flex flex-col space-y-4 mt-6'>
+                            <FundTokenInput onChange={(val: any) => onFundTokenChange(val)}
+                                value={fundTokenAmount} name="BUSD" icon="./images/launchpad/TokenIcons/busd.svg" />
+                            <ProjectTokenInput onChange={(val: any) => onProjectTokenChange(val)} onMax={onMax}
+                                value={projectTokenAmount} name={project.projectSymbol} icon={project.projectIcon} />
+                            <div className='text-white text-[14px] flex justify-between'>
+                                <div>Max Allocation</div>
+                                <div>${userMaxAllocation}</div>
+                            </div>
+                            <div className='text-white text-[14px] flex justify-between'>
+                                <div>BUSD Balance</div>
+                                <div>{`${formatEther(userBUSDBalance, 18, 2)} BUSD`}</div>
+                            </div>
+                            <div className='flex gap-4'>
+                                <Button
+                                    variant="contained"
+                                    sx={{ width: "100%", borderRadius: "12px" }}
+                                    onClick={onApprove}
+                                    disabled={!account || !launchTokenPrice || !getDepositAvailable()}
+                                >
+                                    Approve
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    sx={{ width: "100%", borderRadius: "12px" }}
+                                    onClick={onDeposit}
+                                    disabled={!isApproved}
+                                >
+                                    Deposit
+                                </Button>
+                                {/* <Button
+                                    variant="contained"
+                                    sx={{ width: "100%", borderRadius: "12px" }}
+                                    onClick={onApprove}
+                                    disabled={true}
+                                >
+                                    Reserve Your Tokens Now
+                                </Button> */}
+                            </div>
                         </div>
-                        <div className='text-white text-[14px] flex justify-between'>
-                            <div>BUSD Balance</div>
-                            <div>{`${formatEther(userBUSDBalance, 18, 2)} BUSD`}</div>
+                    )}
+                    {attempting && !hash && (
+                        <div className="flex justify-center items-center flex-col gap-12 h-[200px]">
+                            <Fade in={true} style={{ transitionDelay: '800ms' }} unmountOnExit>
+                                <CircularProgress />
+                            </Fade>
+                            <div>
+                                {`Depositing ${fundTokenAmount} ${userDepositToken?.symbol}`}
+                            </div>
                         </div>
-                        <div className='flex gap-4'>
-                            {/* <Button
-                                variant="contained"
-                                sx={{ width: "100%", borderRadius: "12px" }}
-                                onClick={onApprove}
-                                disabled={!account || !launchTokenPrice || !getDepositAvailable()}
-                            >
-                                Approve
-                            </Button>
-                            <Button
-                                variant="contained"
-                                sx={{ width: "100%", borderRadius: "12px" }}
-                                onClick={onDeposit}
-                                disabled={!isApproved}
-                            >
-                                Deposit
-                            </Button> */}
-                            <Button
-                                variant="contained"
-                                sx={{ width: "100%", borderRadius: "12px" }}
-                                onClick={onApprove}
-                                disabled={true}
-                            >
-                                Reserve Your Tokens Now
-                            </Button>
+                    )}
+                    {hash && (
+                        <div className='w-full'>
+                            <div className='w-full flex justify-center py-4'>
+                                <TaskAltIcon sx={{ fontSize: 120, color: '#00aa00' }} />
+                            </div>
+                            <div className='flex flex-col gap-2'>
+                            <div className='text-[16px] text-[#aaaaaa] text-center'>Transaction submitted</div>
+                            <div className='text-[16px] text-[#aaaaaa] text-center'>{'Hash: ' + hash.slice(0, 10) + '...' + hash.slice(56, 65)}</div>
+                                {chainId && (
+                                    <a className='text-[16px] mt-4 text-[#aaaaee] underline text-center' href={getEtherscanLink(chainId, hash, 'transaction')}>
+                                        {chainId && `View on ${CHAIN_LABELS[chainId]}`}
+                                    </a>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                </div>)}
-                {attempting && !hash && (
-                    <div className="flex justify-center items-center h-[300px]">
-                        <Fade in={true} style={{ transitionDelay: '800ms' }} unmountOnExit>
-                            <CircularProgress />
-                        </Fade>
-                    </div>
-                )}
-                {hash && (
-                    <div className='flex flex-col gap-8'>
-                        <div className='text-white text-[14px]'>
-                            {hash}
-                        </div>
-                        <div className='text-white text-[14px]'>
-                            Deposited {fundTokenAmount}{' '}{project.projectSymbol}
-                        </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </Modal>
         </div>
     );
