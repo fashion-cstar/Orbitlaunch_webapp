@@ -95,6 +95,8 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         if (res) {
             try {
                 if (res.gte(parseEther(fundTokenAmount, fundDecimals))) {
+                    console.log(res)
+                    console.log(parseEther(fundTokenAmount, fundDecimals))
                     try {                        
                         joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
                             setHash(hash)
