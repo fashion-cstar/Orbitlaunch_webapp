@@ -25,7 +25,7 @@ export default function Indicators({ ido, launchTokenPrice, currentTierNo, hideT
     useEffect(() => {
         if (launchTokenPrice && account) {
             if (currentTierNo > 0) {
-                let max = Number(ido[`tierAllocation${currentTierNo}`]) / launchTokenPrice
+                let max = Math.round(Number(ido[`tierAllocation${currentTierNo}`])*100 / launchTokenPrice)/100
                 setMaxAllocation(max)
             }
         }
