@@ -19,6 +19,15 @@ export function isAddress(value: any): string | false {
   return false
 }
 
+export const CHAIN_LABELS: { [chainId in ChainId]?: string } = {
+  [ChainId.Mainnet]: 'Ethereum',
+  [ChainId.Rinkeby]: 'Rinkeby',
+  [ChainId.BSC]: 'Smart Chain',
+  [ChainId.BSCTestnet]: 'Smart Chain Testnet',
+  [ChainId.Polygon]: 'Polygon',
+  [ChainId.Mumbai]: 'Mumbai',
+}
+
 export function getEtherscanLink(
   chainId: number,
   data: string,
@@ -88,6 +97,7 @@ export const wait = (time: number) =>
   })
 
 export const formatEther = (amount: BigNumber, decimals: number, toFixed: number): number => {
+  if (decimals<5) return 0
   let temp: BigNumber = amount.mul(BigNumber.from(10).pow(toFixed))
   temp = temp.div(BigNumber.from(10).pow(decimals))
 
@@ -118,6 +128,23 @@ export const getChainIdFromName = (name: string): number => {
       else if (process.env.network === 'testnet') chainId = 97; //bsc testnet            
   }
   return chainId
+}
+
+export const getNativeSymbol = (name: string): string => {
+  let symbol = 'BNB'
+  switch (name.toLowerCase()) {
+    case 'ethereum':
+      symbol="ETH"
+      break;
+    case 'bsc':
+      symbol="BNB"
+      break;
+    case 'polygon':
+      symbol="MATIC"
+      break;
+    default:      
+  }
+  return symbol
 }
 
 export const getProjectStatusText = (ps: number): string => {

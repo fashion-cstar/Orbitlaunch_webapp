@@ -22,8 +22,8 @@ export default function FeaturedProjects({ options }: { options: any }) {
 
     useEffect(() => {
         if (IdoList) {        
-            setFeaturedProjects(IdoList.filter(item => true))
-            // setFeaturedProjects(IdoList.filter(item => moment((item?.launchEndDate * 1000) ?? '').isAfter(moment.now())))
+            // setFeaturedProjects(IdoList.filter(item => true))
+            setFeaturedProjects(IdoList.filter(item => moment(Number(item?.launchEndDate) * 1000).isAfter(moment.now()) || Number(item?.launchEndDate)===0))
         }
     }, [IdoList])
 
