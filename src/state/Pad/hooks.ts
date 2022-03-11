@@ -41,7 +41,7 @@ export function useDepositInfo(padContractAddress: string, blockchain: string): 
       fetchUserDeposited().then(result => {
         setUserDeposited(result)
       }).catch(console.error)
-    }else{
+    } else {
       setUserDeposited(BigNumber.from(0))
     }
   }, [account])
@@ -167,7 +167,7 @@ export function usePadApproveCallback(): {
         const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
         return tokenContract.approve(padContract.address, parseEther(amount, decimals), {
           gasLimit: calculateGasMargin(gas)
-        }).then((response: TransactionResponse) => {          
+        }).then((response: TransactionResponse) => {
           return response.hash
         })
       }).catch((error: any) => {
@@ -259,7 +259,7 @@ export function useTokenBalance(tokenAddress: string, blockchain: string): BigNu
       fetchUserBalance().then(result => {
         setBalance(result)
       }).catch(console.error)
-    }else{
+    } else {
       setBalance(BigNumber.from(0))
     }
   }, [account, tokenAddress])
@@ -282,7 +282,7 @@ export function useFundTier(): number {
       fetchFundTier().then(result => {
         setCurrentTierNo(result)
       }).catch(console.error)
-    }else{
+    } else {
       setCurrentTierNo(0)
     }
   }, [account, library, connectedUserBalance])
@@ -463,7 +463,7 @@ export function useNativeTokenBalance(blockchain: string): BigNumber {
   const chainId = getChainIdFromName(blockchain);
   const [balance, setBalance] = useState(BigNumber.from(0))
   useEffect(() => {
-    const fetchNativeToken = async () => {      
+    const fetchNativeToken = async () => {
       const balance = await RpcProviders[chainId].getBalance(account);
       return balance
     }
@@ -471,7 +471,7 @@ export function useNativeTokenBalance(blockchain: string): BigNumber {
       fetchNativeToken().then(result => {
         setBalance(result)
       }).catch(console.error)
-    }else{
+    } else {
       setBalance(BigNumber.from(0))
     }
   }, [account])
@@ -487,23 +487,22 @@ export function useProjectStatus(ido: any): number {
   const [projectStatus, setProjectStatus] = useState(0)
 
   useEffect(() => {
-    if (ido) {
-      if (moment(moment.now()).isAfter(ido?.launchDate * 1000)) {
-        setProjectStatus(6) // project launched
-      }
-    }
-
-    if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31) {   
+    if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31) {
+      if (moment(moment.now()).isBefore(startTime.toNumber() * 1000)) setProjectStatus(1) // presale opening soon
+      if (moment(moment.now()).isSameOrAfter(startTime.toNumber() * 1000)
+        && moment(moment.now()).isBefore(endTime.toNumber() * 1000)) setProjectStatus(2) // presale open
+      if (moment(moment.now()).isSameOrAfter(endTime.toNumber() * 1000)) setProjectStatus(3) // presale closed      
       if (openedToNonM31) {
         if (moment(moment.now()).isSameOrAfter(startTimeForNonM31.toNumber() * 1000)
           && moment(moment.now()).isBefore(endTimeForNonM31.toNumber() * 1000)) setProjectStatus(4) // public presale open
         if (moment(moment.now()).isSameOrAfter(endTimeForNonM31.toNumber() * 1000)) setProjectStatus(5) // public presale closed
       }
-      if (moment(moment.now()).isBefore(startTime.toNumber() * 1000)) setProjectStatus(1) // presale opening soon
-      if (moment(moment.now()).isSameOrAfter(startTime.toNumber() * 1000)
-        && moment(moment.now()).isBefore(endTime.toNumber() * 1000)) setProjectStatus(2) // presale open
-      if (moment(moment.now()).isSameOrAfter(endTime.toNumber() * 1000)) setProjectStatus(3) // presale closed      
-    }    
+    }
+    if (ido) {
+      if (moment(moment.now()).isAfter(ido?.launchDate * 1000)) {
+        setProjectStatus(6) // project launched
+      }
+    }
   }, [ido, startTime, endTime, startTimeForNonM31, endTimeForNonM31, openedToNonM31])
 
   return projectStatus
