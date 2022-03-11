@@ -488,18 +488,18 @@ export function useProjectStatus(ido: any): number {
 
   useEffect(() => {
     if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31) {
-      if (moment(moment.now()).isBefore(startTime.toNumber() * 1000)) setProjectStatus(1) // presale opening soon
-      if (moment(moment.now()).isSameOrAfter(startTime.toNumber() * 1000)
-        && moment(moment.now()).isBefore(endTime.toNumber() * 1000)) setProjectStatus(2) // presale open
-      if (moment(moment.now()).isSameOrAfter(endTime.toNumber() * 1000)) setProjectStatus(3) // presale closed      
+      if (moment(moment.now()).isBefore(moment(startTime.toNumber() * 1000))) setProjectStatus(1) // presale opening soon
+      if (moment(moment.now()).isSameOrAfter(moment(startTime.toNumber() * 1000))
+        && moment(moment.now()).isBefore(moment(endTime.toNumber() * 1000))) setProjectStatus(2) // presale open
+      if (moment(moment.now()).isSameOrAfter(moment(endTime.toNumber() * 1000))) setProjectStatus(3) // presale closed      
       if (openedToNonM31) {
-        if (moment(moment.now()).isSameOrAfter(startTimeForNonM31.toNumber() * 1000)
-          && moment(moment.now()).isBefore(endTimeForNonM31.toNumber() * 1000)) setProjectStatus(4) // public presale open
-        if (moment(moment.now()).isSameOrAfter(endTimeForNonM31.toNumber() * 1000)) setProjectStatus(5) // public presale closed
+        if (moment(moment.now()).isSameOrAfter(moment(startTimeForNonM31.toNumber() * 1000))
+          && moment(moment.now()).isBefore(moment(endTimeForNonM31.toNumber() * 1000))) setProjectStatus(4) // public presale open
+        if (moment(moment.now()).isSameOrAfter(moment(endTimeForNonM31.toNumber() * 1000))) setProjectStatus(5) // public presale closed
       }
     }
     if (ido) {
-      if (moment(moment.now()).isAfter(ido?.launchDate * 1000)) {
+      if (moment(moment.now()).isAfter(moment(ido?.launchDate * 1000))) {
         setProjectStatus(6) // project launched
       }
     }
