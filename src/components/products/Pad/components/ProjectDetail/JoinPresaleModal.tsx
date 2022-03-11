@@ -64,8 +64,6 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         if (max > 0) max = (max - formatEther(depositedAmount, fundDecimals, 5))
         if (max < 0) max = 0
         setUserMaxAllocation(max)
-        console.log(Number(project[`tierAllocation${currentTierNo}`]))
-        console.log(formatEther(depositedAmount, fundDecimals, 5))
     }, [depositedAmount, fundDecimals, currentTierNo, project])
 
     useEffect(() => {
