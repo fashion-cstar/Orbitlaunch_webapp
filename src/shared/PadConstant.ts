@@ -25,7 +25,7 @@ export const M31TokenAddress: { [chainId in ChainId]?: string } = {
 }
 
 export const RpcProviders: { [chainId in ChainId]?: JsonRpcProvider } = {
-    [ChainId.Mainnet]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/eth/mainnet'),    
+    [ChainId.Mainnet]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/eth/mainnet'),
     [ChainId.Rinkeby]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/eth/rinkeby'),
     [ChainId.BSC]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/bsc/mainnet'),
     [ChainId.BSCTestnet]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/bsc/testnet')
