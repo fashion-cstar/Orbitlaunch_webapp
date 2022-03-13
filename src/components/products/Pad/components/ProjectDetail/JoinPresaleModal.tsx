@@ -75,10 +75,10 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         let max = currentTierNo ? Number(project[`tierAllocation${currentTierNo}`]) : 0
         if (max > 0) max = (max - formatEther(depositedAmount, fundDecimals, 5))
         if (max < 0) max = 0
-        if (investCap.gt(BigNumber.from(0))) {     
-            let temp:BigNumber = investCap.sub(totalInvestedAmount)
-            let restCap=formatEther(temp, fundDecimals, 5)
-            if (max>restCap) max=restCap
+        if (investCap.gt(BigNumber.from(0))) {
+            let temp: BigNumber = investCap.sub(totalInvestedAmount)
+            let restCap = formatEther(temp, fundDecimals, 5)
+            if (max > restCap) max = restCap
         }
         setUserMaxAllocation(max)
     }, [depositedAmount, fundDecimals, currentTierNo, project])
@@ -192,23 +192,31 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     }
 
     const getAvaliableSupply = () => {
-        if (investCap.gt(BigNumber.from(0))) {            
-            let temp:BigNumber = investCap.sub(totalInvestedAmount)
-            let res:number = 0
-            temp=temp.mul(BigNumber.from(1000)).div(investCap)
-            res=temp.toNumber()/10
-            return res+'%'
+        if (investCap.gt(BigNumber.from(0))) {
+            let temp: BigNumber = investCap.sub(totalInvestedAmount)
+            let res: number = 0
+            temp = temp.mul(BigNumber.from(1000)).div(investCap)
+            res = temp.toNumber() / 10
+            return res + '%'
         }
         return ''
     }
 
     const getAllowedLaunchTokens = () => {
-        let res:string
-        if (launchTokenPrice){
-            return Math.round(userMaxAllocation / launchTokenPrice) + ' '+project.projectSymbol
-        }else{
-            return '0 '+ project.projectSymbol
-        }         
+        let res: string
+        if (launchTokenPrice) {
+            return Math.round(userMaxAllocation / launchTokenPrice) + ' ' + project.projectSymbol
+        } else {
+            return '0 ' + project.projectSymbol
+        }
+    }
+
+    const getUserPurchasedLaunchTokens = () => {
+        if (launchTokenPrice) {
+            return Math.round(formatEther(depositedAmount, fundDecimals, 5) / launchTokenPrice) + ' ' + project.projectSymbol
+        } else {
+            return '0 ' + project.projectSymbol
+        }
     }
 
     return (
@@ -227,7 +235,11 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 value={projectTokenAmount} name={project.projectSymbol} icon={project.projectIcon} />
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>Max Allocation Allowed</div>
-                                <div>{`${userMaxAllocation} / ${getAllowedLaunchTokens()}`}</div>
+                                <div>{`$${userMaxAllocation} / ${getAllowedLaunchTokens()}`}</div>
+                            </div>
+                            <div className='text-white text-[14px] flex justify-between'>
+                                <div>Tokens Purchased</div>
+                                <div>{`$${formatEther(depositedAmount, fundDecimals, 2)} / ${getUserPurchasedLaunchTokens()}`}</div>
                             </div>
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>Current Available Supply</div>
