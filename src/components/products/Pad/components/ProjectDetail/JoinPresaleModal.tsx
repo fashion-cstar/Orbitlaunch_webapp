@@ -191,7 +191,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         handleClose()
     }
 
-    const getAvaliableSupply = () => {
+    const getAvailableSupply = () => {
         if (investCap.gt(BigNumber.from(0))) {
             let temp: BigNumber = investCap.sub(totalInvestedAmount)
             let res: number = 0
@@ -243,7 +243,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                             </div>
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>Current Available Supply</div>
-                                <div>{`${getAvaliableSupply()} ${project.projectSymbol} For Purchase `}</div>
+                                <div>{`${getAvailableSupply()} ${project.projectSymbol} For Purchase `}</div>
                             </div>
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>BUSD Balance</div>
