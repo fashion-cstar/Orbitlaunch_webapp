@@ -271,6 +271,18 @@ export function useTokenBalance(tokenAddress: string, blockchain: string): BigNu
   return balance
 }
 
+export function useTokenBalanceCallback(): { tokenBalanceCallback: (tokenAddress: string, blockchain: string) => Promise<BigNumber> } {
+  const { account, library } = useEthers()
+  const tokenBalanceCallback = async function (tokenAddress: string, blockchain: string) {
+    const chainId = getChainIdFromName(blockchain);
+    const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+    return tokenContract.balanceOf(account).then((res: BigNumber) => {
+      return res
+    })
+  }
+  return { tokenBalanceCallback }
+}
+
 export function useFundTier(): number {
   const { account, library, chainId } = useEthers()
   const [currentTierNo, setCurrentTierNo] = useState(0)
