@@ -36,7 +36,7 @@ export default function ProjectDetail({ project }: { project: any }) {
                 }).catch((error: any) => {
                     console.log(error)
                 })
-            } catch (error) {
+            } catch (error) {                
                 console.debug('Failed to get launch decimals', error)
             } 
         }

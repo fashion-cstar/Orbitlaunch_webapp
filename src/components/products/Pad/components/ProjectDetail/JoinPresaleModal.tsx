@@ -5,7 +5,16 @@ import InputBox from '../Common/InputBox';
 import FundTokenInput from '../Common/FundTokenInput'
 import ProjectTokenInput from '../Common/ProjectTokenInput'
 import { useEthers, ChainId } from "@usedapp/core";
-import { useJoinPresaleCallback, usePadApproveCallback, uselaunchTokenDecimals, useToken, useNativeTokenBalance, useTokenAllowance } from 'src/state/Pad/hooks'
+import {
+    useJoinPresaleCallback,
+    usePadApproveCallback,
+    uselaunchTokenDecimals,
+    useToken,
+    useNativeTokenBalance,
+    useTokenAllowance,
+    useTotalInvestedAmount,
+    useInvestCap
+} from 'src/state/Pad/hooks'
 import { AddressZero } from '@ethersproject/constants'
 import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
@@ -36,7 +45,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const [isApproved, setIsApproved] = useState(false)
     const [isDeposited, setDeposited] = useState(false)
     const [userMaxAllocation, setUserMaxAllocation] = useState(0)
-    let userDepositedAmount = useDepositInfo(project.contractAddress, project.blockchain)
+    const userDepositedAmount = useDepositInfo(project.contractAddress, project.blockchain)
     const tokenDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
     const userDepositToken = useToken(BUSDTokenAddress[chainId], project.blockchain)
     const userBUSDBalance = useTokenBalance(BUSDTokenAddress[chainId], project.blockchain)
@@ -46,6 +55,9 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const [depositedAmount, setDepositedAmount] = useState(BigNumber.from(0))
     const [isOverMax, setIsOverMax] = useState(false)
     const { tokenAllowanceCallback } = useTokenAllowance()
+    const [isWalletApproving, setIsWalletApproving] = useState(false)
+    const totalInvestedAmount = useTotalInvestedAmount(project.contractAddress, project.blockchain)
+    const investCap = useInvestCap(project.contractAddress, project.blockchain)
 
     useEffect(() => {
         if (nativeBalance) {
@@ -53,16 +65,21 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         }
     }, [nativeBalance])
 
-    useEffect(() => {        
+    useEffect(() => {
         if (userDepositedAmount) {
             setDepositedAmount(userDepositedAmount)
         }
     }, [userDepositedAmount])
 
-    useEffect(() => {        
+    useEffect(() => {
         let max = currentTierNo ? Number(project[`tierAllocation${currentTierNo}`]) : 0
         if (max > 0) max = (max - formatEther(depositedAmount, fundDecimals, 5))
         if (max < 0) max = 0
+        if (investCap.gt(BigNumber.from(0))) {     
+            let temp:BigNumber = investCap.sub(totalInvestedAmount)
+            let restCap=formatEther(temp, fundDecimals, 5)
+            if (max>restCap) max=restCap
+        }
         setUserMaxAllocation(max)
     }, [depositedAmount, fundDecimals, currentTierNo, project])
 
@@ -73,13 +90,16 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     }, [tokenDecimals])
 
     async function onApprove() {
+        setIsWalletApproving(true)
         try {
             padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
                 setIsApproved(true)
             }).catch((error: any) => {
+                setIsWalletApproving(false)
                 console.log(error)
             })
         } catch (error) {
+            setIsWalletApproving(false)
             console.log(error)
         }
         return null;
@@ -96,7 +116,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
             try {
                 if (res.gte(parseEther(fundTokenAmount, fundDecimals))) {
                     console.log(res)
-                    try {                        
+                    try {
                         joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
                             setHash(hash)
                             successDeposited()
@@ -125,7 +145,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
             if (Number(val) !== NaN) setFundTokenAmount(Number(val))
             else setFundTokenAmount(0)
             if (launchTokenPrice) {
-                setProjectTokenAmount(Number(val) / launchTokenPrice)
+                setProjectTokenAmount(Math.round(Number(val) / launchTokenPrice * 1000) / 1000)
             }
             if (Number(val) > getDepositAvailable()) {
                 setIsOverMax(true)
@@ -171,6 +191,26 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         handleClose()
     }
 
+    const getAvaliableSupply = () => {
+        if (investCap.gt(BigNumber.from(0))) {            
+            let temp:BigNumber = investCap.sub(totalInvestedAmount)
+            let res:number = 0
+            temp=temp.mul(BigNumber.from(1000)).div(investCap)
+            res=temp.toNumber()/10
+            return res+'%'
+        }
+        return ''
+    }
+
+    const getAllowedLaunchTokens = () => {
+        let res:string
+        if (launchTokenPrice){
+            return Math.round(userMaxAllocation / launchTokenPrice) + ' '+project.projectSymbol
+        }else{
+            return '0 '+ project.projectSymbol
+        }         
+    }
+
     return (
         <div>
             <Modal
@@ -186,8 +226,12 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                             <ProjectTokenInput onChange={(val: any) => onProjectTokenChange(val)} onMax={onMax}
                                 value={projectTokenAmount} name={project.projectSymbol} icon={project.projectIcon} />
                             <div className='text-white text-[14px] flex justify-between'>
-                                <div>Max Allocation</div>
-                                <div>${userMaxAllocation}</div>
+                                <div>Max Allocation Allowed</div>
+                                <div>{`${userMaxAllocation} / ${getAllowedLaunchTokens()}`}</div>
+                            </div>
+                            <div className='text-white text-[14px] flex justify-between'>
+                                <div>Current Available Supply</div>
+                                <div>{`${getAvaliableSupply()} ${project.projectSymbol} For Purchase `}</div>
                             </div>
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>BUSD Balance</div>
@@ -202,7 +246,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
                                     onClick={onApprove}
-                                    disabled={!account || !launchTokenPrice || isOverMax || ethBalance <= 0 || fundTokenAmount === 0}
+                                    disabled={!account || !launchTokenPrice || isOverMax || ethBalance <= 0 || fundTokenAmount === 0 || isApproved || isWalletApproving}
                                 >
                                     Approve
                                 </Button>
@@ -231,7 +275,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 <CircularProgress />
                             </Fade>
                             <div>
-                                {`Depositing ${fundTokenAmount} ${userDepositToken?.symbol}`}
+                                {`Depositing ${fundTokenAmount} ${userDepositToken?.symbol ?? ''}`}
                             </div>
                         </div>
                     )}
