@@ -161,7 +161,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
             if (Number(val) !== NaN) setProjectTokenAmount(Number(val))
             else setFundTokenAmount(0)
             if (launchTokenPrice) {
-                setFundTokenAmount(Number(val) * launchTokenPrice)
+                setFundTokenAmount(Math.round(Number(val) * launchTokenPrice*100)/100)
             }
             if ((Number(val) * launchTokenPrice) > getDepositAvailable()) {
                 setIsOverMax(true)
@@ -190,6 +190,8 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         setIsApproved(false)
         setIsWalletApproving(false)
         setDeposited(false)        
+        setFundTokenAmount(0)
+        setProjectTokenAmount(0)
         handleClose()
     }
 
