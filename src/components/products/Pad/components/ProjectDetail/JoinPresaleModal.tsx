@@ -13,7 +13,8 @@ import {
     useNativeTokenBalance,
     useTokenAllowance,
     useTotalInvestedAmount,
-    useInvestCap
+    useInvestCap,
+    useTokenBalanceCallback
 } from 'src/state/Pad/hooks'
 import { AddressZero } from '@ethersproject/constants'
 import CircularProgress from '@mui/material/CircularProgress';
@@ -48,7 +49,9 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const userDepositedAmount = useDepositInfo(project.contractAddress, project.blockchain)
     const tokenDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
     const userDepositToken = useToken(BUSDTokenAddress[chainId], project.blockchain)
-    const userBUSDBalance = useTokenBalance(BUSDTokenAddress[chainId], project.blockchain)
+    const { tokenBalanceCallback } = useTokenBalanceCallback()
+    const accountBUSDBalance = useTokenBalance(BUSDTokenAddress[chainId], project.blockchain)
+    const [userBUSDBalance, setUserBUSDBalance] = useState<BigNumber>(BigNumber.from(0))
     const nativeBalance = useNativeTokenBalance(project.blockchain)
     const [ethBalance, setEthBalance] = useState(0)
     const [fundDecimals, setFundDecimals] = useState(18)
@@ -64,6 +67,22 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
             setEthBalance(formatEther(nativeBalance, 18, 5))
         }
     }, [nativeBalance])
+
+    useEffect(() => {
+        if (isOpen) {
+            if (account) {
+                callUserBUSDCallback()
+            } else {
+                setUserBUSDBalance(BigNumber.from(0))
+            }
+        }
+    }, [account, isOpen])
+
+    useEffect(() => {
+        if (accountBUSDBalance) {
+            setUserBUSDBalance(accountBUSDBalance)
+        }
+    }, [accountBUSDBalance])
 
     useEffect(() => {
         if (userDepositedAmount) {
@@ -89,11 +108,23 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         }
     }, [tokenDecimals])
 
+    const callUserBUSDCallback = () => {
+        try {
+            tokenBalanceCallback(BUSDTokenAddress[chainId], project.blockchain).then((res: BigNumber) => {
+                setUserBUSDBalance(res)
+            }).catch((error: any) => {
+                console.log(error)
+            })
+        } catch (error) {
+            console.debug('Failed to get BUSD balance', error)
+        }
+    }
     async function onApprove() {
         setIsWalletApproving(true)
         try {
-            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
+            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount), project.blockchain).then((hash: string) => {
                 setIsApproved(true)
+                setIsWalletApproving(false)
             }).catch((error: any) => {
                 setIsWalletApproving(false)
                 console.log(error)
@@ -107,6 +138,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
 
     const successDeposited = () => {
         setDepositedAmount(depositedAmount.add(parseEther(fundTokenAmount, fundDecimals)))
+        callUserBUSDCallback()
     }
 
     async function onDeposit() {
@@ -160,7 +192,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
             if (Number(val) !== NaN) setProjectTokenAmount(Number(val))
             else setFundTokenAmount(0)
             if (launchTokenPrice) {
-                setFundTokenAmount(Number(val) * launchTokenPrice)
+                setFundTokenAmount(Math.round(Number(val) * launchTokenPrice * 100) / 100)
             }
             if ((Number(val) * launchTokenPrice) > getDepositAvailable()) {
                 setIsOverMax(true)
@@ -187,7 +219,10 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         setHash(undefined)
         setAttempting(false)
         setIsApproved(false)
+        setIsWalletApproving(false)
         setDeposited(false)
+        setFundTokenAmount(0)
+        setProjectTokenAmount(0)
         handleClose()
     }
 
