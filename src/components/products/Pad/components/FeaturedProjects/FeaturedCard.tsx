@@ -46,9 +46,9 @@ export default function FeaturedCard({ ido, firstCardIndex, onDetail, options }:
         <div className="pr-6" style={{ transform: `translateX(-${firstCardIndex * 100}%)`, transition: "transform 500ms ease 0s" }} onClick={() => onDetail(ido)}>
             <div className="rounded-2xl cursor-pointer hover:shadow-xl hover:scale-[1.038] hover:border-slate-400 hover:border" style={styling}>
                 <div className="overflow-hidden relative" style={{ height: imgHeight }}>
-                    <div className="absolute h-6 px-2 left-4 top-4 flex items-center justify-center rounded-md" style={{backgroundColor: statusBgColor(projectStatus)}}>
+                    {projectStatus>0 && (<div className="absolute h-6 px-2 left-4 top-4 flex items-center justify-center rounded-md" style={{backgroundColor: statusBgColor(projectStatus)}}>
                         <span className="text-[12px] uppercase" style={{color: statusTxtColor(projectStatus)}}>{getProjectStatusText(projectStatus)}</span>
-                    </div>
+                    </div>)}
                     <img className="w-full rounded-t-2xl" src={ido.projectBanner} alt={ido.projectName} />
                 </div>
                 <div className="p-5">
