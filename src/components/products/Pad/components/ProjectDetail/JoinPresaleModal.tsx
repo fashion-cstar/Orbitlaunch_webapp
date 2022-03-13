@@ -94,6 +94,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         try {
             padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
                 setIsApproved(true)
+                setIsWalletApproving(false)
             }).catch((error: any) => {
                 setIsWalletApproving(false)
                 console.log(error)
@@ -188,6 +189,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         setAttempting(false)
         setIsApproved(false)
         setDeposited(false)
+        setIsWalletApproving(false)
         handleClose()
     }
 
