@@ -50,6 +50,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const tokenDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
     const userDepositToken = useToken(BUSDTokenAddress[chainId], project.blockchain)    
     const { tokenBalanceCallback } = useTokenBalanceCallback() 
+    const accountBUSDBalance = useTokenBalance(BUSDTokenAddress[chainId], project.blockchain)
     const [userBUSDBalance, setUserBUSDBalance] = useState<BigNumber>(BigNumber.from(0))
     const nativeBalance = useNativeTokenBalance(project.blockchain)
     const [ethBalance, setEthBalance] = useState(0)
@@ -76,6 +77,12 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
             }
         }
     }, [account, isOpen])
+
+    useEffect(() => {
+        if (accountBUSDBalance) {
+            setUserBUSDBalance(accountBUSDBalance)
+        }
+    }, [accountBUSDBalance])
 
     useEffect(() => {
         if (userDepositedAmount) {
@@ -109,7 +116,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                 console.log(error)
             })
         } catch (error) {                
-            console.debug('Failed to get user BUSD balance', error)
+            console.debug('Failed to get BUSD balance', error)
         } 
     }
     async function onApprove() {
