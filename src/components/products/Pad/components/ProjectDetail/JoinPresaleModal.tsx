@@ -188,8 +188,8 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         setHash(undefined)
         setAttempting(false)
         setIsApproved(false)
-        setDeposited(false)
         setIsWalletApproving(false)
+        setDeposited(false)        
         handleClose()
     }
 
