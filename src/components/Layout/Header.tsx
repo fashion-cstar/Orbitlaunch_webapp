@@ -19,7 +19,7 @@ export default function Header() {
             <a href="/"><LogoHorizontal className="h-[16px]" /></a>
           </div>
 
-          <div className="tempmobile">
+          <div className="mobile-layout">
             <Wallet isMobile />
           </div>
 

@@ -204,25 +204,25 @@ body {
 }
 
 @media only screen and (max-width: 600px) {
-  .tempdesktop {
+  .desktop-layout {
     display: none;
   }
 }
 
 @media only screen and (min-width: 601px) {
-  .tempmobile {
+  .mobile-layout {
     display: none;
   }
 }
 
 @media only screen and (max-width: 900px) {
-  .fund-desktop {
+  .desktop-content {
     display: none;
   }
 }
 
 @media only screen and (min-width: 901px) {
-  .fund-mobile {
+  .mobile-content {
     display: none;
   }
 }

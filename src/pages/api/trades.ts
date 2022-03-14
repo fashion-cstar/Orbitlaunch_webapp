@@ -1,5 +1,5 @@
 import axios from "axios";
-import { configurationData } from "@app/components/Chart/bitquery";
+import { configurationData } from "@app/components/common/Chart/bitquery";
 import { NextApiRequest, NextApiResponse } from "next";
 import { queryGetSymbols } from "@app/shared/Queries";
 import {
