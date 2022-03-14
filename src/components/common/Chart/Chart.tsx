@@ -7,7 +7,7 @@ import {
   LanguageCode,
   Timezone,
   widget,
-} from "../../../public/static/charting_library/charting_library";
+} from "../../../../public/static/charting_library/charting_library";
 import config from "./config";
 
 function getLanguageFromURL() {

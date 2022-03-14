@@ -51,7 +51,7 @@ export default function Fund() {
     return (
         <>
             <DepositPopup id={depositModalId} />
-            <div className="fund-desktop flex flex-col space-y-4 w-full">
+            <div className="desktop-content flex flex-col space-y-4 w-full">
 
                 <div className="flex flex-row items-center">
                     <h1 className="text-[40px] font-medium">OrbitFund</h1>
@@ -184,7 +184,7 @@ export default function Fund() {
                 </div>
             </div>
 
-            <div className="fund-mobile flex flex-col space-y-4 w-full">
+            <div className="mobile-content flex flex-col space-y-4 w-full">
                 <div className="flex flex-row items-center">
                     <h1 className="text-[35px] font-medium">OrbitFund</h1>
                     <div className="absolute right-10"><BuyButton /></div>

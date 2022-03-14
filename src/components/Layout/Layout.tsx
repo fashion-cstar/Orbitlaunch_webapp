@@ -43,47 +43,13 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
             </p>
           </div>
         )}
-        <div className="tempdesktop">
+        <div className="desktop-layout">
           <Sidebar isOpen />
         </div>
-        {(router.pathname === '/pad' || router.pathname === '/fund') ? (
-          <div className="p-10 grow">
-            {children}
-          </div>
-        ) : (
-          <>
-            <div className="block md:hidden lg:hidden p-10 grow text-center">
-              <br /><br />
-              We're working to release the responsive versions of the Fund/Pad/Dashboard over the next few days.<br /><br />
-              To access this immediately please visit on a laptop/desktop device.<br /><br />
-
-              <br />
-              Good news!<br />
-              OrbitPad and OrbitFund are already compatible with mobile.<br /><br />
-
-              <Button
-                variant="outlined"
-                onClick={() => goToPath('/pad')}
-                className="relative"
-                sx={{ borderRadius: "12px" }}
-              >
-                Go to OrbitPad
-              </Button> &nbsp;&nbsp;
-              <Button
-                variant="outlined"
-                onClick={() => goToPath('/fund')}
-                className="relative"
-                sx={{ borderRadius: "12px" }}
-              >
-                Go to OrbitFund
-              </Button>
-            </div>
-            <div className="hidden md:block lg:block p-10 grow">
-              {children}
-            </div>
-          </>
-        )}
-        <div className="tempmobile fixed bottom-0 w-full h-[45px] border-t border-t-[#112b40]" style={gradientColor}>
+        <div className="p-10 grow">
+          {children}
+        </div>
+        <div className="mobile-layout fixed bottom-0 w-full h-[45px] border-t border-t-[#112b40]" style={gradientColor}>
           <BottomNav />
         </div>
       </div>

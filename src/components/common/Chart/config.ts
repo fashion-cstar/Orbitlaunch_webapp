@@ -3,7 +3,7 @@ import {
   DatafeedConfiguration,
   IBasicDataFeed,
   LibrarySymbolInfo,
-} from "../../../public/static/charting_library/charting_library";
+} from "../../../../public/static/charting_library/charting_library";
 import { BNB_TOKEN_ADDRESS } from "@app/shared/AppConstant";
 import { getSubscriptionId, getWBNBBusdPrice } from "@app/shared/Queries";
 import { configurationData } from "./bitquery";

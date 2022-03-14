@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Board from "@app/components/products/Board";
+import Board from "@app/components/products/Board/Board";
 import { GetServerSideProps } from "next";
 import { getBNBPrice } from "@app/lib/hooks/useTokenPrice";
 import {
