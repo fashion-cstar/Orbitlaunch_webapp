@@ -38,13 +38,13 @@ export default function Indicators() {
             <div className="mb-[6px] flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">
               <span>Market Cap</span>
             </div>
-            <div className="text-xl">$ {marketCap}</div>
+            <div className="text-base">$ {marketCap}</div>
           </div>
           <div className="flex-1 rounded-2xl bg-[#001926] p-4">
             <div className="mb-[6px] flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">
               <span>Current LP</span>
             </div>
-            <div className="text-xl">{liquidityPool} BNB</div>
+            <div className="text-base">{liquidityPool} BNB</div>
           </div>
         </div>
         <div className="flex flex-row space-x-4">
@@ -52,14 +52,14 @@ export default function Indicators() {
             <div className="mb-[6px] flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">
               <span>Holders</span>
             </div>
-            <div className="text-xl">{holders}</div>
+            <div className="text-base">{holders}</div>
           </div>
           {/* @todo: have a variation e.g up to 28% */}
           <div className="flex-1 rounded-2xl bg-[#001926] p-4">
             <div className="mb-[6px] flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">
               <span>Price</span>
             </div>
-            <div className="text-xl">$ {price}</div>
+            <div className="text-base">$ {price}</div>
           </div>
         </div>
       </div>
