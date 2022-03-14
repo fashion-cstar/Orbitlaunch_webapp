@@ -509,7 +509,7 @@ export function useProjectStatus(ido: any): number {
   const startTimeForNonM31: BigNumber = useStartTimeForNonM31(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const endTimeForNonM31: BigNumber = useEndTimeForNonM31(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const openedToNonM31: boolean = useOpenedToNonM31Holders(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
-  const [projectStatus, setProjectStatus] = useState(0)
+  const [projectStatus, setProjectStatus] = useState(1)
 
   useEffect(() => {
     if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31) {
