@@ -3,13 +3,13 @@ import { NextApiRequest, NextApiResponse } from "next";
 import {
   BITQUERY_GRAPHQL_URL,
   BITQUERY_HEADERS,
-  CORS,
-  NETWORK_BSC,
-  RESOLUTION_TO_INTERVAL,
   BNB_TOKEN_ADDRESS,
+  BUSD_TOKEN_ADDRESS,
+  CORS,
+  RESOLUTION_TO_INTERVAL,
 } from "@app/shared/AppConstant";
 import { getThirtyDaysAgo } from "@app/shared/helpers/time";
-import { queryGetBars } from "@app/shared/Queries";
+import { queryGetBars, queryGetBarsWithoutFrom } from "@app/shared/Queries";
 
 export default async function apiGetDexTrades(
   req: NextApiRequest,
@@ -30,22 +30,39 @@ export default async function apiGetDexTrades(
       firstDataRequest,
     } = req.body as any;
 
+    let _quoteCurrency = BNB_TOKEN_ADDRESS;
+
+    if (baseCurrency?.toLowerCase() === BNB_TOKEN_ADDRESS) {
+      _quoteCurrency = BUSD_TOKEN_ADDRESS;
+    }
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    const todayISOString = today.toISOString();
+
     const response = await axios.post(
       BITQUERY_GRAPHQL_URL,
       {
-        query: queryGetBars,
+        query:
+          firstDataRequest && countBack
+            ? queryGetBarsWithoutFrom
+            : queryGetBars,
         variables: {
           from:
-            new Date(from * 1000)?.toISOString() ||
-            getThirtyDaysAgo().toISOString(),
-          to: firstDataRequest
-            ? new Date().toISOString()
-            : new Date(to * 1000)?.toISOString(),
-          limit: countBack || 600,
-          quoteCurrency: BNB_TOKEN_ADDRESS,
+            firstDataRequest && countBack
+              ? undefined
+              : new Date(from * 1000)?.toISOString() ||
+                getThirtyDaysAgo().toISOString(),
+          to:
+            firstDataRequest && countBack
+              ? todayISOString
+              : firstDataRequest
+              ? todayISOString
+              : new Date(to * 1000)?.toISOString(),
+          limit: Math.round(countBack * 1.1) || 600,
+          quoteCurrency: _quoteCurrency,
           baseCurrency: baseCurrency as string,
           network: "bsc",
-          interval: RESOLUTION_TO_INTERVAL[resolution] / 60,
+          interval: RESOLUTION_TO_INTERVAL[resolution],
         },
         mode: CORS,
       },
@@ -53,37 +70,17 @@ export default async function apiGetDexTrades(
         headers: BITQUERY_HEADERS,
       }
     );
-
-    const constructedBars = response.data.data.ethereum?.dexTrades.reduce(
-      (result, bar) => {
-        const isSell = bar.low < bar.high;
-        const isBuy = bar.low > bar.high;
-        const previousBar = result[result.length - 1] || bar;
-        const _bar = {
-          time: new Date(bar.timeInterval.minute).getTime(), // date string in api response
-          low: bar.low,
-          high: bar.high,
-          open: Number(previousBar.close),
-          close: Number(bar.close),
-          volume: bar.volume,
-        };
-        return result.concat(_bar);
-      },
-      []
+    // sort from oldest to newest
+    const bars = response.data.data.ethereum?.dexTrades.sort(
+      (a, b) =>
+        new Date(a.timeInterval.minute).getTime() -
+        new Date(b.timeInterval.minute).getTime()
     );
 
-    // const bars = response.data.data.ethereum?.dexTrades.map((el) => ({
-    //   time: new Date(el.timeInterval.minute).getTime(), // date string in api response
-    //   low: el.low,
-    //   high: el.high,
-    //   open: Number(el.open),
-    //   close: Number(el.close),
-    //   volume: el.volume,
-    // }));
-    res.status(200).json({ data: constructedBars });
+    res.status(200).json({ data: bars });
   } catch (e) {
     console.log(e);
-    res.status(500).json({ error: e });
+    res.status(500).json({ error: e, data: [] });
     res.end();
   }
 }
