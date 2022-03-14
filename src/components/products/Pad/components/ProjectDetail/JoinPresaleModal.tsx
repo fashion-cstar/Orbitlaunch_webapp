@@ -270,23 +270,23 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 value={projectTokenAmount} name={project.projectSymbol} icon={project.projectIcon} />
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>Max Allocation Allowed</div>
-                                <div>{`$${userMaxAllocation} / ${getAllowedLaunchTokens()}`}</div>
+                                <div className='text-right'>{`$${userMaxAllocation} / ${getAllowedLaunchTokens()}`}</div>
                             </div>
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>Tokens Purchased</div>
-                                <div>{`$${formatEther(depositedAmount, fundDecimals, 2)} / ${getUserPurchasedLaunchTokens()}`}</div>
+                                <div className='text-right'>{`$${formatEther(depositedAmount, fundDecimals, 2)} / ${getUserPurchasedLaunchTokens()}`}</div>
                             </div>
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>Current Available Supply</div>
-                                <div>{`${getAvailableSupply()} ${project.projectSymbol} For Purchase `}</div>
+                                <div className='text-right'>{`${getAvailableSupply()} ${project.projectSymbol} For Purchase `}</div>
                             </div>
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>BUSD Balance</div>
-                                <div>{`${formatEther(userBUSDBalance, fundDecimals, 2)} BUSD`}</div>
+                                <div className='text-right'>{`${formatEther(userBUSDBalance, fundDecimals, 2)} BUSD`}</div>
                             </div>
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>Native Coin Balance</div>
-                                <div>{`${ethBalance} ${getNativeSymbol(project.blockchain)}`}</div>
+                                <div className='text-right'>{`${ethBalance} ${getNativeSymbol(project.blockchain)}`}</div>
                             </div>
                             <div className='flex gap-4'>
                                 <Button
