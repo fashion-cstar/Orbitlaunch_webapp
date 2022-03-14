@@ -1,7 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther } from "@ethersproject/units"
 import { Contract } from '@ethersproject/contracts'
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useEthers, ChainId } from "@usedapp/core"
 import { ethers } from "ethers"
 import { getContract, parseEther, calculateGasMargin } from 'src/utils'
@@ -13,6 +13,8 @@ import { AddressZero } from '@ethersproject/constants'
 import { M31TokenAddress, RpcProviders } from "@app/shared/PadConstant"
 import { getTierValues } from '@app/shared/TierLevels'
 import { getChainIdFromName } from 'src/utils'
+import useRefresh from './useRefresh'
+
 import moment from 'moment'
 
 export function fetchProjectList(): Promise<any | null> {
@@ -22,7 +24,7 @@ export function fetchProjectList(): Promise<any | null> {
       return data
     })
     .catch(error => {
-      console.error("Failed to get project list: " + error.error?.message)
+      console.error("Failed to get project list: " + error)
     }))
 }
 
@@ -30,6 +32,7 @@ export function useDepositInfo(padContractAddress: string, blockchain: string): 
   const { account } = useEthers()
   const [userDeposited, setUserDeposited] = useState<BigNumber>(BigNumber.from(0))
   const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchUserDeposited = async () => {
@@ -40,11 +43,11 @@ export function useDepositInfo(padContractAddress: string, blockchain: string): 
     if (!!account) {
       fetchUserDeposited().then(result => {
         setUserDeposited(result)
-      }).catch(console.error)
+      }).catch(error => { })
     } else {
       setUserDeposited(BigNumber.from(0))
     }
-  }, [account])
+  }, [account, slowRefresh])
 
   return userDeposited
 }
@@ -89,7 +92,7 @@ export function useLaunchTokenPrice(padContractAddress: string, blockchain: stri
     if (padContractAddress) {
       fetchLaunchTokenPrice().then(result => {
         setLaunchTokenPrice(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
   }, [padContractAddress])
 
@@ -98,7 +101,7 @@ export function useLaunchTokenPrice(padContractAddress: string, blockchain: stri
 
 export function uselaunchTokenDecimals(padContractAddress: string, blockchain: string): BigNumber {
   const { account, library } = useEthers()
-  const [launchTokenDecimals, setLaunchTokenDecimals] = useState<BigNumber>(BigNumber.from(0))
+  const [launchTokenDecimals, setLaunchTokenDecimals] = useState<BigNumber>(BigNumber.from(18))
   const chainId = getChainIdFromName(blockchain);
 
   useEffect(() => {
@@ -110,7 +113,7 @@ export function uselaunchTokenDecimals(padContractAddress: string, blockchain: s
     if (padContractAddress) {
       fetchLaunchTokenDecimals().then(result => {
         setLaunchTokenDecimals(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
   }, [padContractAddress])
 
@@ -133,7 +136,7 @@ export function useToken(tokenContractAddress: string, blockchain: string): { na
     if (tokenContractAddress) {
       fetchToken().then(result => {
         setToken(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
   }, [tokenContractAddress])
 
@@ -248,6 +251,7 @@ export function useTokenBalance(tokenAddress: string, blockchain: string): BigNu
   const { account } = useEthers()
   const [balance, setBalance] = useState<BigNumber>(BigNumber.from(0))
   const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchUserBalance = async () => {
@@ -258,13 +262,25 @@ export function useTokenBalance(tokenAddress: string, blockchain: string): BigNu
     if (!!account && !!tokenAddress) {
       fetchUserBalance().then(result => {
         setBalance(result)
-      }).catch(console.error)
+      }).catch(error => { })
     } else {
       setBalance(BigNumber.from(0))
     }
-  }, [account, tokenAddress])
+  }, [account, tokenAddress, slowRefresh])
 
   return balance
+}
+
+export function useTokenBalanceCallback(): { tokenBalanceCallback: (tokenAddress: string, blockchain: string) => Promise<BigNumber> } {
+  const { account, library } = useEthers()
+  const tokenBalanceCallback = async function (tokenAddress: string, blockchain: string) {
+    const chainId = getChainIdFromName(blockchain);
+    const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+    return tokenContract.balanceOf(account).then((res: BigNumber) => {
+      return res
+    })
+  }
+  return { tokenBalanceCallback }
 }
 
 export function useFundTier(): number {
@@ -281,7 +297,7 @@ export function useFundTier(): number {
     if (!!account && !!library) {
       fetchFundTier().then(result => {
         setCurrentTierNo(result)
-      }).catch(console.error)
+      }).catch(error => { })
     } else {
       setCurrentTierNo(0)
     }
@@ -294,6 +310,7 @@ export function useTotalInvestedAmount(padContractAddress: string, blockchain: s
   const { account } = useEthers()
   const [totalInvestedAmount, setTotalInvestedAmount] = useState<BigNumber>(BigNumber.from(0))
   const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchTotalInvestedAmount = async () => {
@@ -304,9 +321,9 @@ export function useTotalInvestedAmount(padContractAddress: string, blockchain: s
     if (padContractAddress) {
       fetchTotalInvestedAmount().then(result => {
         setTotalInvestedAmount(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
-  }, [padContractAddress])
+  }, [padContractAddress, slowRefresh])
 
   return totalInvestedAmount
 }
@@ -315,6 +332,7 @@ export function useGetTotalInvestors(padContractAddress: string, blockchain: str
   const { account } = useEthers()
   const [totalInvestors, setTotalInvestors] = useState<BigNumber>(BigNumber.from(0))
   const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchGetTotalInvestors = async () => {
@@ -325,9 +343,9 @@ export function useGetTotalInvestors(padContractAddress: string, blockchain: str
     if (padContractAddress) {
       fetchGetTotalInvestors().then(result => {
         setTotalInvestors(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
-  }, [padContractAddress])
+  }, [padContractAddress, slowRefresh])
 
   return totalInvestors
 }
@@ -346,7 +364,7 @@ export function useVestingStartedAt(padContractAddress: string, blockchain: stri
     if (padContractAddress) {
       fetchVestingStartedAt().then(result => {
         setVestingStartedAt(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
   }, [padContractAddress])
 
@@ -357,6 +375,7 @@ export function useStartTime(padContractAddress: string, blockchain: string): Bi
   const { account } = useEthers()
   const [startTime, setStartTime] = useState<BigNumber>(BigNumber.from(0))
   const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchStartTime = async () => {
@@ -367,9 +386,9 @@ export function useStartTime(padContractAddress: string, blockchain: string): Bi
     if (padContractAddress) {
       fetchStartTime().then(result => {
         setStartTime(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
-  }, [padContractAddress])
+  }, [padContractAddress, slowRefresh])
 
   return startTime
 }
@@ -378,6 +397,7 @@ export function useEndTime(padContractAddress: string, blockchain: string): BigN
   const { account } = useEthers()
   const [endTime, setEndTime] = useState<BigNumber>(BigNumber.from(0))
   const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchEndTime = async () => {
@@ -388,9 +408,9 @@ export function useEndTime(padContractAddress: string, blockchain: string): BigN
     if (padContractAddress) {
       fetchEndTime().then(result => {
         setEndTime(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
-  }, [padContractAddress])
+  }, [padContractAddress, slowRefresh])
 
   return endTime
 }
@@ -399,6 +419,7 @@ export function useStartTimeForNonM31(padContractAddress: string, blockchain: st
   const { account } = useEthers()
   const [startTimeForNonM31, setStartTimeForNonM31] = useState<BigNumber>(BigNumber.from(0))
   const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchStartTimeForNonM31 = async () => {
@@ -409,9 +430,9 @@ export function useStartTimeForNonM31(padContractAddress: string, blockchain: st
     if (padContractAddress) {
       fetchStartTimeForNonM31().then(result => {
         setStartTimeForNonM31(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
-  }, [padContractAddress])
+  }, [padContractAddress, slowRefresh])
 
   return startTimeForNonM31
 }
@@ -420,6 +441,7 @@ export function useEndTimeForNonM31(padContractAddress: string, blockchain: stri
   const { account } = useEthers()
   const [endTimeForNonM31, setEndTimeForNonM31] = useState<BigNumber>(BigNumber.from(0))
   const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchEndTimeForNonM31 = async () => {
@@ -430,9 +452,9 @@ export function useEndTimeForNonM31(padContractAddress: string, blockchain: stri
     if (padContractAddress) {
       fetchEndTimeForNonM31().then(result => {
         setEndTimeForNonM31(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
-  }, [padContractAddress])
+  }, [padContractAddress, slowRefresh])
 
   return endTimeForNonM31
 }
@@ -441,6 +463,7 @@ export function useOpenedToNonM31Holders(padContractAddress: string, blockchain:
   const { account } = useEthers()
   const [openedToNonM31, setOpenedToNonM31] = useState(false)
   const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchOpenedToNonM31Holders = async () => {
@@ -451,9 +474,9 @@ export function useOpenedToNonM31Holders(padContractAddress: string, blockchain:
     if (padContractAddress) {
       fetchOpenedToNonM31Holders().then(result => {
         setOpenedToNonM31(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
-  }, [padContractAddress])
+  }, [padContractAddress, slowRefresh])
 
   return openedToNonM31
 }
@@ -462,6 +485,8 @@ export function useNativeTokenBalance(blockchain: string): BigNumber {
   const { account } = useEthers()
   const chainId = getChainIdFromName(blockchain);
   const [balance, setBalance] = useState(BigNumber.from(0))
+  const { slowRefresh, fastRefresh } = useRefresh()
+
   useEffect(() => {
     const fetchNativeToken = async () => {
       const balance = await RpcProviders[chainId].getBalance(account);
@@ -470,11 +495,11 @@ export function useNativeTokenBalance(blockchain: string): BigNumber {
     if (account) {
       fetchNativeToken().then(result => {
         setBalance(result)
-      }).catch(console.error)
+      }).catch(error => { })
     } else {
       setBalance(BigNumber.from(0))
     }
-  }, [account])
+  }, [account, slowRefresh])
   return balance
 }
 
@@ -488,19 +513,25 @@ export function useProjectStatus(ido: any): number {
 
   useEffect(() => {
     if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31) {
-      if (moment(moment.now()).isBefore(moment(startTime.toNumber() * 1000))) setProjectStatus(1) // presale opening soon
-      if (moment(moment.now()).isSameOrAfter(moment(startTime.toNumber() * 1000))
-        && moment(moment.now()).isBefore(moment(endTime.toNumber() * 1000))) setProjectStatus(2) // presale open
-      if (moment(moment.now()).isSameOrAfter(moment(endTime.toNumber() * 1000))) setProjectStatus(3) // presale closed      
+      if (startTime.toNumber() > 0 && endTime.toNumber() > 0) {
+        if (moment(moment.now()).isBefore(moment(startTime.toNumber() * 1000))) setProjectStatus(1) // presale opening soon
+        if (moment(moment.now()).isSameOrAfter(moment(startTime.toNumber() * 1000))
+          && moment(moment.now()).isBefore(moment(endTime.toNumber() * 1000))) setProjectStatus(2) // presale open
+        if (moment(moment.now()).isSameOrAfter(moment(endTime.toNumber() * 1000))) setProjectStatus(3) // presale closed      
+      }
       if (openedToNonM31) {
-        if (moment(moment.now()).isSameOrAfter(moment(startTimeForNonM31.toNumber() * 1000))
-          && moment(moment.now()).isBefore(moment(endTimeForNonM31.toNumber() * 1000))) setProjectStatus(4) // public presale open
-        if (moment(moment.now()).isSameOrAfter(moment(endTimeForNonM31.toNumber() * 1000))) setProjectStatus(5) // public presale closed
+        if (startTimeForNonM31.toNumber() > 0 && endTimeForNonM31.toNumber() > 0) {
+          if (moment(moment.now()).isSameOrAfter(moment(startTimeForNonM31.toNumber() * 1000))
+            && moment(moment.now()).isBefore(moment(endTimeForNonM31.toNumber() * 1000))) setProjectStatus(4) // public presale open
+          if (moment(moment.now()).isSameOrAfter(moment(endTimeForNonM31.toNumber() * 1000))) setProjectStatus(5) // public presale closed
+        }
       }
     }
     if (ido) {
-      if (moment(moment.now()).isAfter(moment(ido?.launchDate * 1000))) {
-        setProjectStatus(6) // project launched
+      if (ido?.launchDate>0){
+        if (moment(moment.now()).isAfter(moment(ido?.launchDate * 1000))) {
+          setProjectStatus(6) // project launched
+        }
       }
     }
   }, [ido, startTime, endTime, startTimeForNonM31, endTimeForNonM31, openedToNonM31])
@@ -522,7 +553,7 @@ export function useMaxAllocationNonM31(padContractAddress: string, blockchain: s
     if (padContractAddress) {
       fetchMaxAllocationNonM31().then(result => {
         setMaxAllocationNonM31(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
   }, [padContractAddress])
 
@@ -543,7 +574,7 @@ export function useVestDuration(padContractAddress: string, blockchain: string):
     if (padContractAddress) {
       fetchVestDuration().then(result => {
         setVestDuration(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
   }, [padContractAddress, account])
 
@@ -554,6 +585,7 @@ export function useInvestCap(padContractAddress: string, blockchain: string): Bi
   const { account } = useEthers()
   const [investCap, setInvestCap] = useState<BigNumber>(BigNumber.from(0))
   const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchInvestCap = async () => {
@@ -564,9 +596,9 @@ export function useInvestCap(padContractAddress: string, blockchain: string): Bi
     if (padContractAddress) {
       fetchInvestCap().then(result => {
         setInvestCap(result)
-      }).catch(console.error)
+      }).catch(error => { })
     }
-  }, [padContractAddress])
+  }, [padContractAddress, slowRefresh])
 
   return investCap
 }

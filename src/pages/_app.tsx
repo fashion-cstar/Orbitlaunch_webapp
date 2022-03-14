@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import { BSC_RPC_URL } from "@app/shared/AppConstant";
 import compose from "@app/shared/helpers/compose";
 import "@app/styles/globals.css";
+import { RefreshContextProvider } from 'src/contexts/RefreshContext'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -51,10 +52,12 @@ function OrbitApp({
     <CacheProvider value={emotionCache}>
       <DAppProvider config={config}>
         <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <RefreshContextProvider>
+            <CssBaseline />
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </RefreshContextProvider>
         </ThemeProvider>
       </DAppProvider>
     </CacheProvider>
