@@ -6,6 +6,18 @@ export default class MyDocument extends Document {
       <Html>
         <Head>
           <script src="/static/datafeeds/udf/dist/bundle.js" />
+          <script async src="https://www.googletagmanager.com/gtag/js?id=G-ET6KQ143XL"></script>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+    
+                gtag('config', 'G-ET6KQ143XL');
+              `,
+            }}
+          />
         </Head>
         <body>
           <Main />
