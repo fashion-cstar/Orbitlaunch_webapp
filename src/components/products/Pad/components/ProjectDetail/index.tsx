@@ -9,6 +9,7 @@ import About from '@app/components/products/Pad/components/ProjectDetail/About'
 import FeaturedProjects from '@app/components/products/Pad/components/FeaturedProjects'
 import { fetchProjectList } from 'src/state/Pad/hooks'
 import JoinPresaleModal from '@app/components/products/Pad/components/ProjectDetail/JoinPresaleModal'
+import ClaimTokensModal from '@app/components/products/Pad/components/ProjectDetail/ClaimTokensModal'
 import { useLaunchTokenCallback, useFundTier, useProjectStatus } from 'src/state/Pad/hooks'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther } from 'src/utils'
@@ -19,6 +20,7 @@ export default function ProjectDetail({ project }: { project: any }) {
     const [IdoList, setIdoList] = useState<any>()
     const [IdoProject, setIdoProject] = useState<any>()
     const [isOpenJoinPresale, setIsOpenJoinPresale] = useState(false);
+    const [isOpenClaimTokens, setIsOpenClaimTokens] = useState(false);
     const [launchTokenPrice, setLaunchTokenPrice] = useState(0)
     const [launchTokenDecimals, setLaunchTokenDecimals] = useState(0)
     const { launchTokenPriceCallback, launchTokenDecimalsCallback } = useLaunchTokenCallback() 
@@ -81,6 +83,14 @@ export default function ProjectDetail({ project }: { project: any }) {
         setIsOpenJoinPresale(false);
     };
 
+    const handleCloseClaimTokens = () => {
+        setIsOpenClaimTokens(false);
+    };
+
+    const handleClickClaimTokens = () => {
+        setIsOpenClaimTokens(true);
+    };
+
     const handleHideTierCard = (event) => {
 
     }
@@ -90,6 +100,9 @@ export default function ProjectDetail({ project }: { project: any }) {
             {IdoProject && (<JoinPresaleModal project={IdoProject}
                 isOpen={isOpenJoinPresale} launchTokenPrice={launchTokenPrice}
                 currentTierNo={currentTierNo} handleClose={handleCloseJoinPresale} />)}
+            {IdoProject && (<ClaimTokensModal project={IdoProject}
+                isOpen={isOpenClaimTokens} launchTokenPrice={launchTokenPrice}
+                handleClose={handleCloseClaimTokens} />)}
             <div className="w-full" onClick={(e) => handleHideTierCard(e)} >
                 <div className="flex flex-row items-center justify-between">
                     <h1 className="text-[32px] font-medium">OrbitPad</h1>
@@ -113,7 +126,7 @@ export default function ProjectDetail({ project }: { project: any }) {
                                 <Indicators ido={IdoProject} launchTokenPrice={launchTokenPrice} currentTierNo={currentTierNo} hideTierCard={hideTierCard} />
                                 <Detail ido={IdoProject} />
                             </div>
-                            <div className='flex-1'><About ido={IdoProject} projectStatus={projectStatus} handleClickJoinPresale={handleClickJoinPresale} /></div>
+                            <div className='flex-1'><About ido={IdoProject} projectStatus={projectStatus} handleClickJoinPresale={handleClickJoinPresale} handleClickClaimTokens={handleClickClaimTokens} /></div>
                         </div>
                     </div>           
                 </>)}

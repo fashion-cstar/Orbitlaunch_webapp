@@ -163,6 +163,10 @@ export const getProjectStatusText = (ps: number): string => {
       return 'public presale closed'
     case 6:
       return 'project launched'
+    case 7:
+      return 'vesting started'
+    case 8:
+      return 'vesting closed'
   }
 }
 

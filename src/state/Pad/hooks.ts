@@ -227,11 +227,11 @@ export function useJoinPresaleCallback(): {
 }
 
 export function useClaimCallback(): {
-  ClaimCallback: (padContractAddress: string, blockchain: string) => Promise<string>,
+  claimCallback: (padContractAddress: string, blockchain: string) => Promise<string>,
 } {
   const { account, library } = useEthers()
 
-  const ClaimCallback = async function (padContractAddress: string, blockchain: string) {
+  const claimCallback = async function (padContractAddress: string, blockchain: string) {
     if (!account || !library || !padContractAddress) return
     const chainId = getChainIdFromName(blockchain);
     const padContract: Contract = getContract(padContractAddress, PAD_ABI, library, account ? account : undefined)
@@ -244,7 +244,7 @@ export function useClaimCallback(): {
         })
     })
   }
-  return { ClaimCallback }
+  return { claimCallback }
 }
 
 export function useTokenBalance(tokenAddress: string, blockchain: string): BigNumber {
@@ -350,10 +350,35 @@ export function useGetTotalInvestors(padContractAddress: string, blockchain: str
   return totalInvestors
 }
 
+export function useGetAvailableTokens(padContractAddress: string, blockchain: string): BigNumber {
+  const { account } = useEthers()
+  const [availableToClaim, setAvailableToClaim] = useState<BigNumber>(BigNumber.from(0))
+  const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
+
+  useEffect(() => {
+    const fetchAvailableToClaim = async () => {
+      const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
+      const vestingat = await padContract.getAvailableTokens(account)
+      return vestingat
+    }
+    if (padContractAddress && account) {
+      fetchAvailableToClaim().then(result => {
+        setAvailableToClaim(result)
+      }).catch(error => { })
+    } else {
+      setAvailableToClaim(BigNumber.from(0))
+    }
+  }, [padContractAddress, account, slowRefresh])
+
+  return availableToClaim
+}
+
 export function useVestingStartedAt(padContractAddress: string, blockchain: string): BigNumber {
   const { account } = useEthers()
   const [vestingStartedAt, setVestingStartedAt] = useState<BigNumber>(BigNumber.from(0))
   const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchVestingStartedAt = async () => {
@@ -366,9 +391,31 @@ export function useVestingStartedAt(padContractAddress: string, blockchain: stri
         setVestingStartedAt(result)
       }).catch(error => { })
     }
-  }, [padContractAddress])
+  }, [padContractAddress, slowRefresh])
 
   return vestingStartedAt
+}
+
+export function useVestDuration(padContractAddress: string, blockchain: string): BigNumber {
+  const { account } = useEthers()
+  const [vestDuration, setVestDuration] = useState<BigNumber>(BigNumber.from(0))
+  const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
+
+  useEffect(() => {
+    const fetchVestDuration = async () => {
+      const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
+      const timeat = await padContract.vestDuration()
+      return timeat
+    }
+    if (padContractAddress) {
+      fetchVestDuration().then(result => {
+        setVestDuration(result)
+      }).catch(error => { })
+    }
+  }, [padContractAddress, slowRefresh])
+
+  return vestDuration
 }
 
 export function useStartTime(padContractAddress: string, blockchain: string): BigNumber {
@@ -509,6 +556,8 @@ export function useProjectStatus(ido: any): number {
   const startTimeForNonM31: BigNumber = useStartTimeForNonM31(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const endTimeForNonM31: BigNumber = useEndTimeForNonM31(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const openedToNonM31: boolean = useOpenedToNonM31Holders(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
+  const vestingStartedAt: BigNumber = useVestingStartedAt(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
+  const vestDuration: BigNumber = useVestDuration(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const [projectStatus, setProjectStatus] = useState(0)
 
   useEffect(() => {
@@ -527,8 +576,16 @@ export function useProjectStatus(ido: any): number {
         }
       }
     }
+    if (vestingStartedAt && vestDuration) {      
+      let vestingEndAt = (vestingStartedAt.toNumber() + vestDuration.toNumber() * 2592000) //unix timestamp
+      if (vestingStartedAt.toNumber() > 0 && vestDuration.toNumber() > 0) {
+        if (moment(moment.now()).isSameOrAfter(moment(vestingStartedAt.toNumber() * 1000))
+          && moment(moment.now()).isBefore(moment(vestingEndAt * 1000))) setProjectStatus(7) // vesting started
+        if (moment(moment.now()).isSameOrAfter(moment(vestingEndAt * 1000))) setProjectStatus(8) // vesting closed
+      }
+    }
     if (ido) {
-      if (ido?.launchDate>0){
+      if (ido?.launchDate > 0) {
         if (moment(moment.now()).isAfter(moment(ido?.launchDate * 1000))) {
           setProjectStatus(6) // project launched
         }
@@ -558,27 +615,6 @@ export function useMaxAllocationNonM31(padContractAddress: string, blockchain: s
   }, [padContractAddress])
 
   return maxAllocationNonM31
-}
-
-export function useVestDuration(padContractAddress: string, blockchain: string): BigNumber {
-  const { account } = useEthers()
-  const [vestDuration, setVestDuration] = useState<BigNumber>(BigNumber.from(0))
-  const chainId = getChainIdFromName(blockchain);
-
-  useEffect(() => {
-    const fetchVestDuration = async () => {
-      const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
-      const timeat = await padContract.vestDuration()
-      return timeat
-    }
-    if (padContractAddress) {
-      fetchVestDuration().then(result => {
-        setVestDuration(result)
-      }).catch(error => { })
-    }
-  }, [padContractAddress, account])
-
-  return vestDuration
 }
 
 export function useInvestCap(padContractAddress: string, blockchain: string): BigNumber {
