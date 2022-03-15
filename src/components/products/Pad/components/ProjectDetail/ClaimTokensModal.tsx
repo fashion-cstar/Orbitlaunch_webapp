@@ -70,7 +70,7 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
 
     async function onDeposit() {
         setAttempting(true)
-       
+
         try {
             claimCallback(project.contractAddress, project.blockchain).then((hash: string) => {
                 setHash(hash)
@@ -83,13 +83,13 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
             setAttempting(false)
             console.log(error)
         }
-                
+
         return null;
     }
 
     const onclose = () => {
         setHash(undefined)
-        setAttempting(false)       
+        setAttempting(false)
         handleClose()
     }
 
@@ -113,25 +113,25 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
                         <div className='flex flex-col space-y-4 mt-6'>
                             <div className='text-white text-[18px] flex flex-col justify-center items-center gap-4'>
                                 <div>Available To Claim</div>
-                                <div>{`${availableTokens?formatEther(availableTokens, fundDecimals, 2):0} ${project.projectSymbol}`}</div>
-                            </div>                            
+                                <div>{`${availableTokens ? formatEther(availableTokens, fundDecimals, 2) : 0} ${project.projectSymbol}`}</div>
+                            </div>
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>Tokens Purchased</div>
                                 <div className='text-right'>{`$${formatEther(depositedAmount, fundDecimals, 2)} / ${getUserPurchasedLaunchTokens()}`}</div>
-                            </div>                           
+                            </div>
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>Native Coin Balance</div>
                                 <div className='text-right'>{`${ethBalance} ${getNativeSymbol(project.blockchain)}`}</div>
                             </div>
-                            <div className='flex gap-4'>                               
+                            <div className='flex gap-4'>
                                 <Button
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
                                     onClick={onDeposit}
-                                    disabled={!availableTokens || availableTokens?.toNumber()<=0}
+                                    disabled={!availableTokens || availableTokens?.toNumber() <= 0}
                                 >
                                     Claim Tokens
-                                </Button>                                
+                                </Button>
                             </div>
                         </div>
                     )}
