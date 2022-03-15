@@ -7,6 +7,7 @@ export default function FundCard() {
     const { account } = useEthers();
 
     const {
+        totalInvestedToDate,
         currentInvestment,
         currentTierNo,
         currentTierPercentage,
@@ -26,7 +27,7 @@ export default function FundCard() {
                     <div className="flex flex-col space-y-2 text-sm">
                         <p>Current Investors: <span className="text-[#867EE8]">{totalInvestorsFormatted}</span></p>
                         <p>Profit to Date: <span className="text-[#867EE8]">$ {roiToDate}</span></p>
-                        <p>Total Invested to Date: <span className="text-[#867EE8]">$ {currentInvestment}</span></p>
+                        <p>Total Invested to Date: <span className="text-[#867EE8]">$ {totalInvestedToDate}</span></p>
                     </div>
                 </div>
             )}
