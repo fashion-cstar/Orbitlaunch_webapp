@@ -105,7 +105,7 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
         <div>
             <Modal
                 isOpen={isOpen}
-                header="Join Presale Now"
+                header="Claim Tokens"
                 handleClose={onclose}
             >
                 <div className='m-4 md:m-6 w-[300px] md:w-[400px]'>
