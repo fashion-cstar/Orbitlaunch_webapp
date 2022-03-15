@@ -352,26 +352,26 @@ export function useGetTotalInvestors(padContractAddress: string, blockchain: str
 
 export function useGetAvailableTokens(padContractAddress: string, blockchain: string): BigNumber {
   const { account } = useEthers()
-  const [availableToClaim, setAvailableToClaim] = useState<BigNumber>(BigNumber.from(0))
+  const [availableTokens, setAvailableTokens] = useState<BigNumber>(BigNumber.from(0))
   const chainId = getChainIdFromName(blockchain);
   const { slowRefresh, fastRefresh } = useRefresh()
 
   useEffect(() => {
-    const fetchAvailableToClaim = async () => {
+    const fetchAvailableTokens = async () => {
       const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
-      const vestingat = await padContract.getAvailableTokens(account)
-      return vestingat
+      const availableTokens = await padContract.getAvailableTokens(account)
+      return availableTokens
     }
     if (padContractAddress && account) {
-      fetchAvailableToClaim().then(result => {
-        setAvailableToClaim(result)
+      fetchAvailableTokens().then(result => {
+        setAvailableTokens(result)
       }).catch(error => { })
     } else {
-      setAvailableToClaim(BigNumber.from(0))
+      setAvailableTokens(BigNumber.from(0))
     }
   }, [padContractAddress, account, slowRefresh])
 
-  return availableToClaim
+  return availableTokens
 }
 
 export function useVestingStartedAt(padContractAddress: string, blockchain: string): BigNumber {
@@ -405,8 +405,8 @@ export function useVestDuration(padContractAddress: string, blockchain: string):
   useEffect(() => {
     const fetchVestDuration = async () => {
       const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
-      const timeat = await padContract.vestDuration()
-      return timeat
+      const vestDuration = await padContract.vestDuration()
+      return vestDuration
     }
     if (padContractAddress) {
       fetchVestDuration().then(result => {
