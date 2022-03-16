@@ -128,7 +128,7 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
                                     onClick={onDeposit}
-                                    disabled={!availableTokens || availableTokens?.toNumber() <= 0}
+                                    disabled={!availableTokens || availableTokens.lte(0)}
                                 >
                                     Claim Tokens
                                 </Button>
