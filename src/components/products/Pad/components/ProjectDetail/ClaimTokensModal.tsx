@@ -40,6 +40,7 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
     const userDepositedAmount = useDepositInfo(project.contractAddress, project.blockchain)
     const tokenDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
     const availableTokens = useGetAvailableTokens(project.contractAddress, project.blockchain)
+    const [amountToClaim, setAmountToClaim] = useState(BigNumber.from(0))
     const { claimCallback } = useClaimCallback()
     const nativeBalance = useNativeTokenBalance(project.blockchain)
     const [ethBalance, setEthBalance] = useState(0)
@@ -64,11 +65,16 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
         }
     }, [tokenDecimals])
 
+    useEffect(() => {
+        if (availableTokens){
+            setAmountToClaim(availableTokens)
+        }
+    }, [availableTokens])
     const successClaimed = () => {
-
+        setAmountToClaim(BigNumber.from(0))
     }
 
-    async function onDeposit() {
+    async function onClaim() {
         setAttempting(true)
 
         try {
@@ -113,7 +119,7 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
                         <div className='flex flex-col space-y-4 mt-6'>
                             <div className='text-white text-[18px] flex flex-col justify-center items-center gap-4'>
                                 <div>Available To Claim</div>
-                                <div>{`${availableTokens ? formatEther(availableTokens, fundDecimals, 2) : 0} ${project.projectSymbol}`}</div>
+                                <div>{`${amountToClaim ? formatEther(amountToClaim, fundDecimals, 2) : 0} ${project.projectSymbol}`}</div>
                             </div>
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>Tokens Purchased</div>
@@ -127,8 +133,8 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
                                 <Button
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
-                                    onClick={onDeposit}
-                                    disabled={!availableTokens || availableTokens.lte(0)}
+                                    onClick={onClaim}
+                                    disabled={!amountToClaim || amountToClaim.lte(0)}
                                 >
                                     Claim Tokens
                                 </Button>
@@ -141,7 +147,7 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
                                 <CircularProgress />
                             </Fade>
                             <div>
-                                {`Claiming ${formatEther(availableTokens, fundDecimals, 2)} ${project.projectSymbol}`}
+                                {`Claiming ${formatEther(amountToClaim, fundDecimals, 2)} ${project.projectSymbol}`}
                             </div>
                         </div>
                     )}
@@ -154,7 +160,7 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
                                 <div className='text-[16px] text-[#aaaaaa] text-center'>Transaction submitted</div>
                                 <div className='text-[16px] text-[#aaaaaa] text-center'>{'Hash: ' + hash.slice(0, 10) + '...' + hash.slice(56, 65)}</div>
                                 {chainId && (
-                                    <a className='text-[16px] mt-4 text-[#aaaaee] underline text-center' href={getEtherscanLink(chainId, hash, 'transaction')}>
+                                    <a className='text-[16px] mt-4 text-[#aaaaee] underline text-center' target="_blank" href={getEtherscanLink(chainId, hash, 'transaction')}>
                                         {chainId && `View on ${CHAIN_LABELS[chainId]}`}
                                     </a>
                                 )}

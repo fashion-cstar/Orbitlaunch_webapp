@@ -335,7 +335,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 <div className='text-[16px] text-[#aaaaaa] text-center'>Transaction submitted</div>
                                 <div className='text-[16px] text-[#aaaaaa] text-center'>{'Hash: ' + hash.slice(0, 10) + '...' + hash.slice(56, 65)}</div>
                                 {chainId && (
-                                    <a className='text-[16px] mt-4 text-[#aaaaee] underline text-center' href={getEtherscanLink(chainId, hash, 'transaction')}>
+                                    <a className='text-[16px] mt-4 text-[#aaaaee] underline text-center'  target="_blank" href={getEtherscanLink(chainId, hash, 'transaction')}>
                                         {chainId && `View on ${CHAIN_LABELS[chainId]}`}
                                     </a>
                                 )}
