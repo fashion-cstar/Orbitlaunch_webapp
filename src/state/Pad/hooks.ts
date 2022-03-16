@@ -20,7 +20,7 @@ import moment from 'moment'
 export function fetchProjectList(): Promise<any | null> {
   return (fetch(`https://backend-api-pi.vercel.app/api/getProjects`)
     .then((res: any) => res.json())
-    .then((data) => {
+    .then((data) => {   
       return data
     })
     .catch(error => {
@@ -559,9 +559,9 @@ export function useProjectStatus(ido: any): number {
   const vestingStartedAt: BigNumber = useVestingStartedAt(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const vestDuration: BigNumber = useVestDuration(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const [projectStatus, setProjectStatus] = useState(0)
-
+  
   useEffect(() => {
-    if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31) {
+    if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31 && vestingStartedAt && vestDuration) {
       if (startTime.toNumber() > 0 && endTime.toNumber() > 0) {
         if (moment(moment.now()).isBefore(moment(startTime.toNumber() * 1000))) setProjectStatus(1) // presale opening soon
         if (moment(moment.now()).isSameOrAfter(moment(startTime.toNumber() * 1000))
@@ -575,15 +575,15 @@ export function useProjectStatus(ido: any): number {
           if (moment(moment.now()).isSameOrAfter(moment(endTimeForNonM31.toNumber() * 1000))) setProjectStatus(5) // public presale closed
         }
       }
-    }
-    if (vestingStartedAt && vestDuration) {
-      let vestingEndAt = (vestingStartedAt.toNumber() + vestDuration.toNumber() * 2592000) //unix timestamp
-      if (vestingStartedAt.toNumber() > 0 && vestDuration.toNumber() > 0) {
-        if (moment(moment.now()).isSameOrAfter(moment(vestingStartedAt.toNumber() * 1000))
-          && moment(moment.now()).isBefore(moment(vestingEndAt * 1000))) setProjectStatus(7) // vesting started
-        if (moment(moment.now()).isSameOrAfter(moment(vestingEndAt * 1000))) setProjectStatus(8) // vesting closed
+      if (vestingStartedAt && vestDuration) {
+        let vestingEndAt = (vestingStartedAt.toNumber() + vestDuration.toNumber() * 2592000) //unix timestamp
+        if (vestingStartedAt.toNumber() > 0 && vestDuration.toNumber() > 0) {
+          if (moment(moment.now()).isSameOrAfter(moment(vestingStartedAt.toNumber() * 1000))
+            && moment(moment.now()).isBefore(moment(vestingEndAt * 1000))) setProjectStatus(7) // vesting started
+          if (moment(moment.now()).isSameOrAfter(moment(vestingEndAt * 1000))) setProjectStatus(8) // vesting closed
+        }
       }
-    }
+    }    
     if (ido) {
       if (ido?.launchDate > 0) {
         if (moment(moment.now()).isAfter(moment(ido?.launchDate * 1000))) {
@@ -591,7 +591,7 @@ export function useProjectStatus(ido: any): number {
         }
       }
     }
-  }, [ido, startTime, endTime, startTimeForNonM31, endTimeForNonM31, openedToNonM31])
+  }, [ido, startTime, endTime, startTimeForNonM31, endTimeForNonM31, openedToNonM31, vestingStartedAt, vestDuration])
 
   return projectStatus
 }
