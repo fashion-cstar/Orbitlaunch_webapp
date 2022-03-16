@@ -576,7 +576,7 @@ export function useProjectStatus(ido: any): number {
         }
       }
     }
-    if (vestingStartedAt && vestDuration) {      
+    if (vestingStartedAt && vestDuration) {
       let vestingEndAt = (vestingStartedAt.toNumber() + vestDuration.toNumber() * 2592000) //unix timestamp
       if (vestingStartedAt.toNumber() > 0 && vestDuration.toNumber() > 0) {
         if (moment(moment.now()).isSameOrAfter(moment(vestingStartedAt.toNumber() * 1000))
