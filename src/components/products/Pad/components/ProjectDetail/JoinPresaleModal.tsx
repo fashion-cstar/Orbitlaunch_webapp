@@ -122,7 +122,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     async function onApprove() {
         setIsWalletApproving(true)
         try {
-            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount), project.blockchain).then((hash: string) => {
+            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount+1), project.blockchain).then((hash: string) => {
                 setIsApproved(true)
                 setIsWalletApproving(false)
             }).catch((error: any) => {

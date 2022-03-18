@@ -558,6 +558,8 @@ export function useProjectStatus(ido: any): number {
   const openedToNonM31: boolean = useOpenedToNonM31Holders(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const vestingStartedAt: BigNumber = useVestingStartedAt(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const vestDuration: BigNumber = useVestDuration(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
+  const investCap: BigNumber = useInvestCap(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
+  const totalInvestedAmount: BigNumber = useTotalInvestedAmount(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')  
   const [projectStatus, setProjectStatus] = useState(0)
   
   useEffect(() => {
@@ -583,7 +585,7 @@ export function useProjectStatus(ido: any): number {
           if (moment(moment.now()).isSameOrAfter(moment(vestingEndAt * 1000))) setProjectStatus(8) // vesting closed
         }
       }
-    }    
+    }        
     if (ido) {
       if (ido?.launchDate > 0) {
         if (moment(moment.now()).isAfter(moment(ido?.launchDate * 1000))) {
@@ -591,7 +593,12 @@ export function useProjectStatus(ido: any): number {
         }
       }
     }
-  }, [ido, startTime, endTime, startTimeForNonM31, endTimeForNonM31, openedToNonM31, vestingStartedAt, vestDuration])
+    if (investCap.gt(0)){
+      if (totalInvestedAmount.gte(investCap)){
+        setProjectStatus(9)
+      }
+    }
+  }, [ido, startTime, endTime, startTimeForNonM31, endTimeForNonM31, openedToNonM31, vestingStartedAt, vestDuration, investCap, totalInvestedAmount])
 
   return projectStatus
 }

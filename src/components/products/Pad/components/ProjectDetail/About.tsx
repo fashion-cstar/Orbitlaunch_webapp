@@ -20,22 +20,22 @@ export default function About({ ido, projectStatus, handleClickJoinPresale, hand
             <div className='text-[#919699] text-[14px] mt-6'>
                 <p>{ido.shortDescription}</p>
             </div>
-            <div className="mt-12">
-                {projectStatus <= 6 && <Button
-                    variant="contained"
-                    sx={{ width: "100%", borderRadius: "12px" }}
-                    onClick={handleClickJoinPresale}
-                    disabled={!getJoinPresaleButtonActive(projectStatus)}
-                >
-                    Join Presale Now
-                </Button>}
-                {projectStatus >= 7 && < Button
+            <div className="mt-12">                
+                {(projectStatus >= 7 && projectStatus<=8)? < Button
                     variant="contained"
                     sx={{ width: "100%", borderRadius: "12px" }}
                     onClick={handleClickClaimTokens}
                     disabled={projectStatus == 8}
                 >
                     Claim Tokens
+                </Button>:
+                <Button
+                    variant="contained"
+                    sx={{ width: "100%", borderRadius: "12px" }}
+                    onClick={handleClickJoinPresale}
+                    disabled={!getJoinPresaleButtonActive(projectStatus)}
+                >
+                    Join Presale Now
                 </Button>}
             </div>
         </div >

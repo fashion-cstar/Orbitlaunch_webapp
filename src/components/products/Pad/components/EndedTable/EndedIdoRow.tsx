@@ -6,6 +6,7 @@ import { BUSDTokenAddress } from "@app/shared/PadConstant";
 import { formatEther } from 'src/utils'
 import { getChainIdFromName } from 'src/utils'
 import { useEthers, ChainId } from "@usedapp/core";
+import { useRouter } from 'next/router'
 
 export default function EndedIdoRow({ ido }: { ido: any }) {
     const { library, account, chainId } = useEthers()
@@ -17,6 +18,7 @@ export default function EndedIdoRow({ ido }: { ido: any }) {
     const [launchTokenPrice, setLaunchTokenPrice] = useState(0)
     const tokenPrice = useLaunchTokenPrice(ido.contractAddress, ido.blockchain)
     const userDepositToken = useToken(BUSDTokenAddress[chainId], ido.blockchain)
+    const router = useRouter()
 
     useEffect(() => {
        setLaunchTokenPrice(formatEther(tokenPrice, 18, 5))
@@ -34,8 +36,15 @@ export default function EndedIdoRow({ ido }: { ido: any }) {
         }
     }, [depositedAmount, userDepositToken])
 
+    const handleClickProject = () => {
+        router.push({
+            pathname: '/pad',
+            query: { project: ido.projectName },
+        })
+    }
+
     return (
-        <div className="border-b last:border-0 border-[#112B40] flex py-6">
+        <div className="border-b last:border-0 border-[#112B40] flex py-6 cursor-pointer" onClick={handleClickProject}>
             <div className="min-w-[190px]" style={{ width: "19%" }}>
                 <div className='flex items-center'>
                     <img src={ido.projectIcon} className='w-8 h-8 mr-4' />

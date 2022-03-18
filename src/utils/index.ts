@@ -169,6 +169,8 @@ export const getProjectStatusText = (ps: number): string => {
       return 'vesting started'
     case 8:
       return 'vesting closed'
+    case 9:
+      return 'Presale Filled'      
   }
 }
 

@@ -26,7 +26,7 @@ export default function EndedIdoTable({ idos, width }: { idos: any, width: numbe
                             <span className="w-full text-right">ATH Since Launch</span>
                         </div>
                         <div className="flex items-center min-w-[140px] text-[#919699] text-[12px]" style={{ width: "15%" }}>
-                            <span className="w-full text-right">Launched</span>
+                            <span className="w-full text-right">Presale Completed</span>
                         </div>
                         <div className="flex items-center min-w-[70px] text-[#919699] text-[12px]" style={{ width: "7%" }}>
                             <span className="w-full text-right">Networks</span>
