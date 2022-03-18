@@ -1,8 +1,9 @@
 import ChainIcon from "../ChainIcon";
 import { Button } from "@mui/material";
-import { getJoinPresaleButtonActive } from 'src/utils'
+import { getJoinPresaleButtonActive, getJoinPresaleButtonText } from 'src/utils'
 
-export default function About({ ido, projectStatus, handleClickJoinPresale }: { ido: any, projectStatus: number, handleClickJoinPresale: () => void }) {
+export default function About({ ido, projectStatus, handleClickJoinPresale, handleClickClaimTokens }:
+    { ido: any, projectStatus: number, handleClickJoinPresale: () => void, handleClickClaimTokens: () => void }) {
     return (
         <div className="min-w-[300px] rounded-2xl bg-[#001926] p-4">
             <div className='text-[#919699] text-[14px]'>
@@ -19,16 +20,24 @@ export default function About({ ido, projectStatus, handleClickJoinPresale }: { 
             <div className='text-[#919699] text-[14px] mt-6'>
                 <p>{ido.shortDescription}</p>
             </div>
-            <div className="mt-12">
+            <div className="mt-12">                
+                {(projectStatus >= 7 && projectStatus<=8)? < Button
+                    variant="contained"
+                    sx={{ width: "100%", borderRadius: "12px" }}
+                    onClick={handleClickClaimTokens}
+                    disabled={projectStatus == 8}
+                >
+                    Claim Tokens
+                </Button>:
                 <Button
                     variant="contained"
                     sx={{ width: "100%", borderRadius: "12px" }}
                     onClick={handleClickJoinPresale}
                     disabled={!getJoinPresaleButtonActive(projectStatus)}
                 >
-                    Join Presale Now
-                </Button>
+                    {getJoinPresaleButtonText(projectStatus)}
+                </Button>}
             </div>
-        </div>
+        </div >
     );
 }

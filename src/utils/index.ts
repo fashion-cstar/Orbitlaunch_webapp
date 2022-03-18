@@ -98,10 +98,12 @@ export const wait = (time: number) =>
 
 export const formatEther = (amount: BigNumber, decimals: number, toFixed: number): number => {
   if (decimals<5) return 0
-  let temp: BigNumber = amount.mul(BigNumber.from(10).pow(toFixed))
-  temp = temp.div(BigNumber.from(10).pow(decimals))
-
-  return (temp.toNumber()) / (10 ** toFixed)
+  try{
+    let temp: BigNumber = amount.mul(BigNumber.from(10).pow(toFixed))
+    temp = temp.div(BigNumber.from(10).pow(decimals))
+    return (temp.toNumber()) / (10 ** toFixed)
+  }catch (error) {}
+  return 0
 }
 
 export const parseEther = (n: number, decimals: number): BigNumber => {
@@ -163,10 +165,41 @@ export const getProjectStatusText = (ps: number): string => {
       return 'public presale closed'
     case 6:
       return 'project launched'
+    case 7:
+      return 'vesting started'
+    case 8:
+      return 'vesting closed'
+    case 9:
+      return 'Presale Filled'      
+  }
+}
+
+export const getJoinPresaleButtonText = (ps: number): string => {  
+  switch (ps) {
+    case 0:
+      return 'Join Presale Now'
+    case 1:
+      return 'Join Presale Now'
+    case 2:
+      return 'Join Presale Now'
+    case 3:
+      return 'Your Presale Tokens'
+    case 4:
+      return 'Join Presale Now'
+    case 5:
+      return 'Your Presale Tokens'
+    case 6:
+      return 'Your Presale Tokens'
+    case 7:
+      return 'Your Presale Tokens'
+    case 8:
+      return 'Your Presale Tokens'
+    case 9:
+      return 'Your Presale Tokens'      
   }
 }
 
 export const getJoinPresaleButtonActive = (ps: number): boolean => {
-  if (ps === 2 || ps === 4) return true
+  if (ps >= 2 && ps <= 5 || ps === 9) return true
   return false
 }

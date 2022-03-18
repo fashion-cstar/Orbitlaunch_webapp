@@ -8,7 +8,6 @@ import { useEthers, ChainId } from "@usedapp/core";
 import {
     useJoinPresaleCallback,
     usePadApproveCallback,
-    uselaunchTokenDecimals,
     useToken,
     useNativeTokenBalance,
     useTokenAllowance,
@@ -47,7 +46,6 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const [isDeposited, setDeposited] = useState(false)
     const [userMaxAllocation, setUserMaxAllocation] = useState(0)
     const userDepositedAmount = useDepositInfo(project.contractAddress, project.blockchain)
-    const tokenDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
     const userDepositToken = useToken(BUSDTokenAddress[chainId], project.blockchain)
     const { tokenBalanceCallback } = useTokenBalanceCallback()
     const accountBUSDBalance = useTokenBalance(BUSDTokenAddress[chainId], project.blockchain)
@@ -97,16 +95,19 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         if (investCap.gt(BigNumber.from(0))) {
             let temp: BigNumber = investCap.sub(totalInvestedAmount)
             let restCap = formatEther(temp, fundDecimals, 5)
-            if (max > restCap) max = restCap
+            if (max > restCap) max = restCap            
         }
+        if (max<0) max=0
         setUserMaxAllocation(max)
     }, [depositedAmount, fundDecimals, currentTierNo, project])
 
     useEffect(() => {
-        if (tokenDecimals) {
-            setFundDecimals(tokenDecimals.toNumber())
-        }
-    }, [tokenDecimals])
+        try{
+            if (userDepositToken) {
+                if (userDepositToken?.decimals) setFundDecimals(userDepositToken?.decimals)
+            }
+        }catch(error) {}
+    }, [userDepositToken])
 
     const callUserBUSDCallback = () => {
         try {
@@ -122,7 +123,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     async function onApprove() {
         setIsWalletApproving(true)
         try {
-            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount), project.blockchain).then((hash: string) => {
+            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount+1), project.blockchain).then((hash: string) => {
                 setIsApproved(true)
                 setIsWalletApproving(false)
             }).catch((error: any) => {
@@ -226,13 +227,15 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         handleClose()
     }
 
-    const getAvailableSupply = () => {
-        if (investCap.gt(BigNumber.from(0))) {
-            let temp: BigNumber = investCap.sub(totalInvestedAmount)
-            let res: number = 0
-            temp = temp.mul(BigNumber.from(1000)).div(investCap)
-            res = temp.toNumber() / 10
-            return res + '%'
+    const getAvailableSupply = () => {            
+        if (investCap && totalInvestedAmount) {
+            if (investCap.gt(BigNumber.from(0))){
+                let temp: BigNumber = investCap.sub(totalInvestedAmount)
+                let res: number = 0            
+                temp = temp.mul(BigNumber.from(10000)).div(investCap)            
+                if (temp.lte(BigNumber.from(10000))) res = temp.toNumber() / 100
+                return res + '%'
+            }
         }
         return ''
     }
@@ -305,6 +308,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 >
                                     Deposit
                                 </Button>
+
                                 {/* <Button
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
@@ -313,6 +317,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 >
                                     Reserve Your Tokens Now
                                 </Button> */}
+                                
                             </div>
                         </div>
                     )}
@@ -335,7 +340,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 <div className='text-[16px] text-[#aaaaaa] text-center'>Transaction submitted</div>
                                 <div className='text-[16px] text-[#aaaaaa] text-center'>{'Hash: ' + hash.slice(0, 10) + '...' + hash.slice(56, 65)}</div>
                                 {chainId && (
-                                    <a className='text-[16px] mt-4 text-[#aaaaee] underline text-center' href={getEtherscanLink(chainId, hash, 'transaction')}>
+                                    <a className='text-[16px] mt-4 text-[#aaaaee] underline text-center'  target="_blank" href={getEtherscanLink(chainId, hash, 'transaction')}>
                                         {chainId && `View on ${CHAIN_LABELS[chainId]}`}
                                     </a>
                                 )}

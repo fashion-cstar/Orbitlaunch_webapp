@@ -1,12 +1,15 @@
 import moment from 'moment'
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import ChainIcon from '../ChainIcon'
-import { useTotalInvestedAmount, useGetTotalInvestors, useDepositInfo, useLaunchTokenPrice, uselaunchTokenDecimals } from 'src/state/Pad/hooks'
-import { BigNumber } from '@ethersproject/bignumber';
+import { useTotalInvestedAmount, useGetTotalInvestors, useDepositInfo, useLaunchTokenPrice, useToken } from 'src/state/Pad/hooks'
+import { BUSDTokenAddress } from "@app/shared/PadConstant";
 import { formatEther } from 'src/utils'
 import { getChainIdFromName } from 'src/utils'
+import { useEthers, ChainId } from "@usedapp/core";
+import { useRouter } from 'next/router'
 
 export default function EndedIdoRow({ ido }: { ido: any }) {
+    const { library, account, chainId } = useEthers()
     const depositedAmount = useDepositInfo(ido.contractAddress, ido.blockchain)
     const investedAmount = useTotalInvestedAmount(ido.contractAddress, ido.blockchain)
     const totalInvestors = useGetTotalInvestors(ido.contractAddress, ido.blockchain)
@@ -14,22 +17,34 @@ export default function EndedIdoRow({ ido }: { ido: any }) {
     const [userDepositedAmount, setUserDepositedAmount] = useState(0)
     const [launchTokenPrice, setLaunchTokenPrice] = useState(0)
     const tokenPrice = useLaunchTokenPrice(ido.contractAddress, ido.blockchain)
-    const tokenDecimals = uselaunchTokenDecimals(ido.contractAddress, ido.blockchain)
+    const userDepositToken = useToken(BUSDTokenAddress[chainId], ido.blockchain)
+    const router = useRouter()
 
     useEffect(() => {
-        if (tokenDecimals.toNumber()>0 && tokenPrice) setLaunchTokenPrice(formatEther(tokenPrice, tokenDecimals.toNumber(), 4))
-    }, [tokenPrice, tokenDecimals])
+       setLaunchTokenPrice(formatEther(tokenPrice, 18, 5))
+    }, [tokenPrice])
+
+    useEffect(() => {        
+        if (userDepositToken){            
+            if (userDepositToken?.decimals && investedAmount) setTotalInvestedAmount(formatEther(investedAmount, userDepositToken?.decimals, 2))            
+        }
+    }, [investedAmount, userDepositToken])
 
     useEffect(() => {
-        if (tokenDecimals.toNumber()>0 && investedAmount) setTotalInvestedAmount(formatEther(investedAmount, tokenDecimals.toNumber(), 2))
-    }, [investedAmount, tokenDecimals])
+        if (userDepositToken){
+            if (userDepositToken?.decimals && depositedAmount) setUserDepositedAmount(formatEther(depositedAmount, userDepositToken?.decimals, 2))
+        }
+    }, [depositedAmount, userDepositToken])
 
-    useEffect(() => {
-        if (tokenDecimals.toNumber()>0 && depositedAmount) setUserDepositedAmount(formatEther(depositedAmount, tokenDecimals.toNumber(), 2))
-    }, [depositedAmount, tokenDecimals])
+    const handleClickProject = () => {
+        router.push({
+            pathname: '/pad',
+            query: { project: ido.projectName },
+        })
+    }
 
     return (
-        <div className="border-b last:border-0 border-[#112B40] flex py-6">
+        <div className="border-b last:border-0 border-[#112B40] flex py-6 cursor-pointer" onClick={handleClickProject}>
             <div className="min-w-[190px]" style={{ width: "19%" }}>
                 <div className='flex items-center'>
                     <img src={ido.projectIcon} className='w-8 h-8 mr-4' />
@@ -51,7 +66,7 @@ export default function EndedIdoRow({ ido }: { ido: any }) {
                     {}
                 </div>
             </div>
-            <div className="min-w-[140px] justify-end text-[16px] flex items-center" style={{ width: "15%" }}>{moment(ido.launchDate * 1000).format("MMM Do YY")}</div>
+            <div className="min-w-[140px] justify-end text-[16px] flex items-center" style={{ width: "15%" }}>{moment(ido.launchEndDate * 1000).format("MMM Do YY")}</div>
             <div className="min-w-[70px] justify-end flex items-center" style={{ width: "7%" }}><ChainIcon blockchain={ido.blockchain} /></div>
         </div>
     )
