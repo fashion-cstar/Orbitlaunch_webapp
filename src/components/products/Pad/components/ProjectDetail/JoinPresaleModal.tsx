@@ -95,7 +95,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         if (investCap.gt(BigNumber.from(0))) {
             let temp: BigNumber = investCap.sub(totalInvestedAmount)
             let restCap = formatEther(temp, fundDecimals, 5)
-            if (max > restCap) max = restCap
+            if (max > restCap) max = restCap            
         }
         setUserMaxAllocation(max)
     }, [depositedAmount, fundDecimals, currentTierNo, project])
