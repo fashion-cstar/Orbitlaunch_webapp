@@ -175,6 +175,6 @@ export const getProjectStatusText = (ps: number): string => {
 }
 
 export const getJoinPresaleButtonActive = (ps: number): boolean => {
-  if (ps === 2 || ps === 4 || ps === 9) return true
+  if (ps >= 2 && ps <= 5 || ps === 9) return true
   return false
 }
