@@ -31,8 +31,8 @@ export default function Pad() {
 
     useEffect(() => {
         if (IdoList) {
-            if (filterChain === 'all') setEndedProjects(IdoList.filter(item => moment((item?.launchEndDate * 1000) ?? '').isBefore(moment.now()) && Number(item?.launchEndDate)!==0))
-            else setEndedProjects(IdoList.filter(item => moment((item?.launchEndDate * 1000) ?? '').isBefore(moment.now()) && Number(item?.launchEndDate)!==0 && item.blockchain.toLowerCase() === filterChain))
+            if (filterChain === 'all') setEndedProjects(IdoList.filter(item => moment((item?.launchEndDate * 1000) ?? '').isBefore(moment.now()) && Number(item?.launchEndDate) !== 0))
+            else setEndedProjects(IdoList.filter(item => moment((item?.launchEndDate * 1000) ?? '').isBefore(moment.now()) && Number(item?.launchEndDate) !== 0 && item.blockchain.toLowerCase() === filterChain))
         }
     }, [IdoList, filterChain])
 
@@ -63,6 +63,11 @@ export default function Pad() {
         setTableWidth(newWidth)
         window.addEventListener("resize", getListSize);
     }, []);
+
+    useEffect(() => {
+        const newWidth = widthRef?.current?.clientWidth;
+        setTableWidth(newWidth)
+    }, [IdoEndedProjects]);
 
     return (
         <>
