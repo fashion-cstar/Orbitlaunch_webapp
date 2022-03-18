@@ -586,8 +586,7 @@ export function useProjectStatus(ido: any): number {
         }
       }
       if (investCap.gt(0)){
-        if (totalInvestedAmount.gte(investCap)){
-          console.log
+        if (totalInvestedAmount.gte(investCap)){          
           setProjectStatus(9)
         }
       }
