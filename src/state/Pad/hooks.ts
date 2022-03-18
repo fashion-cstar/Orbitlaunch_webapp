@@ -120,7 +120,7 @@ export function uselaunchTokenDecimals(padContractAddress: string, blockchain: s
   return launchTokenDecimals
 }
 
-export function useToken(tokenContractAddress: string, blockchain: string): { name: string, symbol: string, decimals: BigNumber } {
+export function useToken(tokenContractAddress: string, blockchain: string): { name: string, symbol: string, decimals: number } {
   const { account, library } = useEthers()
   const [token, setToken] = useState<any>()
   const chainId = getChainIdFromName(blockchain);
@@ -626,8 +626,9 @@ export function useInvestCap(padContractAddress: string, blockchain: string): Bi
   useEffect(() => {
     const fetchInvestCap = async () => {
       const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
-      const timeat = await padContract.investCap()
-      return timeat
+      // const cap = await padContract.investCap()
+      const cap = await padContract.hardCap()      
+      return cap
     }
     if (padContractAddress) {
       fetchInvestCap().then(result => {

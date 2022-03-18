@@ -7,7 +7,6 @@ import ProjectTokenInput from '../Common/ProjectTokenInput'
 import { useEthers, ChainId } from "@usedapp/core";
 import {
     useClaimCallback,
-    uselaunchTokenDecimals,
     useToken,
     useNativeTokenBalance,
     useGetAvailableTokens,
@@ -38,11 +37,11 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
     const [attempting, setAttempting] = useState(false)
     const { library, account, chainId } = useEthers()
     const userDepositedAmount = useDepositInfo(project.contractAddress, project.blockchain)
-    const tokenDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
     const availableTokens = useGetAvailableTokens(project.contractAddress, project.blockchain)
     const [amountToClaim, setAmountToClaim] = useState(BigNumber.from(0))
     const { claimCallback } = useClaimCallback()
     const nativeBalance = useNativeTokenBalance(project.blockchain)
+    const userDepositToken = useToken(BUSDTokenAddress[chainId], project.blockchain)
     const [ethBalance, setEthBalance] = useState(0)
     const [fundDecimals, setFundDecimals] = useState(18)
     const [depositedAmount, setDepositedAmount] = useState(BigNumber.from(0))
@@ -60,10 +59,12 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
     }, [userDepositedAmount])
 
     useEffect(() => {
-        if (tokenDecimals) {
-            setFundDecimals(tokenDecimals.toNumber())
-        }
-    }, [tokenDecimals])
+        try{
+            if (userDepositToken) {
+                if (userDepositToken?.decimals) setFundDecimals(userDepositToken?.decimals)
+            }
+        }catch(error) {}
+    }, [userDepositToken])
 
     useEffect(() => {
         if (availableTokens){

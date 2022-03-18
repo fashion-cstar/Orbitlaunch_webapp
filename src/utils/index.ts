@@ -98,10 +98,12 @@ export const wait = (time: number) =>
 
 export const formatEther = (amount: BigNumber, decimals: number, toFixed: number): number => {
   if (decimals<5) return 0
-  let temp: BigNumber = amount.mul(BigNumber.from(10).pow(toFixed))
-  temp = temp.div(BigNumber.from(10).pow(decimals))
-
-  return (temp.toNumber()) / (10 ** toFixed)
+  try{
+    let temp: BigNumber = amount.mul(BigNumber.from(10).pow(toFixed))
+    temp = temp.div(BigNumber.from(10).pow(decimals))
+    return (temp.toNumber()) / (10 ** toFixed)
+  }catch (error) {}
+  return 0
 }
 
 export const parseEther = (n: number, decimals: number): BigNumber => {

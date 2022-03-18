@@ -8,7 +8,6 @@ import { useEthers, ChainId } from "@usedapp/core";
 import {
     useJoinPresaleCallback,
     usePadApproveCallback,
-    uselaunchTokenDecimals,
     useToken,
     useNativeTokenBalance,
     useTokenAllowance,
@@ -47,7 +46,6 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const [isDeposited, setDeposited] = useState(false)
     const [userMaxAllocation, setUserMaxAllocation] = useState(0)
     const userDepositedAmount = useDepositInfo(project.contractAddress, project.blockchain)
-    const tokenDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
     const userDepositToken = useToken(BUSDTokenAddress[chainId], project.blockchain)
     const { tokenBalanceCallback } = useTokenBalanceCallback()
     const accountBUSDBalance = useTokenBalance(BUSDTokenAddress[chainId], project.blockchain)
@@ -103,10 +101,12 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     }, [depositedAmount, fundDecimals, currentTierNo, project])
 
     useEffect(() => {
-        if (tokenDecimals) {
-            setFundDecimals(tokenDecimals.toNumber())
-        }
-    }, [tokenDecimals])
+        try{
+            if (userDepositToken) {
+                if (userDepositToken?.decimals) setFundDecimals(userDepositToken?.decimals)
+            }
+        }catch(error) {}
+    }, [userDepositToken])
 
     const callUserBUSDCallback = () => {
         try {
@@ -226,13 +226,15 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         handleClose()
     }
 
-    const getAvailableSupply = () => {
-        if (investCap.gt(BigNumber.from(0))) {
-            let temp: BigNumber = investCap.sub(totalInvestedAmount)
-            let res: number = 0
-            temp = temp.mul(BigNumber.from(1000)).div(investCap)
-            res = temp.toNumber() / 10
-            return res + '%'
+    const getAvailableSupply = () => {            
+        if (investCap && totalInvestedAmount) {
+            if (investCap.gt(BigNumber.from(0))){
+                let temp: BigNumber = investCap.sub(totalInvestedAmount)
+                let res: number = 0            
+                temp = temp.mul(BigNumber.from(10000)).div(investCap)            
+                if (temp.lte(BigNumber.from(10000))) res = temp.toNumber() / 100
+                return res + '%'
+            }
         }
         return ''
     }

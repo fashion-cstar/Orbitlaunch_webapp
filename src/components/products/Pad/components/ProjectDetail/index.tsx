@@ -22,8 +22,7 @@ export default function ProjectDetail({ project }: { project: any }) {
     const [isOpenJoinPresale, setIsOpenJoinPresale] = useState(false);
     const [isOpenClaimTokens, setIsOpenClaimTokens] = useState(false);
     const [launchTokenPrice, setLaunchTokenPrice] = useState(0)
-    const [launchTokenDecimals, setLaunchTokenDecimals] = useState(0)
-    const { launchTokenPriceCallback, launchTokenDecimalsCallback } = useLaunchTokenCallback() 
+    const { launchTokenPriceCallback } = useLaunchTokenCallback() 
     const { library, account, chainId } = useEthers()
     const projectStatus=useProjectStatus(IdoProject)
     const hideTierCard = useRef(null)
@@ -31,32 +30,16 @@ export default function ProjectDetail({ project }: { project: any }) {
     const currentTierNo = useFundTier();
 
     useEffect(() => {
-        if (IdoProject){
-            try {
-                launchTokenDecimalsCallback(IdoProject.contractAddress, IdoProject.blockchain).then((res: BigNumber) => {
-                    setLaunchTokenDecimals(res?res.toNumber():0)
-                }).catch((error: any) => {
-                    console.log(error)
-                })
-            } catch (error) {                
-                console.debug('Failed to get launch decimals', error)
-            } 
+        try {
+            launchTokenPriceCallback(IdoProject.contractAddress, IdoProject.blockchain).then((res: BigNumber) => {
+                setLaunchTokenPrice(formatEther(res, 18, 5))
+            }).catch((error: any) => {
+                console.log(error)
+            })
+        } catch (error) {
+            console.debug('Failed to get launch price', error)
         }
     }, [IdoProject])
-
-    useEffect(() => {
-        if (launchTokenDecimals>0) {
-            try {
-                launchTokenPriceCallback(IdoProject.contractAddress, IdoProject.blockchain).then((res: BigNumber) => {
-                    setLaunchTokenPrice(formatEther(res, 18, 5))
-                }).catch((error: any) => {
-                    console.log(error)
-                })
-            } catch (error) {
-                console.debug('Failed to get launch price', error)
-            }
-        }
-    }, [launchTokenDecimals, IdoProject])
 
     const handleBackClick = async () => {
         // router.back()        
@@ -66,7 +49,7 @@ export default function ProjectDetail({ project }: { project: any }) {
     useEffect(() => {
         fetchProjectList().then(res => {
             if (res) setIdoList(res.data)
-        })
+        })        
     }, [])
 
     useEffect(() => {
