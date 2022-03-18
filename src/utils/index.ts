@@ -174,6 +174,31 @@ export const getProjectStatusText = (ps: number): string => {
   }
 }
 
+export const getJoinPresaleButtonText = (ps: number): string => {  
+  switch (ps) {
+    case 0:
+      return 'Join Presale Now'
+    case 1:
+      return 'Join Presale Now'
+    case 2:
+      return 'Join Presale Now'
+    case 3:
+      return 'Your Presale Tokens'
+    case 4:
+      return 'Join Presale Now'
+    case 5:
+      return 'Your Presale Tokens'
+    case 6:
+      return 'Your Presale Tokens'
+    case 7:
+      return 'Your Presale Tokens'
+    case 8:
+      return 'Your Presale Tokens'
+    case 9:
+      return 'Your Presale Tokens'      
+  }
+}
+
 export const getJoinPresaleButtonActive = (ps: number): boolean => {
   if (ps >= 2 && ps <= 5 || ps === 9) return true
   return false

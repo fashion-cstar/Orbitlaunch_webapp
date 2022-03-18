@@ -1,6 +1,6 @@
 import ChainIcon from "../ChainIcon";
 import { Button } from "@mui/material";
-import { getJoinPresaleButtonActive } from 'src/utils'
+import { getJoinPresaleButtonActive, getJoinPresaleButtonText } from 'src/utils'
 
 export default function About({ ido, projectStatus, handleClickJoinPresale, handleClickClaimTokens }:
     { ido: any, projectStatus: number, handleClickJoinPresale: () => void, handleClickClaimTokens: () => void }) {
@@ -35,7 +35,7 @@ export default function About({ ido, projectStatus, handleClickJoinPresale, hand
                     onClick={handleClickJoinPresale}
                     disabled={!getJoinPresaleButtonActive(projectStatus)}
                 >
-                    Join Presale Now
+                    {getJoinPresaleButtonText(projectStatus)}
                 </Button>}
             </div>
         </div >
