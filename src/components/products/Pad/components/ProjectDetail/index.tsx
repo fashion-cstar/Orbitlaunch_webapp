@@ -82,7 +82,7 @@ export default function ProjectDetail({ project }: { project: any }) {
         <>
             {IdoProject && (<JoinPresaleModal project={IdoProject}
                 isOpen={isOpenJoinPresale} launchTokenPrice={launchTokenPrice}
-                currentTierNo={currentTierNo} handleClose={handleCloseJoinPresale} />)}
+                currentTierNo={currentTierNo} handleClose={handleCloseJoinPresale} projectStatus={projectStatus} />)}
             {IdoProject && (<ClaimTokensModal project={IdoProject}
                 isOpen={isOpenClaimTokens} launchTokenPrice={launchTokenPrice}
                 handleClose={handleCloseClaimTokens} />)}

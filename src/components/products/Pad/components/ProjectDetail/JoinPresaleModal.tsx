@@ -32,9 +32,10 @@ interface PresaleModalProps {
     currentTierNo: number
     handleClose: () => void
     project: any
+    projectStatus: number
 }
 
-export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTierNo, handleClose, project }: PresaleModalProps) {
+export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTierNo, handleClose, project, projectStatus }: PresaleModalProps) {
     const [hash, setHash] = useState<string | undefined>()
     const [attempting, setAttempting] = useState(false)
     const { library, account, chainId } = useEthers()
@@ -296,7 +297,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
                                     onClick={onApprove}
-                                    disabled={!account || !launchTokenPrice || isOverMax || ethBalance <= 0 || fundTokenAmount === 0 || isApproved || isWalletApproving}
+                                    disabled={!account || !launchTokenPrice || isOverMax || ethBalance <= 0 || fundTokenAmount === 0 || isApproved || isWalletApproving || !(projectStatus === 2 || projectStatus === 4)}
                                 >
                                     Approve
                                 </Button>
