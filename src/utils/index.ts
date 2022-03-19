@@ -7,6 +7,26 @@ import { parseUnits } from '@ethersproject/units'
 import { getAddress } from '@ethersproject/address'
 import { utils } from 'ethers'
 import { ChainId } from "@usedapp/core";
+
+export enum PROJECT_STATUS {
+  Unknown,
+  PresaleOpeningSoon,
+  PresaleOpen,
+  PresaleClosed,
+  PublicPresaleOpen,
+  PublicPresaleClosed,
+  ProjectLaunched,
+  VestingStarted,
+  VestingClosed,
+  PresaleFilled  
+}
+
+enum NETWORK_NAME {
+  Ethereum = 'ethereum',
+  BSC = 'bsc',
+  Polygon = 'polygon'
+}
+
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: any): string | false {
   if (value) {
@@ -113,15 +133,15 @@ export const parseEther = (n: number, decimals: number): BigNumber => {
 export const getChainIdFromName = (name: string): number => {
   let chainId = 1
   switch (name.toLowerCase()) {
-    case 'ethereum':
+    case NETWORK_NAME.Ethereum:
       if (process.env.network === 'mainnet') chainId = 1; //ethereum mainnet
       else if (process.env.network === 'testnet') chainId = 4; //ethereum rinkeby
       break;
-    case 'bsc':
+    case NETWORK_NAME.BSC:
       if (process.env.network === 'mainnet') chainId = 56; //bsc mainnet
       else if (process.env.network === 'testnet') chainId = 97; //bsc testnet            
       break;
-    case 'polygon':
+    case NETWORK_NAME.Polygon:
       if (process.env.network === 'mainnet') chainId = 137; //polygon mainnet
       else if (process.env.network === 'testnet') chainId = 80001; //mumbai testnet            
       break;
@@ -135,13 +155,13 @@ export const getChainIdFromName = (name: string): number => {
 export const getNativeSymbol = (name: string): string => {
   let symbol = 'BNB'
   switch (name.toLowerCase()) {
-    case 'ethereum':
+    case NETWORK_NAME.Ethereum:
       symbol="ETH"
       break;
-    case 'bsc':
+    case NETWORK_NAME.BSC:
       symbol="BNB"
       break;
-    case 'polygon':
+    case NETWORK_NAME.Polygon:
       symbol="MATIC"
       break;
     default:      
@@ -151,55 +171,48 @@ export const getNativeSymbol = (name: string): string => {
 
 export const getProjectStatusText = (ps: number): string => {
   switch (ps) {
-    case 0:
+    case PROJECT_STATUS.Unknown:
       return ''
-    case 1:
+    case PROJECT_STATUS.PresaleOpeningSoon:
       return 'presale opening soon'
-    case 2:
+    case PROJECT_STATUS.PresaleOpen:
       return 'presale open'
-    case 3:
+    case PROJECT_STATUS.PresaleClosed:
       return 'presale closed'
-    case 4:
+    case PROJECT_STATUS.PublicPresaleOpen:
       return 'public presale open'
-    case 5:
+    case PROJECT_STATUS.PublicPresaleClosed:
       return 'public presale closed'
-    case 6:
+    case PROJECT_STATUS.ProjectLaunched:
       return 'project launched'
-    case 7:
+    case PROJECT_STATUS.VestingStarted:
       return 'vesting started'
-    case 8:
+    case PROJECT_STATUS.VestingClosed:
       return 'vesting closed'
-    case 9:
-      return 'Presale Filled'      
+    case PROJECT_STATUS.PresaleFilled:
+      return 'Presale Filled'   
+    default:
+      return ''   
   }
 }
 
 export const getJoinPresaleButtonText = (ps: number): string => {  
   switch (ps) {
-    case 0:
+    case PROJECT_STATUS.Unknown: 
+    case PROJECT_STATUS.PresaleOpeningSoon: 
+    case PROJECT_STATUS.PresaleOpen: 
+    case PROJECT_STATUS.PublicPresaleOpen:
       return 'Join Presale Now'
-    case 1:
-      return 'Join Presale Now'
-    case 2:
-      return 'Join Presale Now'
-    case 3:
+    case PROJECT_STATUS.PresaleClosed:
+    case PROJECT_STATUS.PublicPresaleClosed:
       return 'Your Presale Tokens'
-    case 4:
-      return 'Join Presale Now'
-    case 5:
+    default:
       return 'Your Presale Tokens'
-    case 6:
-      return 'Your Presale Tokens'
-    case 7:
-      return 'Your Presale Tokens'
-    case 8:
-      return 'Your Presale Tokens'
-    case 9:
-      return 'Your Presale Tokens'      
   }
 }
 
 export const getJoinPresaleButtonActive = (ps: number): boolean => {
-  if (ps >= 2 && ps <= 5 || ps === 9) return true
+  if (ps >= PROJECT_STATUS.PresaleOpen && ps <= PROJECT_STATUS.PublicPresaleClosed 
+    || ps === PROJECT_STATUS.PresaleFilled) return true
   return false
 }

@@ -24,7 +24,7 @@ import { BUSDTokenAddress } from "@app/shared/PadConstant";
 import { useDepositInfo, useTokenBalance } from 'src/state/Pad/hooks'
 import { parseEther } from 'src/utils'
 import TaskAltIcon from '@mui/icons-material/TaskAlt'
-import { getEtherscanLink, CHAIN_LABELS, getNativeSymbol } from 'src/utils'
+import { getEtherscanLink, CHAIN_LABELS, getNativeSymbol, PROJECT_STATUS } from 'src/utils'
 
 interface PresaleModalProps {
     isOpen: boolean
@@ -297,7 +297,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
                                     onClick={onApprove}
-                                    disabled={!account || !launchTokenPrice || isOverMax || ethBalance <= 0 || fundTokenAmount === 0 || isApproved || isWalletApproving || !(projectStatus === 2 || projectStatus === 4)}
+                                    disabled={!account || !launchTokenPrice || isOverMax || ethBalance <= 0 || fundTokenAmount === 0 || isApproved || isWalletApproving || !(projectStatus === PROJECT_STATUS.PresaleOpen || projectStatus === PROJECT_STATUS.PublicPresaleOpen)}
                                 >
                                     Approve
                                 </Button>
