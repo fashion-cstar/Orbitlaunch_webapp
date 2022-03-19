@@ -100,7 +100,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         }
         if (max<0) max=0
         setUserMaxAllocation(max)
-    }, [depositedAmount, fundDecimals, currentTierNo, project])
+    }, [depositedAmount, fundDecimals, currentTierNo, project, investCap, totalInvestedAmount])
 
     useEffect(() => {
         try{
