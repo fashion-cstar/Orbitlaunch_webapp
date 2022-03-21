@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { render } from "react-dom";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
@@ -58,8 +58,8 @@ const options = {
     },
     chart: {
         backgroundColor: 'transparent',
-        height: 200,
-        width: 450,
+        height: '45%',
+        // width: 450,
         spacingBottom: 0,
         spacingLeft: 0,
         animation: {
@@ -111,13 +111,14 @@ const options = {
     }
 };
 
-export default function HolderInfo() {
+export default function HolderInfo({ width }: { width: number }) {
+
     return (
-        <div>
-            <div className="text-[24px] text-white my-3">Holder Info</div>
-            <div className="text-[24px] text-white my-3">{`${0.0442}$`}<span className="text-[#00D98D]">{` (`}&#8593;{`${28}% ${30} days)`}</span></div>
+        <div className="w-full" key={width}>
+            <div className="text-[18px] md:text-[24px] text-white my-3">Holder Info</div>
+            <div className="text-[16px] md:text-[21px] text-white my-3">{`${0.0442}$`}<span className="text-[#00D98D]">{` (`}&#8593;{`${28}% ${30} days)`}</span></div>
             <HighchartsReact highcharts={Highcharts} options={options} />
-            <div className="text-[24px] text-white my-3">{`Project Age - ${421} days`}</div>
+            <div className="text-[16px] md:text-[21px] text-white my-3">{`Project Age - ${421} days`}</div>
         </div>
     )
 }

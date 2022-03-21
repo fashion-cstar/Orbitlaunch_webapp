@@ -46,7 +46,7 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
         <div className="desktop-layout">
           <Sidebar isOpen />
         </div>
-        <div className="p-10 grow">
+        <div className="p-6 md:p-10 grow">
           {children}
         </div>
         <div className="mobile-layout fixed bottom-0 w-full h-[45px] border-t border-t-[#112b40]" style={gradientColor}>

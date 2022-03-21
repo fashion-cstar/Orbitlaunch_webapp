@@ -38,8 +38,8 @@ const options = {
     tooltip: { enabled: true },
     chart: {
         backgroundColor: 'transparent',
-        height: 250,
-        width: 450,
+        height: '50%',
+        // width: 450,
         marginTop: 65,
         spacingBottom: 0,
         spacingLeft: 0,
@@ -93,8 +93,9 @@ const options = {
     }
 };
 
-export default function Volume() {
+export default function Volume({ width }: { width: number }) {
     const [tabIndex, setTabIndex] = useState(0)
+
     const handleClick = (tabIndex: number) => {
         setTabIndex(tabIndex)
     }
@@ -108,8 +109,8 @@ export default function Volume() {
     }
 
     return (
-        <div>
-            <div className="flex justify-between text-[24px] text-white my-3">
+        <div className="w-full" key={width}>
+            <div className="flex justify-between text-[18px] md:text-[24px] text-white my-3">
                 <span>Volume</span>
                 <div className="flex gap-2">
                     <TabButton isSelected={tabIndex === 0} name="Day" tabIndex={0} handleTabClick={handleClick} />
