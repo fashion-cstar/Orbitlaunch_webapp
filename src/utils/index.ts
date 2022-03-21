@@ -205,7 +205,6 @@ export const getJoinPresaleButtonText = (ps: number): string => {
       return 'Join Presale Now'
     case PROJECT_STATUS.PresaleClosed:
     case PROJECT_STATUS.PublicPresaleClosed:
-      return 'Your Presale Tokens'
     default:
       return 'Your Presale Tokens'
   }
