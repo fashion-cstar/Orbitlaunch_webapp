@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Analytics from "@app/components/products/Analytics";
+import Analytics from "@app/components/products/Analytics/index";
 
 export default function Home() {
   return (
