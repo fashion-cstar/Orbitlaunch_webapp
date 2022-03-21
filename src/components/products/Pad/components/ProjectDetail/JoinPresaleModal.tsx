@@ -24,7 +24,7 @@ import { BUSDTokenAddress } from "@app/shared/PadConstant";
 import { useDepositInfo, useTokenBalance } from 'src/state/Pad/hooks'
 import { parseEther } from 'src/utils'
 import TaskAltIcon from '@mui/icons-material/TaskAlt'
-import { getEtherscanLink, CHAIN_LABELS, getNativeSymbol } from 'src/utils'
+import { getEtherscanLink, CHAIN_LABELS, getNativeSymbol, PROJECT_STATUS } from 'src/utils'
 
 interface PresaleModalProps {
     isOpen: boolean
@@ -32,9 +32,10 @@ interface PresaleModalProps {
     currentTierNo: number
     handleClose: () => void
     project: any
+    projectStatus: number
 }
 
-export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTierNo, handleClose, project }: PresaleModalProps) {
+export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTierNo, handleClose, project, projectStatus }: PresaleModalProps) {
     const [hash, setHash] = useState<string | undefined>()
     const [attempting, setAttempting] = useState(false)
     const { library, account, chainId } = useEthers()
@@ -99,7 +100,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         }
         if (max<0) max=0
         setUserMaxAllocation(max)
-    }, [depositedAmount, fundDecimals, currentTierNo, project])
+    }, [depositedAmount, fundDecimals, currentTierNo, project, investCap, totalInvestedAmount])
 
     useEffect(() => {
         try{
@@ -296,7 +297,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
                                     onClick={onApprove}
-                                    disabled={!account || !launchTokenPrice || isOverMax || ethBalance <= 0 || fundTokenAmount === 0 || isApproved || isWalletApproving}
+                                    disabled={!account || !launchTokenPrice || isOverMax || ethBalance <= 0 || fundTokenAmount === 0 || isApproved || isWalletApproving || !(projectStatus === PROJECT_STATUS.PresaleOpen || projectStatus === PROJECT_STATUS.PublicPresaleOpen)}
                                 >
                                     Approve
                                 </Button>

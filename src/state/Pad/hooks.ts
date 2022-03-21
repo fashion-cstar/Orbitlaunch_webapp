@@ -12,7 +12,7 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { AddressZero } from '@ethersproject/constants'
 import { M31TokenAddress, RpcProviders } from "@app/shared/PadConstant"
 import { getTierValues } from '@app/shared/TierLevels'
-import { getChainIdFromName } from 'src/utils'
+import { getChainIdFromName, PROJECT_STATUS } from 'src/utils'
 import useRefresh from './useRefresh'
 
 import moment from 'moment'
@@ -565,36 +565,36 @@ export function useProjectStatus(ido: any): number {
   useEffect(() => {
     if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31 && vestingStartedAt && vestDuration && investCap && totalInvestedAmount) {
       if (startTime.toNumber() > 0 && endTime.toNumber() > 0) {
-        if (moment(moment.now()).isBefore(moment(startTime.toNumber() * 1000))) setProjectStatus(1) // presale opening soon
+        if (moment(moment.now()).isBefore(moment(startTime.toNumber() * 1000))) setProjectStatus(PROJECT_STATUS.PresaleOpeningSoon) // presale opening soon
         if (moment(moment.now()).isSameOrAfter(moment(startTime.toNumber() * 1000))
-          && moment(moment.now()).isBefore(moment(endTime.toNumber() * 1000))) setProjectStatus(2) // presale open
-        if (moment(moment.now()).isSameOrAfter(moment(endTime.toNumber() * 1000))) setProjectStatus(3) // presale closed      
+          && moment(moment.now()).isBefore(moment(endTime.toNumber() * 1000))) setProjectStatus(PROJECT_STATUS.PresaleOpen) // presale open
+        if (moment(moment.now()).isSameOrAfter(moment(endTime.toNumber() * 1000))) setProjectStatus(PROJECT_STATUS.PresaleClosed) // presale closed      
       }
       if (openedToNonM31) {
         if (startTimeForNonM31.toNumber() > 0 && endTimeForNonM31.toNumber() > 0) {
           if (moment(moment.now()).isSameOrAfter(moment(startTimeForNonM31.toNumber() * 1000))
-            && moment(moment.now()).isBefore(moment(endTimeForNonM31.toNumber() * 1000))) setProjectStatus(4) // public presale open
-          if (moment(moment.now()).isSameOrAfter(moment(endTimeForNonM31.toNumber() * 1000))) setProjectStatus(5) // public presale closed
+            && moment(moment.now()).isBefore(moment(endTimeForNonM31.toNumber() * 1000))) setProjectStatus(PROJECT_STATUS.PublicPresaleOpen) // public presale open
+          if (moment(moment.now()).isSameOrAfter(moment(endTimeForNonM31.toNumber() * 1000))) setProjectStatus(PROJECT_STATUS.PublicPresaleClosed) // public presale closed
         }
       }
       if (vestingStartedAt && vestDuration) {
         let vestingEndAt = (vestingStartedAt.toNumber() + vestDuration.toNumber() * 2592000) //unix timestamp
         if (vestingStartedAt.toNumber() > 0 && vestDuration.toNumber() > 0) {
           if (moment(moment.now()).isSameOrAfter(moment(vestingStartedAt.toNumber() * 1000))
-            && moment(moment.now()).isBefore(moment(vestingEndAt * 1000))) setProjectStatus(7) // vesting started
-          if (moment(moment.now()).isSameOrAfter(moment(vestingEndAt * 1000))) setProjectStatus(8) // vesting closed
+            && moment(moment.now()).isBefore(moment(vestingEndAt * 1000))) setProjectStatus(PROJECT_STATUS.VestingStarted) // vesting started
+          if (moment(moment.now()).isSameOrAfter(moment(vestingEndAt * 1000))) setProjectStatus(PROJECT_STATUS.VestingClosed) // vesting closed
         }
       }
       if (investCap.gt(0)){
         if (totalInvestedAmount.gte(investCap)){          
-          setProjectStatus(9)
+          setProjectStatus(PROJECT_STATUS.PresaleFilled)
         }
       }
     }        
     if (ido) {
       if (ido?.launchDate > 0) {
         if (moment(moment.now()).isAfter(moment(ido?.launchDate * 1000))) {
-          setProjectStatus(6) // project launched
+          setProjectStatus(PROJECT_STATUS.ProjectLaunched) // project launched
         }
       }
     }    
