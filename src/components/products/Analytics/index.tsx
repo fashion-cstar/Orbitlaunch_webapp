@@ -1,12 +1,14 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
-import BuyButton from "../../common/BuyButton";
-import dynamic from "next/dynamic";
-import { AppTokenAddress } from "@app/shared/AppConstant";
-import { useGlobalCurrency } from "@app/lib/context/GlobalCurrencyContext";
-import HolderInfo from "./components/HolderInfo";
-import Volume from "./components/Volume/index";
-import AllTimeHigh from "./components/AllTimeHigh";
-import TokenDistribution from "./components/TokenDistribution";
+import BuyButton from "../../common/BuyButton"
+import dynamic from "next/dynamic"
+import { AppTokenAddress } from "@app/shared/AppConstant"
+import { useGlobalCurrency } from "@app/lib/context/GlobalCurrencyContext"
+import HolderInfo from "./components/HolderInfo"
+import Volume from "./components/Volume"
+import AllTimeHigh from "./components/AllTimeHigh"
+import TokenDistribution from "./components/TokenDistribution"
+import CommonTokens from './components/CommonTokens'
+import TopWallets from './components/TopWallets'
 
 const styleHeight = {
     height: '300px',
@@ -36,8 +38,9 @@ export default function Analytics() {
     }, []);
     return (
         <>
-            <div className="w-full" ref={widthRef}>
-                <div className="absolute flex flex-col space-y-4" style={{ width: `${width}px` }}>
+            <div className="block relative w-full" ref={widthRef}></div>
+            <div className="block relative w-1">
+                <div className="inline-block flex flex-col space-y-4" style={{ width: `${width}px` }}>
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
                         <div className="flex justify-between">
                             <h1 className="text-[32px] md:text-[40px] font-medium">OrbitAnalytics</h1>
@@ -72,10 +75,14 @@ export default function Analytics() {
                                 </div>
                                 <div>
                                     Graph
-                                </div>
-                                <div className="flex gap-4">
-                                    <div className="flex flex-col items-center rounded-2xl bg-[#001926] p-4">Holder Info</div>
-                                    <div className="flex flex-col items-center rounded-2xl bg-[#001926] p-4">Volume</div>
+                                </div>           
+                                <div className="flex flex-col lg:flex-row gap-4">
+                                    <div className="md:basis-1/2 items-center rounded-2xl bg-[#001926] p-4">
+                                        <CommonTokens />
+                                    </div>
+                                    <div className="md:basis-1/2 items-center rounded-2xl bg-[#001926] p-4">
+                                        <TopWallets />
+                                    </div>
                                 </div>
                             </div>
                         </div>
