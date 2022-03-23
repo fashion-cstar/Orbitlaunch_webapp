@@ -26,6 +26,8 @@
     "axios": "^0.25.0",
     "ethereumjs-testrpc": "^6.0.3",
     "ethers": "^5.5.4",
+    "highcharts": "^10.0.0",
+    "highcharts-react-official": "^3.1.0",
     "iconsax-react": "^0.0.8",
     "localforage": "^1.10.0",
     "moment": "^2.29.1",
