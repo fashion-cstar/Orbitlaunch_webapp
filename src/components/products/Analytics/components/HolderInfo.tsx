@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { render } from "react-dom";
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
+import React, { useEffect } from "react"
+import { render } from "react-dom"
+import Highcharts from "highcharts"
+import HighchartsReact from "highcharts-react-official"
 
 const options = {
     title: {
@@ -11,7 +11,7 @@ const options = {
         {
             name: 'M31',
             type: 'area',
-            data:  [{
+            data: [{
                 x: 2,
                 y: 9,
             }, {
@@ -70,7 +70,7 @@ const options = {
         enabled: false
     },
     xAxis: {
-        min: 0,        
+        min: 0,
         max: 11,
         categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         lineColor: 'transparent',
@@ -79,7 +79,7 @@ const options = {
         labels: {
             style: {
                 color: '#919699',
-                fontSize: '12px',
+                fontSize: '11px',
                 fontWeight: '300',
             }
         }
@@ -97,12 +97,12 @@ const options = {
         labels: {
             style: {
                 color: '#919699',
-                fontSize: '12px',
+                fontSize: '11px',
                 fontWeight: '300',
                 // fontFamily: 'Poppins'
             },
             formatter: function () {
-                return this.pos + "k";
+                return this.pos + "k"
             }
         },
         title: {
@@ -115,7 +115,9 @@ export default function HolderInfo({ width }: { width: number }) {
 
     return (
         <div className="w-full" key={width}>
-            <div className="text-[18px] md:text-[24px] text-white my-3">Holder Info</div>
+            <div className="text-[18px] md:text-[24px] text-white my-3">
+                Holder Info
+            </div>
             <div className="text-[16px] md:text-[21px] text-white my-3">{`${0.0442}$`}<span className="text-[#00D98D]">{` (`}&#8593;{`${28}% ${30} days)`}</span></div>
             <HighchartsReact highcharts={Highcharts} options={options} />
             <div className="text-[16px] md:text-[21px] text-white my-3">{`Project Age - ${421} days`}</div>

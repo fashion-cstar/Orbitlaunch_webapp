@@ -6,7 +6,7 @@ import EndedIdoTable from './components/EndedTable'
 import { useRouter } from 'next/router'
 import FeaturedProjects from './components/FeaturedProjects'
 import ConnectTier from './components/Buttons/ConnectTier'
-import { Button } from "@mui/material";
+import { Button } from "@mui/material"
 import ProjectSubmitModal from './components/ProjectSubmitModal'
 import { fetchProjectList } from 'src/state/Pad/hooks'
 

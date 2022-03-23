@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { render } from "react-dom";
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
+import React, { useEffect } from "react"
+import { render } from "react-dom"
+import Highcharts from "highcharts"
+import HighchartsReact from "highcharts-react-official"
 
 const options = {
     chart: {
@@ -88,7 +88,9 @@ export default function TokenDistribution({ width }: { width: number }) {
 
     return (
         <div className="w-full" key={width}>
-            <div className="text-[18px] md:text-[24px] text-white my-3">Token Distribution</div>
+            <div className="text-[18px] md:text-[24px] text-white my-3">
+                Token Distribution
+            </div>
             <div className="flex gap-6 my-6 items-center justify-around">
                 <div className="w-1/2">
                     <HighchartsReact highcharts={Highcharts} options={options} />

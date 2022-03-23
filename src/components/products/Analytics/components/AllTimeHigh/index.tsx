@@ -1,10 +1,14 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import ChartBar from './ChartBar'
+
 export default function AllTimeHigh({ width }: { width: number }) {
-    console.log(width)
+    
     return (
         <div key={width}>
-            <div className="text-[18px] md:text-[24px] text-white my-3">All Time High<span className="text-[14px] md:text-[16px] text-[#00D98D]">&nbsp;&nbsp;&nbsp;&nbsp;{`($${0.19} current)`}</span></div>
+            <div className="text-[18px] md:text-[24px] text-white my-3">
+                All Time High
+                <span className="text-[14px] md:text-[16px] text-[#00D98D]">&nbsp;&nbsp;&nbsp;&nbsp;{`($${0.19} current)`}</span>
+            </div>
             <div className='flex justify-center w-full'>
                 <div className="flex items-end justify-center p-2 overflow-visible" style={{width: `${95}%`}}>
                     <div style={{width:"40%"}}>

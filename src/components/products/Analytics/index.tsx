@@ -9,6 +9,7 @@ import AllTimeHigh from "./components/AllTimeHigh"
 import TokenDistribution from "./components/TokenDistribution"
 import CommonTokens from './components/CommonTokens'
 import TopWallets from './components/TopWallets'
+import PublicSafetyRating from './components/PublicSafetyRating'
 
 const styleHeight = {
     height: '300px',
@@ -73,8 +74,8 @@ export default function Analytics() {
                                 <div>
                                     <Chart address={AppTokenAddress} symbol={"M31"} bnbPrice={bnbPrice} />
                                 </div>
-                                <div>
-                                    Graph
+                                <div className="rounded-2xl p-4" style={{background: "radial-gradient(circle, #034028 0%, #03232d 45%, #001926 100%)", backgroundRepeat: "no-repeat"}}>
+                                    <PublicSafetyRating />
                                 </div>           
                                 <div className="flex flex-col lg:flex-row gap-4">
                                     <div className="md:basis-1/2 items-center rounded-2xl bg-[#001926] p-4">

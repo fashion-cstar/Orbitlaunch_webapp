@@ -562,8 +562,13 @@ export function useProjectStatus(ido: any): number {
   const totalInvestedAmount: BigNumber = useTotalInvestedAmount(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')  
   const [projectStatus, setProjectStatus] = useState(0)
   
-  useEffect(() => {
-    if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31 && vestingStartedAt && vestDuration && investCap && totalInvestedAmount) {
+  useEffect(() => {    
+    if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31 && vestingStartedAt && vestDuration && investCap && totalInvestedAmount) {            
+      if (investCap.gt(0)){
+        if (totalInvestedAmount.gte(investCap)){          
+          setProjectStatus(PROJECT_STATUS.PresaleFilled)
+        }
+      }
       if (startTime.toNumber() > 0 && endTime.toNumber() > 0) {
         if (moment(moment.now()).isBefore(moment(startTime.toNumber() * 1000))) setProjectStatus(PROJECT_STATUS.PresaleOpeningSoon) // presale opening soon
         if (moment(moment.now()).isSameOrAfter(moment(startTime.toNumber() * 1000))
@@ -584,12 +589,7 @@ export function useProjectStatus(ido: any): number {
             && moment(moment.now()).isBefore(moment(vestingEndAt * 1000))) setProjectStatus(PROJECT_STATUS.VestingStarted) // vesting started
           if (moment(moment.now()).isSameOrAfter(moment(vestingEndAt * 1000))) setProjectStatus(PROJECT_STATUS.VestingClosed) // vesting closed
         }
-      }
-      if (investCap.gt(0)){
-        if (totalInvestedAmount.gte(investCap)){          
-          setProjectStatus(PROJECT_STATUS.PresaleFilled)
-        }
-      }
+      }      
     }        
     if (ido) {
       if (ido?.launchDate > 0) {

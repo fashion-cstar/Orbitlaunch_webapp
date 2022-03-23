@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useEffect } from 'react'
-import { render } from "react-dom";
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
-import RightArrow from '../../../Pad/components/Buttons/RightArrow';
-import LeftArrow from '../../../Pad/components/Buttons/LeftArrow';
-import TabButton from "./TabButton";
+import { render } from "react-dom"
+import Highcharts from "highcharts"
+import HighchartsReact from "highcharts-react-official"
+import RightArrow from '../../../Pad/components/Buttons/RightArrow'
+import LeftArrow from '../../../Pad/components/Buttons/LeftArrow'
+import TabButton from "./TabButton"
 
 const options = {
     title: {
@@ -80,7 +80,7 @@ const options = {
         labels: {
             style: {
                 color: '#919699',
-                fontSize: '12px',
+                fontSize: '11px',
                 fontWeight: '300',
             },
             formatter: function () {
