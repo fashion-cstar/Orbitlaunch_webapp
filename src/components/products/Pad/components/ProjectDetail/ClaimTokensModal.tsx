@@ -12,7 +12,8 @@ import {
     useGetAvailableTokens,
     useTotalInvestedAmount,
     useInvestCap,
-    useTokenBalanceCallback
+    useTokenBalanceCallback,
+    uselaunchTokenDecimals
 } from 'src/state/Pad/hooks'
 import { AddressZero } from '@ethersproject/constants'
 import CircularProgress from '@mui/material/CircularProgress';
@@ -45,7 +46,14 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
     const [ethBalance, setEthBalance] = useState(0)
     const [fundDecimals, setFundDecimals] = useState(18)
     const [depositedAmount, setDepositedAmount] = useState(BigNumber.from(0))
+    const [launchTokenDecimals, setLaunchTokenDecimals] = useState(18)
+    const launchDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
 
+    useEffect(() => {
+        if (launchDecimals){            
+            if (launchDecimals.gt(0)) setLaunchTokenDecimals(launchDecimals.toNumber())
+        }
+    }, [launchDecimals])
     useEffect(() => {
         if (nativeBalance) {
             setEthBalance(formatEther(nativeBalance, 18, 5))
@@ -68,7 +76,7 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
 
     useEffect(() => {
         if (availableTokens){
-            setAmountToClaim(availableTokens)
+            setAmountToClaim(availableTokens)            
         }
     }, [availableTokens])
     const successClaimed = () => {
@@ -120,7 +128,7 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
                         <div className='flex flex-col space-y-4 mt-6'>
                             <div className='text-white text-[18px] flex flex-col justify-center items-center gap-4'>
                                 <div>Available To Claim</div>
-                                <div>{`${amountToClaim ? formatEther(amountToClaim, fundDecimals, 2) : 0} ${project.projectSymbol}`}</div>
+                                <div>{`${amountToClaim ? formatEther(amountToClaim, launchTokenDecimals, 2) : 0} ${project.projectSymbol}`}</div>
                             </div>
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>Tokens Purchased</div>
@@ -148,7 +156,7 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
                                 <CircularProgress />
                             </Fade>
                             <div>
-                                {`Claiming ${formatEther(amountToClaim, fundDecimals, 2)} ${project.projectSymbol}`}
+                                {`Claiming ${formatEther(amountToClaim, launchTokenDecimals, 2)} ${project.projectSymbol}`}
                             </div>
                         </div>
                     )}
