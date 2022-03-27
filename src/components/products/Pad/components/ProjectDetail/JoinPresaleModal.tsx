@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import Button from '@mui/material/Button';
-import Modal from '../Common/Modal';
+import Modal from 'src/components/common/Modal';
 import InputBox from '../Common/InputBox';
 import FundTokenInput from '../Common/FundTokenInput'
 import ProjectTokenInput from '../Common/ProjectTokenInput'
@@ -8,23 +8,21 @@ import { useEthers, ChainId } from "@usedapp/core";
 import {
     useJoinPresaleCallback,
     usePadApproveCallback,
-    useToken,
-    useNativeTokenBalance,
-    useTokenAllowance,
     useTotalInvestedAmount,
     useInvestCap,
-    useTokenBalanceCallback
+    useDepositInfo
 } from 'src/state/Pad/hooks'
+import { useToken, useNativeTokenBalance, useTokenAllowance, useTokenBalance, useTokenBalanceCallback } from 'src/state/hooks'
 import { AddressZero } from '@ethersproject/constants'
 import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
 import { BigNumber } from '@ethersproject/bignumber';
 import { formatEther } from 'src/utils'
 import { BUSDTokenAddress } from "@app/shared/PadConstant";
-import { useDepositInfo, useTokenBalance } from 'src/state/Pad/hooks'
 import { parseEther } from 'src/utils'
 import TaskAltIcon from '@mui/icons-material/TaskAlt'
 import { getEtherscanLink, CHAIN_LABELS, getNativeSymbol, PROJECT_STATUS } from 'src/utils'
+import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 
 interface PresaleModalProps {
     isOpen: boolean
@@ -37,6 +35,7 @@ interface PresaleModalProps {
 
 export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTierNo, handleClose, project, projectStatus }: PresaleModalProps) {
     const [hash, setHash] = useState<string | undefined>()
+    const snackbar = useSnackbar()
     const [attempting, setAttempting] = useState(false)
     const { library, account, chainId } = useEthers()
     const [fundTokenAmount, setFundTokenAmount] = useState(0)
@@ -96,18 +95,18 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         if (investCap.gt(BigNumber.from(0))) {
             let temp: BigNumber = investCap.sub(totalInvestedAmount)
             let restCap = formatEther(temp, fundDecimals, 5)
-            if (max > restCap) max = restCap            
+            if (max > restCap) max = restCap
         }
-        if (max<0) max=0
+        if (max < 0) max = 0
         setUserMaxAllocation(max)
     }, [depositedAmount, fundDecimals, currentTierNo, project, investCap, totalInvestedAmount])
 
     useEffect(() => {
-        try{
+        try {
             if (userDepositToken) {
                 if (userDepositToken?.decimals) setFundDecimals(userDepositToken?.decimals)
             }
-        }catch(error) {}
+        } catch (error) { }
     }, [userDepositToken])
 
     const callUserBUSDCallback = () => {
@@ -124,12 +123,17 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     async function onApprove() {
         setIsWalletApproving(true)
         try {
-            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount+1), project.blockchain).then((hash: string) => {
+            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount + 1), project.blockchain).then((hash: string) => {
                 setIsApproved(true)
                 setIsWalletApproving(false)
             }).catch((error: any) => {
                 setIsWalletApproving(false)
                 console.log(error)
+                let err: any = error
+                if (err?.message) snackbar.snackbar.show(err?.message, "error")
+                if (err?.error) {
+                    if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
+                }
             })
         } catch (error) {
             setIsWalletApproving(false)
@@ -157,6 +161,11 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                         }).catch(error => {
                             setAttempting(false)
                             console.log(error)
+                            let err: any = error
+                            if (err?.message) snackbar.snackbar.show(err?.message, "error")
+                            if (err?.error) {
+                                if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
+                            }
                         })
                     } catch (error) {
                         setAttempting(false)
@@ -228,12 +237,12 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
         handleClose()
     }
 
-    const getAvailableSupply = () => {            
+    const getAvailableSupply = () => {
         if (investCap && totalInvestedAmount) {
-            if (investCap.gt(BigNumber.from(0))){
+            if (investCap.gt(BigNumber.from(0))) {
                 let temp: BigNumber = investCap.sub(totalInvestedAmount)
-                let res: number = 0            
-                temp = temp.mul(BigNumber.from(10000)).div(investCap)            
+                let res: number = 0
+                temp = temp.mul(BigNumber.from(10000)).div(investCap)
                 if (temp.lte(BigNumber.from(10000))) res = temp.toNumber() / 100
                 return res + '%'
             }
@@ -318,7 +327,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 >
                                     Reserve Your Tokens Now
                                 </Button> */}
-                                
+
                             </div>
                         </div>
                     )}
@@ -341,7 +350,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 <div className='text-[16px] text-[#aaaaaa] text-center'>Transaction submitted</div>
                                 <div className='text-[16px] text-[#aaaaaa] text-center'>{'Hash: ' + hash.slice(0, 10) + '...' + hash.slice(56, 65)}</div>
                                 {chainId && (
-                                    <a className='text-[16px] mt-4 text-[#aaaaee] underline text-center'  target="_blank" href={getEtherscanLink(chainId, hash, 'transaction')}>
+                                    <a className='text-[16px] mt-4 text-[#aaaaee] underline text-center' target="_blank" href={getEtherscanLink(chainId, hash, 'transaction')}>
                                         {chainId && `View on ${CHAIN_LABELS[chainId]}`}
                                     </a>
                                 )}
