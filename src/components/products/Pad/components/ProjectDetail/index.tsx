@@ -13,7 +13,7 @@ import ClaimTokensModal from '@app/components/products/Pad/components/ProjectDet
 import { useLaunchTokenCallback, useFundTier, useProjectStatus } from 'src/state/Pad/hooks'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther } from 'src/utils'
-import { useEthers, useToken, ChainId } from "@usedapp/core"
+import { useEthers } from "@usedapp/core"
 import { getProjectStatusText } from 'src/utils'
 
 export default function ProjectDetail({ project }: { project: any }) {
@@ -22,9 +22,9 @@ export default function ProjectDetail({ project }: { project: any }) {
     const [isOpenJoinPresale, setIsOpenJoinPresale] = useState(false);
     const [isOpenClaimTokens, setIsOpenClaimTokens] = useState(false);
     const [launchTokenPrice, setLaunchTokenPrice] = useState(0)
-    const { launchTokenPriceCallback } = useLaunchTokenCallback() 
+    const { launchTokenPriceCallback } = useLaunchTokenCallback()
     const { library, account, chainId } = useEthers()
-    const projectStatus=useProjectStatus(IdoProject)
+    const projectStatus = useProjectStatus(IdoProject)
     const hideTierCard = useRef(null)
     const router = useRouter()
     const currentTierNo = useFundTier();
@@ -49,7 +49,7 @@ export default function ProjectDetail({ project }: { project: any }) {
     useEffect(() => {
         fetchProjectList().then(res => {
             if (res) setIdoList(res.data)
-        })        
+        })
     }, [])
 
     useEffect(() => {
@@ -111,12 +111,12 @@ export default function ProjectDetail({ project }: { project: any }) {
                             </div>
                             <div className='flex-1'><About ido={IdoProject} projectStatus={projectStatus} handleClickJoinPresale={handleClickJoinPresale} handleClickClaimTokens={handleClickClaimTokens} /></div>
                         </div>
-                    </div>           
+                    </div>
                 </>)}
                 <div className="mt-8">
                     <h1 className="text-white text-[24px]">Featured projects</h1>
                     <FeaturedProjects options={null} />
-                </div>                
+                </div>
             </div>
         </>
     )
