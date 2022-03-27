@@ -1,6 +1,16 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
-export default function TextArea({ name, value, placeholder, required, id, onChange }:
-    { name: string, value: string, placeholder: string, required: boolean, id: string, onChange: (val: any) => void }) {
+import CommonTextArea from 'src/components/common/CommonTextArea'
+
+interface TextAreaProps {
+    name: string
+    value: string
+    placeholder: string
+    required: boolean
+    id: string
+    onChange: (val: any) => void
+}
+
+export default function TextArea({ name, value, placeholder, required, id, onChange }: TextAreaProps) {
     const [isBorder, setIsBorder] = useState(false)
     const handleFocus = () => {
         setIsBorder(true)
@@ -14,15 +24,14 @@ export default function TextArea({ name, value, placeholder, required, id, onCha
             <div className="flex items-center space-x-3 text-[12px] font-bold uppercase text-app-primary mb-2">
                 <span>{name}</span>{(required && <span className='text-[#ff0000]'>*</span>)}
             </div>
-            <textarea
-                id={id}
-                className="bg-[#001926] text-white text-[16px] rounded-md block w-full pt-1.5 focus:outline-none" rows={5}
+            <CommonTextArea
+                id={id}               
                 placeholder={placeholder}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                onChange={(event) => onChange(event.target.value)}
+                handleFocus={handleFocus}
+                handleBlur={handleBlur}
+                onChange={onChange}
                 value={value}
-                required={required ? true : false}
+                required={required}
             />
         </div>
     )
