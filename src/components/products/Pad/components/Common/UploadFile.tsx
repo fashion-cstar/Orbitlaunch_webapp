@@ -1,7 +1,13 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import UploadIcon from '../svgs/UploadIcon'
-export default function UploadFile({ name, placeholder, id, onChange }:
-    { name: string, placeholder: string, id: string, onChange: (val: any) => void }) {
+
+interface UploadFileProps {
+    name: string
+    placeholder: string
+    id: string
+    onChange: (val: any) => void
+}
+export default function UploadFile({ name, placeholder, id, onChange }: UploadFileProps) {
     const fileRef = useRef(null);
     const [isBorder, setIsBorder] = useState(false)
     const [file, setFile] = useState<any>()
