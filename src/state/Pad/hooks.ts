@@ -13,14 +13,15 @@ import { AddressZero } from '@ethersproject/constants'
 import { M31TokenAddress, RpcProviders } from "@app/shared/PadConstant"
 import { getTierValues } from '@app/shared/TierLevels'
 import { getChainIdFromName, PROJECT_STATUS } from 'src/utils'
-import useRefresh from './useRefresh'
+import { useTokenBalance } from '../hooks'
+import useRefresh from '../useRefresh'
 
 import moment from 'moment'
 
 export function fetchProjectList(): Promise<any | null> {
   return (fetch(`https://backend-api-pi.vercel.app/api/getProjects`)
     .then((res: any) => res.json())
-    .then((data) => {   
+    .then((data) => {
       return data
     })
     .catch(error => {
@@ -120,41 +121,6 @@ export function uselaunchTokenDecimals(padContractAddress: string, blockchain: s
   return launchTokenDecimals
 }
 
-export function useToken(tokenContractAddress: string, blockchain: string): { name: string, symbol: string, decimals: number } {
-  const { account, library } = useEthers()
-  const [token, setToken] = useState<any>()
-  const chainId = getChainIdFromName(blockchain);
-
-  useEffect(() => {
-    const fetchToken = async () => {
-      const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
-      const name = await tokenContract.name()
-      const decimals = await tokenContract.decimals()
-      const symbol = await tokenContract.symbol()
-      return { name: name, symbol: symbol, decimals: decimals }
-    }
-    if (tokenContractAddress) {
-      fetchToken().then(result => {
-        setToken(result)
-      }).catch(error => { })
-    }
-  }, [tokenContractAddress])
-
-  return token
-}
-
-export function useTokenAllowance(): { tokenAllowanceCallback: (owner: string, spender: string, tokenContractAddress: string, blockchain: string) => Promise<BigNumber> } {
-  const { account, library } = useEthers()
-  const tokenAllowanceCallback = async function (owner: string, spender: string, tokenContractAddress: string, blockchain: string) {
-    const chainId = getChainIdFromName(blockchain);
-    const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
-    return tokenContract.allowance(owner, spender).then((res: BigNumber) => {
-      return res
-    })
-  }
-  return { tokenAllowanceCallback }
-}
-
 export function usePadApproveCallback(): {
   padApproveCallback: (padContractAddress: string, tokenContractAddress: string, amount: number, blockchain: string) => Promise<string>
 } {
@@ -245,42 +211,6 @@ export function useClaimCallback(): {
     })
   }
   return { claimCallback }
-}
-
-export function useTokenBalance(tokenAddress: string, blockchain: string): BigNumber {
-  const { account } = useEthers()
-  const [balance, setBalance] = useState<BigNumber>(BigNumber.from(0))
-  const chainId = getChainIdFromName(blockchain);
-  const { slowRefresh, fastRefresh } = useRefresh()
-
-  useEffect(() => {
-    const fetchUserBalance = async () => {
-      const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
-      const amount = await tokenContract.balanceOf(account)
-      return amount
-    }
-    if (!!account && !!tokenAddress) {
-      fetchUserBalance().then(result => {
-        setBalance(result)
-      }).catch(error => { })
-    } else {
-      setBalance(BigNumber.from(0))
-    }
-  }, [account, tokenAddress, slowRefresh])
-
-  return balance
-}
-
-export function useTokenBalanceCallback(): { tokenBalanceCallback: (tokenAddress: string, blockchain: string) => Promise<BigNumber> } {
-  const { account, library } = useEthers()
-  const tokenBalanceCallback = async function (tokenAddress: string, blockchain: string) {
-    const chainId = getChainIdFromName(blockchain);
-    const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
-    return tokenContract.balanceOf(account).then((res: BigNumber) => {
-      return res
-    })
-  }
-  return { tokenBalanceCallback }
 }
 
 export function useFundTier(): number {
@@ -528,28 +458,6 @@ export function useOpenedToNonM31Holders(padContractAddress: string, blockchain:
   return openedToNonM31
 }
 
-export function useNativeTokenBalance(blockchain: string): BigNumber {
-  const { account } = useEthers()
-  const chainId = getChainIdFromName(blockchain);
-  const [balance, setBalance] = useState(BigNumber.from(0))
-  const { slowRefresh, fastRefresh } = useRefresh()
-
-  useEffect(() => {
-    const fetchNativeToken = async () => {
-      const balance = await RpcProviders[chainId].getBalance(account);
-      return balance
-    }
-    if (account) {
-      fetchNativeToken().then(result => {
-        setBalance(result)
-      }).catch(error => { })
-    } else {
-      setBalance(BigNumber.from(0))
-    }
-  }, [account, slowRefresh])
-  return balance
-}
-
 export function useProjectStatus(ido: any): number {
   const startTime: BigNumber = useStartTime(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const endTime: BigNumber = useEndTime(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
@@ -559,45 +467,53 @@ export function useProjectStatus(ido: any): number {
   const vestingStartedAt: BigNumber = useVestingStartedAt(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const vestDuration: BigNumber = useVestDuration(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const investCap: BigNumber = useInvestCap(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
-  const totalInvestedAmount: BigNumber = useTotalInvestedAmount(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')  
+  const totalInvestedAmount: BigNumber = useTotalInvestedAmount(ido ? ido.contractAddress : '', ido ? ido.blockchain : '')
   const [projectStatus, setProjectStatus] = useState(0)
-  
-  useEffect(() => {    
-    if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31 && vestingStartedAt && vestDuration && investCap && totalInvestedAmount) {            
-      if (investCap.gt(0)){
-        if (totalInvestedAmount.gte(investCap)){          
-          setProjectStatus(PROJECT_STATUS.PresaleFilled)
-        }
-      }
+
+  useEffect(() => {
+    let status = 0
+    if (startTime && endTime && startTimeForNonM31 && endTimeForNonM31 && vestingStartedAt && vestDuration && investCap && totalInvestedAmount) {
       if (startTime.toNumber() > 0 && endTime.toNumber() > 0) {
         if (moment(moment.now()).isBefore(moment(startTime.toNumber() * 1000))) setProjectStatus(PROJECT_STATUS.PresaleOpeningSoon) // presale opening soon
         if (moment(moment.now()).isSameOrAfter(moment(startTime.toNumber() * 1000))
-          && moment(moment.now()).isBefore(moment(endTime.toNumber() * 1000))) setProjectStatus(PROJECT_STATUS.PresaleOpen) // presale open
+          && moment(moment.now()).isBefore(moment(endTime.toNumber() * 1000))) {
+          setProjectStatus(PROJECT_STATUS.PresaleOpen) // presale open
+          status = PROJECT_STATUS.PresaleOpen
+        }
         if (moment(moment.now()).isSameOrAfter(moment(endTime.toNumber() * 1000))) setProjectStatus(PROJECT_STATUS.PresaleClosed) // presale closed      
       }
       if (openedToNonM31) {
         if (startTimeForNonM31.toNumber() > 0 && endTimeForNonM31.toNumber() > 0) {
           if (moment(moment.now()).isSameOrAfter(moment(startTimeForNonM31.toNumber() * 1000))
-            && moment(moment.now()).isBefore(moment(endTimeForNonM31.toNumber() * 1000))) setProjectStatus(PROJECT_STATUS.PublicPresaleOpen) // public presale open
+            && moment(moment.now()).isBefore(moment(endTimeForNonM31.toNumber() * 1000))) {
+            setProjectStatus(PROJECT_STATUS.PublicPresaleOpen) // public presale open
+            status = PROJECT_STATUS.PublicPresaleOpen
+          }
           if (moment(moment.now()).isSameOrAfter(moment(endTimeForNonM31.toNumber() * 1000))) setProjectStatus(PROJECT_STATUS.PublicPresaleClosed) // public presale closed
+        }
+      }
+      if (investCap.gt(0)) {
+        if (totalInvestedAmount.gte(investCap)) {
+          if (status === PROJECT_STATUS.PresaleOpen || status === PROJECT_STATUS.PublicPresaleOpen) setProjectStatus(PROJECT_STATUS.PresaleFilled)
         }
       }
       if (vestingStartedAt && vestDuration) {
         let vestingEndAt = (vestingStartedAt.toNumber() + vestDuration.toNumber() * 2592000) //unix timestamp
-        if (vestingStartedAt.toNumber() > 0 && vestDuration.toNumber() > 0) {
+        if (ido?.contractAddress == "0x7118ddde65d8a04ba31befeabb7e3435389f5a50") vestingEndAt = (vestingStartedAt.toNumber() + 20 * 2592000) //unix timestamp
+        if (vestingStartedAt.toNumber() > 0) {
           if (moment(moment.now()).isSameOrAfter(moment(vestingStartedAt.toNumber() * 1000))
             && moment(moment.now()).isBefore(moment(vestingEndAt * 1000))) setProjectStatus(PROJECT_STATUS.VestingStarted) // vesting started
           if (moment(moment.now()).isSameOrAfter(moment(vestingEndAt * 1000))) setProjectStatus(PROJECT_STATUS.VestingClosed) // vesting closed
         }
-      }      
-    }        
+      }
+    }
     if (ido) {
       if (ido?.launchDate > 0) {
         if (moment(moment.now()).isAfter(moment(ido?.launchDate * 1000))) {
           setProjectStatus(PROJECT_STATUS.ProjectLaunched) // project launched
         }
       }
-    }    
+    }
   }, [ido, startTime, endTime, startTimeForNonM31, endTimeForNonM31, openedToNonM31, vestingStartedAt, vestDuration, investCap, totalInvestedAmount])
 
   return projectStatus
@@ -634,7 +550,7 @@ export function useInvestCap(padContractAddress: string, blockchain: string): Bi
     const fetchInvestCap = async () => {
       const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
       // const cap = await padContract.investCap()
-      const cap = await padContract.hardCap()      
+      const cap = await padContract.hardCap()
       return cap
     }
     if (padContractAddress) {
@@ -646,6 +562,3 @@ export function useInvestCap(padContractAddress: string, blockchain: string): Bi
 
   return investCap
 }
-
-
-
