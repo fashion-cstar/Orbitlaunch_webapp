@@ -499,7 +499,9 @@ export function useProjectStatus(ido: any): number {
       }
       if (vestingStartedAt && vestDuration) {
         let vestingEndAt = (vestingStartedAt.toNumber() + vestDuration.toNumber() * 2592000) //unix timestamp
-        if (ido?.contractAddress == "0x7118ddde65d8a04ba31befeabb7e3435389f5a50") vestingEndAt = (vestingStartedAt.toNumber() + 20 * 2592000) //unix timestamp
+        if (ido?.contractAddress == "0x7118ddde65d8a04ba31befeabb7e3435389f5a50"){
+          vestingEndAt = (vestingStartedAt.toNumber() + 20 * 2592000) //unix timestamp
+        }
         if (vestingStartedAt.toNumber() > 0) {
           if (moment(moment.now()).isSameOrAfter(moment(vestingStartedAt.toNumber() * 1000))
             && moment(moment.now()).isBefore(moment(vestingEndAt * 1000))) setProjectStatus(PROJECT_STATUS.VestingStarted) // vesting started
