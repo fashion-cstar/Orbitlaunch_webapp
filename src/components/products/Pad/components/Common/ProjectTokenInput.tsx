@@ -1,8 +1,15 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
-import InputBoxContainer from './InputBoxContainer'
+import TokenQtyInputBox from '@app/components/common/TokenQtyInputBox'
 
-export default function ProjectTokenInput({ value, icon, name, onChange, onMax }:
-    { value: any, icon: string, name: string, onChange: (val: any) => void, onMax: () => void }) {
+interface TokenInputProps {
+    value: any
+    icon: string
+    name: string
+    onChange: (val: any) => void
+    onMax: () => void
+}
+
+export default function ProjectTokenInput({ value, icon, name, onChange, onMax }: TokenInputProps) {
     const [isBorder, setIsBorder] = useState(false)
     const handleFocus = () => {
         setIsBorder(true)
@@ -20,22 +27,12 @@ export default function ProjectTokenInput({ value, icon, name, onChange, onMax }
                 </div>
             </div>
             <div className='flex space-x-2'>
-                <InputBoxContainer>
-                    <input
-                        type="text"
-                        className="bg-[#001926] text-white text-[24px] rounded-md block w-full p-0 focus:outline-none"
-                        placeholder="0.0"
-                        onFocus={handleFocus}
-                        onBlur={handleBlur}
-                        onChange={(event) => {
-                                if (isNaN(Number(event.target.value))) onChange(0)
-                                else onChange(event.target.value)
-                            }
-                        }
-                        value={Number(value) === 0 || isNaN(Number(value))? '' : Number(value)}
-                        required={true}
-                    />
-                </InputBoxContainer>
+                <TokenQtyInputBox
+                    handleFocus={handleFocus}
+                    handleBlur={handleBlur}
+                    onChange={onChange}
+                    value={value}
+                />
                 <div className='flex space-x-4 py-2 px-4 bg-[#06111C] rounded-xl justify-center'>
                     <img src={icon} className="w-6 h-6" />
                     <div className='uppercase text-white text-[14px]'>{name}</div>
