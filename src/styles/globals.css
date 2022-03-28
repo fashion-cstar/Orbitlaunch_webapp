@@ -229,21 +229,30 @@ body {
 
 .pad-modal-fadeIn {  
   -webkit-animation-name: fadeIn;
-  -webkit-animation-duration: 4s;
+  -webkit-animation-duration: 0.6s;
   animation-name: fadeIn;
-  animation-duration: 4s;
-
-  @-webkit-keyframes fadeIn {
-      from {opacity: 0} 
-      to {opacity: 1}
-  }
-  
-  @keyframes fadeIn {
-      from {opacity: 0} 
-      to {opacity: 1}
-  }
+  animation-duration: 0.6s;  
 }
 
+@-webkit-keyframes fadeIn {
+  from {opacity: 0} 
+  to {opacity: 1}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0} 
+  to {opacity: 1}
+}
+
+@-webkit-keyframes fadeOut {
+  from {opacity: 1} 
+  to {opacity: 0}
+}
+
+@keyframes fadeOut {
+  from {opacity: 1} 
+  to {opacity: 0}
+}
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

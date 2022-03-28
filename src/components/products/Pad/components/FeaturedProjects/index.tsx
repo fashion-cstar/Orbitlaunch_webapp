@@ -3,8 +3,8 @@ import FeaturedCard from "./FeaturedCard"
 import moment from 'moment'
 import FeaturedList from './FeaturedList'
 import { useRouter } from 'next/router'
-import RightArrow from '../Buttons/RightArrow'
-import LeftArrow from '../Buttons/LeftArrow'
+import RightArrow from 'src/components/common/RightArrow'
+import LeftArrow from 'src/components/common/LeftArrow'
 import { fetchProjectList } from 'src/state/Pad/hooks'
 
 export default function FeaturedProjects({ options }: { options: any }) {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import RightArrow from '../products/Pad/components/Buttons/RightArrow';
-import LeftArrow from '../products/Pad/components/Buttons/LeftArrow';
+import RightArrow from './RightArrow';
+import LeftArrow from './LeftArrow';
 import { ethers } from "ethers";
 
 interface SliderCardsProps {

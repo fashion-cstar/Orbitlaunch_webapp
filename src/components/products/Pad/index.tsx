@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
-import BuyButton from "./components/Buttons/BuyButton"
+import BuyButton from "src/components/common/BuyButton"
 import moment from 'moment'
 import EndedTabHeader from './components/EndedTable/EndedTabHeader'
 import EndedIdoTable from './components/EndedTable'
@@ -62,7 +62,7 @@ export default function Pad() {
         const newWidth = widthRef?.current?.clientWidth;
         setTableWidth(newWidth)
         window.addEventListener("resize", getListSize);
-    }, []);
+    });
 
     useEffect(() => {
         const newWidth = widthRef?.current?.clientWidth;

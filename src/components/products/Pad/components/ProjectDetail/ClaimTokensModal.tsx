@@ -1,30 +1,26 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import Button from '@mui/material/Button';
-import Modal from '../Common/Modal';
+import Modal from 'src/components/common/Modal';
 import InputBox from '../Common/InputBox';
 import FundTokenInput from '../Common/FundTokenInput'
 import ProjectTokenInput from '../Common/ProjectTokenInput'
 import { useEthers, ChainId } from "@usedapp/core";
 import {
     useClaimCallback,
-    useToken,
-    useNativeTokenBalance,
     useGetAvailableTokens,
-    useTotalInvestedAmount,
-    useInvestCap,
-    useTokenBalanceCallback,
-    uselaunchTokenDecimals
+    uselaunchTokenDecimals,
+    useDepositInfo
 } from 'src/state/Pad/hooks'
-import { AddressZero } from '@ethersproject/constants'
+import { useToken, useNativeTokenBalance } from 'src/state/hooks'
 import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
 import { BigNumber } from '@ethersproject/bignumber';
 import { formatEther } from 'src/utils'
 import { BUSDTokenAddress } from "@app/shared/PadConstant";
-import { useDepositInfo, useTokenBalance } from 'src/state/Pad/hooks'
 import { parseEther } from 'src/utils'
 import TaskAltIcon from '@mui/icons-material/TaskAlt'
 import { getEtherscanLink, CHAIN_LABELS, getNativeSymbol } from 'src/utils'
+import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 
 interface ClaimModalProps {
     isOpen: boolean
@@ -35,6 +31,7 @@ interface ClaimModalProps {
 
 export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose, project }: ClaimModalProps) {
     const [hash, setHash] = useState<string | undefined>()
+    const snackbar = useSnackbar()
     const [attempting, setAttempting] = useState(false)
     const { library, account, chainId } = useEthers()
     const userDepositedAmount = useDepositInfo(project.contractAddress, project.blockchain)
@@ -50,7 +47,7 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
     const launchDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
 
     useEffect(() => {
-        if (launchDecimals){            
+        if (launchDecimals) {
             if (launchDecimals.gt(0)) setLaunchTokenDecimals(launchDecimals.toNumber())
         }
     }, [launchDecimals])
@@ -67,18 +64,19 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
     }, [userDepositedAmount])
 
     useEffect(() => {
-        try{
+        try {
             if (userDepositToken) {
                 if (userDepositToken?.decimals) setFundDecimals(userDepositToken?.decimals)
             }
-        }catch(error) {}
+        } catch (error) { }
     }, [userDepositToken])
 
     useEffect(() => {
-        if (availableTokens){
-            setAmountToClaim(availableTokens)            
+        if (availableTokens) {
+            setAmountToClaim(availableTokens)
         }
     }, [availableTokens])
+
     const successClaimed = () => {
         setAmountToClaim(BigNumber.from(0))
     }
@@ -93,6 +91,11 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
             }).catch(error => {
                 setAttempting(false)
                 console.log(error)
+                let err: any = error
+                if (err?.message) snackbar.snackbar.show(err?.message, "error")
+                if (err?.error) {
+                    if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
+                }
             })
         } catch (error) {
             setAttempting(false)

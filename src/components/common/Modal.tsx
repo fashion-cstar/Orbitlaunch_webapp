@@ -20,7 +20,7 @@ export default function Modal({
 
     const handleWindowClick = (event) => {
         const modal = document.getElementById("orbit-pad-modal");
-        if (event.target == modal) {
+        if (event.target.id == modal.id) {
             handleClose()
         }
     }

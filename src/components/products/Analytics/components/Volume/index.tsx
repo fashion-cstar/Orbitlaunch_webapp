@@ -2,8 +2,8 @@ import React, { useMemo, useState, useEffect } from 'react'
 import { render } from "react-dom"
 import Highcharts from "highcharts"
 import HighchartsReact from "highcharts-react-official"
-import RightArrow from '../../../Pad/components/Buttons/RightArrow'
-import LeftArrow from '../../../Pad/components/Buttons/LeftArrow'
+import RightArrow from 'src/components/common/RightArrow'
+import LeftArrow from 'src/components/common/LeftArrow'
 import TabButton from "./TabButton"
 
 const options = {

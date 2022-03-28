@@ -1,7 +1,8 @@
 import moment from 'moment'
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import ChainIcon from '../ChainIcon'
-import { useTotalInvestedAmount, useGetTotalInvestors, useDepositInfo, useLaunchTokenPrice, useToken } from 'src/state/Pad/hooks'
+import { useTotalInvestedAmount, useGetTotalInvestors, useDepositInfo, useLaunchTokenPrice } from 'src/state/Pad/hooks'
+import { useToken } from 'src/state/hooks'
 import { BUSDTokenAddress } from "@app/shared/PadConstant";
 import { formatEther } from 'src/utils'
 import { getChainIdFromName } from 'src/utils'

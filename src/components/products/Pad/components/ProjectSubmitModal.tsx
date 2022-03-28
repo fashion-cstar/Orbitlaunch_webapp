@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import Button from '@mui/material/Button';
-import Modal from './Common/Modal';
+import Modal from 'src/components/common/Modal';
 import InputBox from './Common/InputBox';
 import TextArea from './Common/TextArea';
 import ReCAPTCHA from "react-google-recaptcha";
