@@ -137,6 +137,9 @@ export function usePadApproveCallback(): {
         return tokenContract.approve(padContract.address, parseEther(amount, decimals), {
           gasLimit: calculateGasMargin(gas)
         }).then((response: TransactionResponse) => {
+          // response.wait().then((_: any) => {
+          //   return response.hash
+          // }).catch(error => {})
           return response.hash
         })
       }).catch((error: any) => {
@@ -144,6 +147,9 @@ export function usePadApproveCallback(): {
         return tokenContract.approve(padContract.address, MaxUint256, {
           gasLimit: calculateGasMargin(gas)
         }).then((response: TransactionResponse) => {
+          // response.wait().then((_: any) => {
+          //   return response.hash
+          // }).catch(error => {})
           return response.hash
         })
       })
