@@ -20,10 +20,10 @@ export default function EndedIdoTable({ idos, width }: { idos: any, width: numbe
                             <span className="w-full text-right">Whitelist Price</span>
                         </div>
                         <div className="flex items-center min-w-[100px] text-[#919699] text-[12px]" style={{ width: "10%" }}>
-                            <span className="w-full text-right">Current Price</span>
+                            <span className="w-full text-right">ATH Since Launch</span>
                         </div>
                         <div className="flex items-center min-w-[110px] text-[#919699] text-[12px]" style={{ width: "10%" }}>
-                            <span className="w-full text-right">ATH Since Launch</span>
+                            <span className="w-full text-right pr-5">ROI</span>
                         </div>
                         <div className="flex items-center min-w-[140px] text-[#919699] text-[12px]" style={{ width: "15%" }}>
                             <span className="w-full text-right">Presale Completed</span>

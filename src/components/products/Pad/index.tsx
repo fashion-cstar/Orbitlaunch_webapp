@@ -25,7 +25,10 @@ export default function Pad() {
 
     useEffect(() => {
         fetchProjectList().then(res => {
-            if (res) setIdoList(res.data)
+            if (res){
+                res.data.sort((a,b) => a.padOrder-b.padOrder)
+                setIdoList(res.data)
+            }
         })
     }, [])
 
