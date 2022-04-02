@@ -15,3 +15,8 @@ export const CONSTANT = {
         responsible for any losses. Orbit is not a licensed professional and cannot guarantee no loss. Past performance is not a 
         guarantee of future results. Orbit takes no responsibility for your investing.`
 };
+
+export enum ReferralStatus {
+    NEW_USER = 'New User',
+    ALREADY_REFERRED = 'Already Referred'
+}

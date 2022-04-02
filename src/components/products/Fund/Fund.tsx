@@ -1,20 +1,26 @@
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useEthers } from "@usedapp/core";
+import { ethers } from "ethers";
+import { Button } from "@mui/material";
+
 import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
 import useFund from "@app/lib/hooks/useFund";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
-import theme from "@app/lib/theme";
 import { tierInformation as tierInfo } from "@app/shared/TierLevels";
-import { Button, useTheme } from "@mui/material";
-import { useEthers } from "@usedapp/core";
-import { ethers } from "ethers";
+import { checkUserAlreadyReferred, getUserReferralInfo, registerSoloUser, registerUserWithParent } from "@app/state/Referral";
+import { ReferralStatus } from "@app/constants/constant";
+
 import BuyButton from "../../common/BuyButton";
 import SliderCards from "../../common/SliderCards";
 import DepositPopup from "./DepositPopup";
 
 export default function Fund() {
     const activateProvider = Web3ModalButton();
+    const router = useRouter();
     const snackbar = useSnackbar();
     const depositModalId = "deposit-busd-modal";
-    const { account } = useEthers();
+    const { account, library } = useEthers();
     const {
         startInvestmentPeriodDate,
         endInvestmentPeriodDate,
@@ -30,7 +36,11 @@ export default function Fund() {
         balance,
         withdraw
     } = useFund();
+    const [totalReferred, setTotalReferred] = useState(0);
+    const [referredBy, setReferredBy] = useState('');
+    const [commissionEarned, setCommissionEarned] = useState(0);
     const tierInformation = tierInfo;
+    const { id } = router.query;
 
     const handleOpenDepositModal = () => {
         const modal = document.getElementById(depositModalId);
@@ -47,6 +57,49 @@ export default function Fund() {
 
         snackbar.snackbar.show("Deposit is succesfull", "success");
     }
+
+    useEffect(() => {
+        const processUserReferral = async () => {
+            console.log('processUserReferral');
+
+            if (account && library) {
+                const signer = library.getSigner();
+                // Check current user referral status
+                const result = await checkUserAlreadyReferred(account)
+                const { msg } = result;
+                
+                // User visited the link with the referral link
+                if (id) {
+                    const walletAddress = window.atob(id as string);
+                    if (msg === ReferralStatus.NEW_USER) {
+                        if (ethers.utils.isAddress(walletAddress)) {
+                            // Sign a message
+                            const hash = ethers.utils.keccak256(account);
+                            const signature = await signer.signMessage(ethers.utils.arrayify(hash));
+    
+                            await registerUserWithParent(window.btoa(account), id as string, signature, hash);
+                        }
+                    }
+                } else {
+                    if (msg === ReferralStatus.NEW_USER) {
+                        const hash = ethers.utils.keccak256(account);
+                        const signature = await signer.signMessage(ethers.utils.arrayify(hash));
+
+                        await registerSoloUser(window.btoa(account), signature, hash);
+                    }
+                }
+            
+                const referralInfo = await getUserReferralInfo(account);
+                if (referralInfo.data !== undefined) {
+                    const { claimedReferralFee, parent, totalReferralFee, totalReferred } = referralInfo.data;
+                    setTotalReferred(totalReferred);
+                    setReferredBy(`https://www.orbitlaunch.io/fund/${window.btoa(parent)}`);
+                    setCommissionEarned(totalReferralFee);
+                }
+            }
+        }
+        processUserReferral();
+    }, [id, account]);
 
     return (
         <>
@@ -168,7 +221,37 @@ export default function Fund() {
                                     </div>
                                 </div>
                             )
-                            : null
+                            : (
+                                <div className="flex-1 rounded-2xl bg-[#001926] p-4 min-h-[250px] leading-7">
+                                    <p className="text-l font-bold break-all">
+                                        Referral URL: &nbsp;
+                                        <span className="text-m cursor-pointer text-app-primary" onClick={() => {
+                                              navigator.clipboard.writeText(`https://orbitlaunch.io/fund/${window.btoa(account)}`);
+                                        }}>
+                                            {`https://www.orbitlaunch.io/fund/${window.btoa(account)}`}
+                                        </span>
+                                    </p>
+                                    <p className="text-l font-bold break-all">
+                                        Total Referrals Based on Connected Wallets: &nbsp;
+                                        <span className="text-m cursor-pointer text-app-primary"
+                                        >
+                                            {totalReferred}
+                                        </span>
+                                    </p>
+                                    <p className="text-l font-bold break-all">
+                                        Commision Earned: &nbsp;
+                                        <span className="text-m cursor-pointer text-app-primary">
+                                            {commissionEarned}
+                                        </span>
+                                    </p>
+                                    <p className="text-l font-bold break-all">
+                                        You Were Referred by:&nbsp;
+                                        <span className="text-m cursor-pointer text-app-primary">
+                                            {referredBy}
+                                        </span>
+                                    </p>
+                                </div>
+                            )
                         }
                     </div>
                 </div>
