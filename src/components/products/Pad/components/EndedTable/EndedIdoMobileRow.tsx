@@ -13,6 +13,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LinkProject from '../svgs/LinkProject'
 
 export default function EndedIdoMobileRow({ ido, key }: { ido: any, key: number }) {
     const { library, account, chainId } = useEthers()
@@ -61,10 +62,13 @@ export default function EndedIdoMobileRow({ ido, key }: { ido: any, key: number 
                     <div className='w-full max-w-[500px]'>
                         <div className='flex items-center justify-between gap-4 ml-4'>
                             <div className='flex gap-4 items-center'>
-                                <img src={ido.projectIcon} className='w-8 h-8 mr-4' />
+                                <img src={ido.projectIcon} className='w-8 h-8 mr-2' />
                                 <div className="text-white text-[16px] p-0">{ido.projectName}</div>
                             </div>
-                            <div className="text-[#919699] text-[12px] uppercase p-0">${ido.projectSymbol}</div>
+                            <div className='flex items-center'>
+                                <div className="hover:bg-[#ffffff]/[.3] rounded-md p-1" onClick={handleClickProject}><LinkProject /></div>
+                                <div className="text-[#919699] text-[12px] uppercase p-0 min-w-[70px] text-right mr-2">${ido.projectSymbol}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
