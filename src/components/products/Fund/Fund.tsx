@@ -93,7 +93,11 @@ export default function Fund() {
                 if (referralInfo.data !== undefined) {
                     const { claimedReferralFee, parent, totalReferralFee, totalReferred } = referralInfo.data;
                     setTotalReferred(totalReferred);
-                    setReferredBy(`https://www.orbitlaunch.io/fund/${window.btoa(parent)}`);
+                    if (parent === null) {
+                        setReferredBy(null);
+                    } else {
+                        setReferredBy(`https://www.orbitlaunch.io/fund/${window.btoa(parent)}`);
+                    }
                     setCommissionEarned(totalReferralFee);
                 }
             }
@@ -244,12 +248,16 @@ export default function Fund() {
                                             {commissionEarned}
                                         </span>
                                     </p>
-                                    <p className="text-l font-bold break-all">
-                                        You Were Referred by:&nbsp;
-                                        <span className="text-m cursor-pointer text-app-primary">
-                                            {referredBy}
-                                        </span>
-                                    </p>
+                                    {
+                                        referredBy !== null && (
+                                            <p className="text-l font-bold break-all">
+                                                You Were Referred by:&nbsp;
+                                                <span className="text-m cursor-pointer text-app-primary">
+                                                    {referredBy}
+                                                </span>
+                                            </p>
+                                       )
+                                    }
                                 </div>
                             )
                         }
