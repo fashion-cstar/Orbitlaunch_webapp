@@ -10,7 +10,7 @@ export default function EndedTabHeader({ handleTabClick }: { handleTabClick: (ch
     return (
         <div className="flex gap-6">
             <TabButton isSelected={chainName === 'all'} name="All" chainName={'all'} handleTabClick={handleClick} />
-            <TabButton isSelected={chainName === 'bsc'} name="Binance Smart Chain" chainName={'bsc'} handleTabClick={handleClick} />
+            <TabButton isSelected={chainName === 'bsc'} name="Binance" chainName={'bsc'} handleTabClick={handleClick} />
             <TabButton isSelected={chainName === 'ethereum'} name="Ethereum" chainName={'ethereum'} handleTabClick={handleClick} />            
         </div>
     )
