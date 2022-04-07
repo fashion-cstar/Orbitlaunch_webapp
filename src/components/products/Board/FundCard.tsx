@@ -38,7 +38,7 @@ export default function FundCard() {
                         <p>Current Investors: <span className="text-[#867EE8]">{totalInvestorsFormatted}</span></p>
                         <p>Profit to Date: <span className="text-[#867EE8]">$ {roiToDate}</span></p>
                         <p>Total Invested to Date: <span className="text-[#867EE8]">$ {
-                            ethers.utils.formatEther(ethers.utils.parseEther(totalInvestedToDate).add(ethers.utils.parseEther(totalInvestedToDate_V1)))
+                            ethers.FixedNumber.fromString(ethers.utils.formatEther(ethers.utils.parseEther(totalInvestedToDate).add(ethers.utils.parseEther(totalInvestedToDate_V1)))).round(2).toString()
                         }</span></p>
                     </div>
                 </div>

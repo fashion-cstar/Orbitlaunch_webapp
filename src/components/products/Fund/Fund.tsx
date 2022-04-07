@@ -179,7 +179,7 @@ export default function Fund() {
                                 <span>{!!account ? 'ROI to Date' : 'Total Invested to Date'}</span>
                             </div>
                             <div className="text-xl">${!!account ? '0' : 
-                                ethers.utils.formatEther(ethers.utils.parseEther(totalInvestedToDate).add(ethers.utils.parseEther(totalInvestedToDate_V1)))
+                                ethers.FixedNumber.fromString(ethers.utils.formatEther(ethers.utils.parseEther(totalInvestedToDate).add(ethers.utils.parseEther(totalInvestedToDate_V1)))).round(2).toString()
                             }</div>
                         </div>
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
@@ -349,7 +349,7 @@ export default function Fund() {
                             <span>{!!account ? 'ROI to Date' : 'Total Invested to Date'}</span>
                         </div>
                         <div className="text-xl">${!!account ? '0' :
-                            ethers.utils.formatEther(ethers.utils.parseEther(totalInvestedToDate).add(ethers.utils.parseEther(totalInvestedToDate_V1)))
+                            ethers.FixedNumber.fromString(ethers.utils.formatEther(ethers.utils.parseEther(totalInvestedToDate).add(ethers.utils.parseEther(totalInvestedToDate_V1)))).round(2).toString()
                         }</div>
                     </div>
                 </div>
