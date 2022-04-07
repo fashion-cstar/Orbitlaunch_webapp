@@ -1,4 +1,5 @@
 import useFund from "@app/lib/hooks/useFund";
+import useFund_V2 from "@app/lib/hooks/useFund_V2";
 import { useEthers } from "@usedapp/core";
 import { ethers } from "ethers";
 
@@ -7,15 +8,24 @@ export default function FundCard() {
     const { account } = useEthers();
 
     const {
+        totalInvestedToDate_V1,
+        currentInvestment_V1,
+        currentTierNo_V1,
+        currentTierPercentage_V1,
+        roiToDate_V1,
+        totalInvestors_V1
+    } = useFund();
+
+    const {
         totalInvestedToDate,
         currentInvestment,
         currentTierNo,
         currentTierPercentage,
         roiToDate,
         totalInvestors
-    } = useFund();
+    } = useFund_V2();    
 
-    const totalInvestorsFormatted = ethers.utils.formatUnits(totalInvestors, 0);
+    const totalInvestorsFormatted = ethers.utils.formatUnits((totalInvestors+totalInvestors_V1), 0);
 
     return (
         <>
@@ -27,7 +37,9 @@ export default function FundCard() {
                     <div className="flex flex-col space-y-2 text-sm">
                         <p>Current Investors: <span className="text-[#867EE8]">{totalInvestorsFormatted}</span></p>
                         <p>Profit to Date: <span className="text-[#867EE8]">$ {roiToDate}</span></p>
-                        <p>Total Invested to Date: <span className="text-[#867EE8]">$ {totalInvestedToDate}</span></p>
+                        <p>Total Invested to Date: <span className="text-[#867EE8]">$ {
+                            ethers.FixedNumber.fromString(ethers.utils.formatEther(ethers.utils.parseEther(totalInvestedToDate).add(ethers.utils.parseEther(totalInvestedToDate_V1)))).round(2).toString()
+                        }</span></p>
                     </div>
                 </div>
             )}

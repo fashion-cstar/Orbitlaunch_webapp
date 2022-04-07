@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
     AppTokenAddress,
     BusdContractAddress,
-    OrbitFundContractAddress,    
+    OrbitFundContractAddress_V2,    
     OrbitStableTokenAddress
 } from "@app/shared/AppConstant";
 import { ethers } from "ethers";
@@ -16,13 +16,13 @@ import orbitStableCoinAbi from "@app/lib/contract/abis/orbitStableCoinAbi.json";
 import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbi.json";
 import { getContract, getProviderOrSigner } from '@app/utils';
 
-export default function useFund() {
+export default function useFund_V2() {
     const { account, library } = useEthers();
     const connectedUserBalance = useTokenBalance(AppTokenAddress, account);
 
-    const agreeToTerms_V1 = async () => {
+    const agreeToTerms = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
 
             return orbitFundContract.agreeToTerms()
                 .then(() => {
@@ -46,10 +46,10 @@ export default function useFund() {
         }
     }
 
-    const userAgreed_V1 = async () => {
+    const userAgreed = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
-            
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
+
             return await orbitFundContract.userAgreed(account)
                 .then((response: any) => {
                     return {
@@ -73,16 +73,16 @@ export default function useFund() {
         }
     }
 
-    const depositBusd_V1 = async (amount: string) => {
+    const depositBusd = async (amount: string) => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
             const busdContract = getContract(BusdContractAddress, busdAbi, library, account ? account : undefined);
             const provider = getProviderOrSigner(library, account) as any;
 
             const weiAmount = ethers.utils.parseEther(amount);
             const approveTxHash = await busdContract
                 .connect(provider)
-                .approve(OrbitFundContractAddress, weiAmount);
+                .approve(OrbitFundContractAddress_V2, weiAmount);
 
             return approveTxHash.wait().then(async (_: any) => {
                 return await orbitFundContract.deposit(weiAmount)
@@ -109,35 +109,35 @@ export default function useFund() {
     }
 
     const [{
-        startInvestmentPeriodDate_V1,
-        endInvestmentPeriodDate_V1,
-        currentInvestment_V1,
-        totalInvestedToDate_V1,
-        totalInvestors_V1,
-        roiToDate_V1, currentTierNo_V1,
-        currentTierPercentage_V1,
-        disableDeposit_V1,
-        disableWithdraw_V1,
-        remainingTimeText_V1,
-        balance_V1
+        startInvestmentPeriodDate,
+        endInvestmentPeriodDate,
+        currentInvestment,
+        totalInvestedToDate,
+        totalInvestors,
+        roiToDate, currentTierNo,
+        currentTierPercentage,
+        disableDeposit,
+        disableWithdraw,
+        remainingTimeText,
+        balance
     }, setInfo] = useState({
-        startInvestmentPeriodDate_V1: '-',
-        endInvestmentPeriodDate_V1: '-',
-        currentInvestment_V1: '0.00',
-        totalInvestedToDate_V1: '0.00',
-        totalInvestors_V1: 0,
-        roiToDate_V1: '0.0',
-        currentTierNo_V1: 0,
-        currentTierPercentage_V1: "0",
-        disableDeposit_V1: true,
-        disableWithdraw_V1: true,
-        remainingTimeText_V1: '0 days 0 hours 0 minutes',
-        balance_V1: '0.00'
+        startInvestmentPeriodDate: '-',
+        endInvestmentPeriodDate: '-',
+        currentInvestment: '0.00',
+        totalInvestedToDate: '0.00',
+        totalInvestors: 0,
+        roiToDate: '0.0',
+        currentTierNo: 0,
+        currentTierPercentage: "0",
+        disableDeposit: true,
+        disableWithdraw: true,
+        remainingTimeText: '0 days 0 hours 0 minutes',
+        balance: '0.00'
     });
 
     const totalInvestedAmount = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
 
             return await orbitFundContract.totalInvestedAmount()
                 .then((response: any) => {
@@ -155,7 +155,7 @@ export default function useFund() {
 
     const getTotalInvestors = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
 
             return await orbitFundContract.getTotalInvestors()
                 .then((response: any) => {
@@ -173,7 +173,7 @@ export default function useFund() {
 
     const startPeriodTime = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
 
             return await orbitFundContract.startTime()
                 .then((response: any) => {
@@ -200,7 +200,7 @@ export default function useFund() {
 
     const endPeriodTime = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
 
             return await orbitFundContract.endTime()
                 .then((response: any) => {
@@ -263,7 +263,7 @@ export default function useFund() {
 
     const depositInfos = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
 
             return await orbitFundContract.depositInfos(account)
                 .then((response: any) => {
@@ -281,7 +281,7 @@ export default function useFund() {
 
     const userWithdrew = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
 
             return await orbitFundContract.userWithdrew(account)
                 .then(async (result: any) => {
@@ -297,15 +297,15 @@ export default function useFund() {
         }
     }
 
-    const withdraw_V1 = async (weiAmount: ethers.BigNumber) => {
+    const withdraw = async (weiAmount: ethers.BigNumber) => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
             const orbitStableContract = getContract(OrbitStableTokenAddress, orbitStableCoinAbi, library, account ? account : undefined);
             const provider = getProviderOrSigner(library, account) as any;
 
             const approveTxHash = await orbitStableContract
                 .connect(provider)
-                .approve(OrbitFundContractAddress, weiAmount);
+                .approve(OrbitFundContractAddress_V2, weiAmount);
 
             return approveTxHash.wait().then(async (_: any) => {
                 return await orbitFundContract.withdraw()
@@ -383,36 +383,36 @@ export default function useFund() {
         if (!!account && !!library && !!connectedUserBalance) {
             fetchConnectedData().then(result => {
                 setInfo({
-                    startInvestmentPeriodDate_V1: result.startInvestmentPeriodDate,
-                    endInvestmentPeriodDate_V1: result.endInvestmentPeriodDate,
-                    currentInvestment_V1: result.currentInvestment,
-                    totalInvestedToDate_V1: result.totalInvestedToDate,
-                    totalInvestors_V1: result.totalInvestors,
-                    roiToDate_V1: result.roiToDate,
-                    currentTierNo_V1: result.currentTierNo,
-                    currentTierPercentage_V1: result.currentTierPercentage,
-                    disableDeposit_V1: result.disableDeposit,
-                    disableWithdraw_V1: result.disableWithdraw,
-                    remainingTimeText_V1: result.remainingTimeText,
-                    balance_V1: result.balance,
+                    startInvestmentPeriodDate: result.startInvestmentPeriodDate,
+                    endInvestmentPeriodDate: result.endInvestmentPeriodDate,
+                    currentInvestment: result.currentInvestment,
+                    totalInvestedToDate: result.totalInvestedToDate,
+                    totalInvestors: result.totalInvestors,
+                    roiToDate: result.roiToDate,
+                    currentTierNo: result.currentTierNo,
+                    currentTierPercentage: result.currentTierPercentage,
+                    disableDeposit: result.disableDeposit,
+                    disableWithdraw: result.disableWithdraw,
+                    remainingTimeText: result.remainingTimeText,
+                    balance: result.balance,
                 });
             }).catch(console.error);;
         }
         else {
             fetchNotConnectedData().then(result => {
                 setInfo({
-                    startInvestmentPeriodDate_V1: result.startInvestmentPeriodDate,
-                    endInvestmentPeriodDate_V1: result.endInvestmentPeriodDate,
-                    currentInvestment_V1: result.currentInvestment,
-                    totalInvestedToDate_V1: result.totalInvestedToDate,
-                    totalInvestors_V1: result.totalInvestors,
-                    roiToDate_V1: result.roiToDate,
-                    currentTierNo_V1: result.currentTierNo,
-                    currentTierPercentage_V1: result.currentTierPercentage,
-                    disableDeposit_V1: result.disableDeposit,
-                    disableWithdraw_V1: result.disableWithdraw,
-                    remainingTimeText_V1: result.remainingTimeText,
-                    balance_V1: result.balance
+                    startInvestmentPeriodDate: result.startInvestmentPeriodDate,
+                    endInvestmentPeriodDate: result.endInvestmentPeriodDate,
+                    currentInvestment: result.currentInvestment,
+                    totalInvestedToDate: result.totalInvestedToDate,
+                    totalInvestors: result.totalInvestors,
+                    roiToDate: result.roiToDate,
+                    currentTierNo: result.currentTierNo,
+                    currentTierPercentage: result.currentTierPercentage,
+                    disableDeposit: result.disableDeposit,
+                    disableWithdraw: result.disableWithdraw,
+                    remainingTimeText: result.remainingTimeText,
+                    balance: result.balance
                 });
             }).catch(console.error);
         }
@@ -421,26 +421,26 @@ export default function useFund() {
 
     const fundInfo = useMemo(
         () => ({
-            startInvestmentPeriodDate_V1,
-            endInvestmentPeriodDate_V1,
-            currentInvestment_V1,
-            totalInvestedToDate_V1,
-            totalInvestors_V1,
-            roiToDate_V1,
-            currentTierNo_V1,
-            currentTierPercentage_V1,
-            disableDeposit_V1,
-            disableWithdraw_V1,
-            remainingTimeText_V1,
-            balance_V1,
-            agreeToTerms_V1,
-            userAgreed_V1,
-            depositBusd_V1,
-            withdraw_V1
+            startInvestmentPeriodDate,
+            endInvestmentPeriodDate,
+            currentInvestment,
+            totalInvestedToDate,
+            totalInvestors,
+            roiToDate,
+            currentTierNo,
+            currentTierPercentage,
+            disableDeposit,
+            disableWithdraw,
+            remainingTimeText,
+            balance,
+            agreeToTerms,
+            userAgreed,
+            depositBusd,
+            withdraw
         }),
-        [startInvestmentPeriodDate_V1, endInvestmentPeriodDate_V1, currentInvestment_V1, totalInvestors_V1,
-            roiToDate_V1, currentTierNo_V1, currentTierPercentage_V1, disableDeposit_V1, disableWithdraw_V1,
-            remainingTimeText_V1, balance_V1, totalInvestedToDate_V1, agreeToTerms_V1, userAgreed_V1, depositBusd_V1, withdraw_V1]
+        [startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, totalInvestors,
+            roiToDate, currentTierNo, currentTierPercentage, disableDeposit, disableWithdraw,
+            remainingTimeText, balance, totalInvestedToDate, agreeToTerms, userAgreed, depositBusd, withdraw]
     );
 
     return fundInfo;
