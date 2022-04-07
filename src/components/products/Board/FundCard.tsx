@@ -15,7 +15,7 @@ export default function FundCard() {
         roiToDate_V1,
         totalInvestors_V1
     } = useFund();
-    
+
     const {
         totalInvestedToDate,
         currentInvestment,
@@ -37,7 +37,9 @@ export default function FundCard() {
                     <div className="flex flex-col space-y-2 text-sm">
                         <p>Current Investors: <span className="text-[#867EE8]">{totalInvestorsFormatted}</span></p>
                         <p>Profit to Date: <span className="text-[#867EE8]">$ {roiToDate}</span></p>
-                        <p>Total Invested to Date: <span className="text-[#867EE8]">$ {(totalInvestedToDate+totalInvestedToDate_V1)}</span></p>
+                        <p>Total Invested to Date: <span className="text-[#867EE8]">$ {
+                            ethers.utils.formatEther(ethers.utils.parseEther(totalInvestedToDate).add(ethers.utils.parseEther(totalInvestedToDate_V1)))
+                        }</span></p>
                     </div>
                 </div>
             )}

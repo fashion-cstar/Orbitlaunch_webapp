@@ -49,7 +49,7 @@ export default function useFund() {
     const userAgreed_V1 = async () => {
         try {
             const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
-
+            
             return await orbitFundContract.userAgreed(account)
                 .then((response: any) => {
                     return {
