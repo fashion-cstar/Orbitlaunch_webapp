@@ -6,6 +6,7 @@ import { Button } from "@mui/material";
 
 import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
 import useFund from "@app/lib/hooks/useFund";
+import useFund_V2 from "@app/lib/hooks/useFund_V2";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { tierInformation as tierInfo } from "@app/shared/TierLevels";
 import { checkUserAlreadyReferred, getUserReferralInfo, registerSoloUser, registerUserWithParent } from "@app/state/Referral";
@@ -22,6 +23,21 @@ export default function Fund() {
     const depositModalId = "deposit-busd-modal";
     const { account, library } = useEthers();
     const {
+        startInvestmentPeriodDate_V1,
+        endInvestmentPeriodDate_V1,
+        currentInvestment_V1,
+        totalInvestedToDate_V1,
+        currentTierNo_V1,
+        currentTierPercentage_V1,
+        roiToDate_V1,
+        totalInvestors_V1,
+        disableDeposit_V1,
+        disableWithdraw_V1,
+        remainingTimeText_V1,
+        balance_V1,
+        withdraw_V1
+    } = useFund();
+    const {
         startInvestmentPeriodDate,
         endInvestmentPeriodDate,
         currentInvestment,
@@ -35,10 +51,11 @@ export default function Fund() {
         remainingTimeText,
         balance,
         withdraw
-    } = useFund();
+    } = useFund_V2();
     const [totalReferred, setTotalReferred] = useState(0);
     const [referredBy, setReferredBy] = useState('');
     const [commissionEarned, setCommissionEarned] = useState(0);
+
     const tierInformation = tierInfo;
     const { id } = router.query;
 
@@ -49,7 +66,7 @@ export default function Fund() {
 
     const handleWithdrawalSubmit = async () => {
         const weiAmount = ethers.utils.parseEther(balance);
-        const withdrawalResult = await withdraw(weiAmount);
+        const withdrawalResult = await withdraw_V1(weiAmount);
         if (!withdrawalResult.ok) {
             snackbar.snackbar.show(withdrawalResult.message, "error");
             return;
@@ -118,9 +135,9 @@ export default function Fund() {
                             ? (<>
                                 <Button
                                     type="button"
-                                    disabled={disableWithdraw || currentTierNo === 0}
+                                    disabled={disableWithdraw_V1 || currentTierNo === 0}
                                     variant="outlined"
-                                    onClick={disableWithdraw ? null : async () => await handleWithdrawalSubmit()}
+                                    onClick={disableWithdraw_V1 ? null : async () => await handleWithdrawalSubmit()}
                                     sx={{ borderRadius: "12px" }}
                                 >
                                     Withdrawal
@@ -155,13 +172,13 @@ export default function Fund() {
                             <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                 <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                             </div>
-                            <div className="text-xl">{!!account ? `$${currentInvestment}` : totalInvestors.toString()}</div>
+                            <div className="text-xl">{!!account ? `$${currentInvestment}` : (totalInvestors+totalInvestors_V1).toString()}</div>
                         </div>
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                             <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                 <span>{!!account ? 'ROI to Date' : 'Total Invested to Date'}</span>
                             </div>
-                            <div className="text-xl">${!!account ? '0' : totalInvestedToDate}</div>
+                            <div className="text-xl">${!!account ? '0' : (totalInvestedToDate+totalInvestedToDate_V1)}</div>
                         </div>
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                             <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
@@ -286,10 +303,10 @@ export default function Fund() {
                             <>
                                 <Button
                                     type="button"
-                                    disabled={disableWithdraw || currentTierNo === 0}
+                                    disabled={disableWithdraw_V1 || currentTierNo === 0}
                                     className="w-full"
                                     variant="outlined"
-                                    onClick={disableWithdraw ? null : async () => await handleWithdrawalSubmit()}
+                                    onClick={disableWithdraw_V1 ? null : async () => await handleWithdrawalSubmit()}
                                     sx={{ borderRadius: "12px" }}
                                 >
                                     Withdrawal
@@ -323,13 +340,13 @@ export default function Fund() {
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                         </div>
-                        <div className="text-xl">{!!account ? `$${currentInvestment}` : totalInvestors.toString()}</div>
+                        <div className="text-xl">{!!account ? `$${currentInvestment}` : (totalInvestors+totalInvestors_V1).toString()}</div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>{!!account ? 'ROI to Date' : 'Total Invested to Date'}</span>
                         </div>
-                        <div className="text-xl">${!!account ? '0' : totalInvestedToDate}</div>
+                        <div className="text-xl">${!!account ? '0' : (totalInvestedToDate+totalInvestedToDate_V1)}</div>
                     </div>
                 </div>
                 <div className="flex flex-row items-center space-x-4">
