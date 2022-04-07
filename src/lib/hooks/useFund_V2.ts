@@ -16,7 +16,7 @@ import orbitStableCoinAbi from "@app/lib/contract/abis/orbitStableCoinAbi.json";
 import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbi.json";
 import { getContract, getProviderOrSigner } from '@app/utils';
 
-export default function useFund() {
+export default function useFund_V2() {
     const { account, library } = useEthers();
     const connectedUserBalance = useTokenBalance(AppTokenAddress, account);
 
