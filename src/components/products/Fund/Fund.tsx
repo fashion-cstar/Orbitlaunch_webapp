@@ -38,21 +38,6 @@ export default function Fund() {
         withdraw_V1
     } = useFund();
     const {
-        startInvestmentPeriodDate_V1,
-        endInvestmentPeriodDate_V1,
-        currentInvestment_V1,
-        totalInvestedToDate_V1,
-        currentTierNo_V1,
-        currentTierPercentage_V1,
-        roiToDate_V1,
-        totalInvestors_V1,
-        disableDeposit_V1,
-        disableWithdraw_V1,
-        remainingTimeText_V1,
-        balance_V1,
-        withdraw_V1
-    } = useFund();
-    const {
         startInvestmentPeriodDate,
         endInvestmentPeriodDate,
         currentInvestment,
@@ -137,6 +122,10 @@ export default function Fund() {
         processUserReferral();
     }, [id, account]);
 
+    const getCurrentInvestors = (v1_investors: number, v2_investors: number) => {
+        return Number(v1_investors) + Number(v2_investors)
+    }
+
     return (
         <>
             <DepositPopup id={depositModalId} />
@@ -187,13 +176,13 @@ export default function Fund() {
                             <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                 <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                             </div>
-                            <div className="text-xl">{!!account ? `$${currentInvestment}` : (totalInvestors + totalInvestors_V1).toString()}</div>
+                            <div className="text-xl">{!!account ? `$${currentInvestment}` : getCurrentInvestors(totalInvestors, totalInvestors_V1).toString()}</div>
                         </div>
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                             <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                 <span>{!!account ? 'ROI to Date' : 'Total Invested to Date'}</span>
                             </div>
-                            <div className="text-xl">${!!account ? roiToDate_V1 : 
+                            <div className="text-xl">${!!account ? roiToDate_V1 :
                                 ethers.FixedNumber.fromString(ethers.utils.formatEther(ethers.utils.parseEther(totalInvestedToDate).add(ethers.utils.parseEther(totalInvestedToDate_V1)))).round(2).toString()
                             }</div>
                         </div>
@@ -357,7 +346,7 @@ export default function Fund() {
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                         </div>
-                        <div className="text-xl">{!!account ? `$${currentInvestment}` : (totalInvestors + totalInvestors_V1).toString()}</div>
+                        <div className="text-xl">{!!account ? `$${currentInvestment}` : getCurrentInvestors(totalInvestors, totalInvestors_V1).toString()}</div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
