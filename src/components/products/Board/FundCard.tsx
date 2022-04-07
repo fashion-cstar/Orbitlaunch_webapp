@@ -23,7 +23,7 @@ export default function FundCard() {
         currentTierPercentage,
         roiToDate,
         totalInvestors
-    } = useFund_V2();    
+    } = useFund_V2();
 
     const totalInvestorsFormatted = ethers.utils.formatUnits((totalInvestors+totalInvestors_V1), 0);
 
