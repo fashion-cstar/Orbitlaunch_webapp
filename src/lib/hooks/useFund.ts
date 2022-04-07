@@ -8,7 +8,7 @@ import {
     OrbitStableTokenAddress
 } from "@app/shared/AppConstant";
 import { ethers } from "ethers";
-import { getTierValues } from '@app/shared/TierLevels';
+import { getTierValues, tierInformation } from '@app/shared/TierLevels';
 import moment from 'moment';
 import { getRemainingTimeBetweenTwoDates } from '@app/shared/helpers/time';
 import busdAbi from "@app/lib/contract/abis/busdAbi.json";
@@ -267,15 +267,16 @@ export default function useFund() {
 
             return await orbitFundContract.depositInfos(account)
                 .then((response: any) => {
-                    return formatEther(response.amount);
+                    return {tierValue: response.tierValue.toNumber(), amount: formatEther(response.amount)};
                 }).catch((err: any) => {
                     console.error("ERROR: " + (err.data?.message || err));
-                    return formatEther(ethers.utils.parseEther('0.000'));
+                    // return formatEther(ethers.utils.parseEther('0.000'));
+                    return {tierValue: -1, amount: formatEther(ethers.utils.parseEther('0.000'))};
                 });
         }
         catch (err) {
             console.error("ERROR: " + (err.data?.message || err));
-            return formatEther(ethers.utils.parseEther('0.000'));
+            return {tierValue: -1, amount: formatEther(ethers.utils.parseEther('0.000'))};
         }
     }
 
@@ -337,8 +338,14 @@ export default function useFund() {
             let depositPeriodResult = await depositPeriodInfo();
             let userWithdrewResult = await userWithdrew();
 
-            let totalInvestment = await depositInfos();
-            const investmentAmountInDollars = (parseFloat(totalInvestment) * parseFloat("1")).toFixed(2);
+            // let totalInvestment = await depositInfos();
+            let depositinfo = await depositInfos();
+            let ROIToDate = 0
+            if (depositinfo.tierValue!==-1){
+                let profitPercent = Number(tierInformation[depositinfo.tierValue].monthlyPercent)
+                ROIToDate = Math.round(profitPercent*Number(depositinfo.amount))/100
+            }
+            const investmentAmountInDollars = (parseFloat(depositinfo.amount) * parseFloat("1")).toFixed(2);
             const formattedConnectedBalance = formatEther(connectedUserBalance);
 
             let tierResult = await getTierValues(ethers.BigNumber.from(Math.trunc(parseFloat(formattedConnectedBalance))));
@@ -349,7 +356,7 @@ export default function useFund() {
                 currentInvestment: userWithdrewResult ? '0.00' : investmentAmountInDollars,
                 totalInvestedToDate: '0.00',
                 totalInvestors: 0,
-                roiToDate: '0.00',
+                roiToDate: ROIToDate.toLocaleString(),
                 currentTierNo: tierResult.tierNo,
                 currentTierPercentage: tierResult.monthlyPercent,
                 disableDeposit: depositPeriodResult.disabledDeposit,

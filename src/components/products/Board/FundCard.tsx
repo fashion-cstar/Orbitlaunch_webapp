@@ -6,7 +6,6 @@ import { ethers } from "ethers";
 export default function FundCard() {
 
     const { account } = useEthers();
-
     const {
         totalInvestedToDate_V1,
         currentInvestment_V1,
@@ -23,9 +22,13 @@ export default function FundCard() {
         currentTierPercentage,
         roiToDate,
         totalInvestors
-    } = useFund_V2();    
+    } = useFund_V2();
 
-    const totalInvestorsFormatted = ethers.utils.formatUnits((totalInvestors+totalInvestors_V1), 0);
+    const getCurrentInvestors = (v1_investors: number, v2_investors: number) => {
+        return Number(v1_investors) + Number(v2_investors)
+    }
+
+    const totalInvestorsFormatted = ethers.utils.formatUnits(getCurrentInvestors(totalInvestors, totalInvestors_V1), 0);
 
     return (
         <>
