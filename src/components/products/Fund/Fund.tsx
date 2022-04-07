@@ -55,7 +55,6 @@ export default function Fund() {
     const [totalReferred, setTotalReferred] = useState(0);
     const [referredBy, setReferredBy] = useState('');
     const [commissionEarned, setCommissionEarned] = useState(0);
-
     const tierInformation = tierInfo;
     const { id } = router.query;
 
