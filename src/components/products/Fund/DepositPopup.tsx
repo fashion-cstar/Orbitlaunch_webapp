@@ -1,6 +1,6 @@
 import DepositInput from "@app/components/common/DepositInput";
 import Popup from "@app/components/common/Popup";
-import useFund from "@app/lib/hooks/useFund";
+import useFund_V2 from "@app/lib/hooks/useFund_V2";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { useState } from "react";
 import AgreeTermsPopup from "./AgreeTermsPopup";
@@ -17,7 +17,7 @@ export default function DepositPopup({
     onClose
 }: DepositPopupProps) {
     const snackbar = useSnackbar();
-    const { userAgreed, depositBusd } = useFund();
+    const { userAgreed, depositBusd } = useFund_V2();
     const agreeTermsModalId = "agree-terms-modal";
     const [disableDepositButton, setDisableDepositButton] = useState(true);
     const [depositAmount, setDepositAmount] = useState('');

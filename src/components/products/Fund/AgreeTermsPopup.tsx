@@ -1,6 +1,6 @@
 import Popup from "@app/components/common/Popup";
 import { CONSTANT, ConstantItem } from "@app/constants/constant"
-import useFund from "@app/lib/hooks/useFund";
+import useFund_V2 from "@app/lib/hooks/useFund_V2";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { Button } from "@mui/material";
 
@@ -17,7 +17,7 @@ export default function AgreeTermsPopup({
 }: AgreeTermsPopupProps) {
     const agreeTermsModalId = "agree-terms-modal";
     const snackbar = useSnackbar();
-    const { agreeToTerms } = useFund();
+    const { agreeToTerms } = useFund_V2();
 
     const handleCloseAgreeTermsModal = () => {
         const modal = document.getElementById(agreeTermsModalId);
