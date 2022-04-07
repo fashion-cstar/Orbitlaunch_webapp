@@ -15,7 +15,7 @@ export default function FundCard() {
         roiToDate_V1,
         totalInvestors_V1
     } = useFund();
-    
+
     const {
         totalInvestedToDate,
         currentInvestment,
