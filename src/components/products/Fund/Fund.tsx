@@ -96,7 +96,7 @@ export default function Fund() {
                     if (parent === null) {
                         setReferredBy(null);
                     } else {
-                        setReferredBy(`https://www.orbitlaunch.io/fund/${window.btoa(parent)}`);
+                        setReferredBy(`https://app.orbitlaunch.io/fund/${window.btoa(parent)}`);
                     }
                     setCommissionEarned(totalReferralFee);
                 }
@@ -232,7 +232,7 @@ export default function Fund() {
                                         <span className="text-m cursor-pointer text-app-primary" onClick={() => {
                                               navigator.clipboard.writeText(`https://orbitlaunch.io/fund/${window.btoa(account)}`);
                                         }}>
-                                            {`https://www.orbitlaunch.io/fund/${window.btoa(account)}`}
+                                            {`https://app.orbitlaunch.io/fund/${window.btoa(account)}`}
                                         </span>
                                     </p>
                                     <p className="text-l font-bold break-all">
