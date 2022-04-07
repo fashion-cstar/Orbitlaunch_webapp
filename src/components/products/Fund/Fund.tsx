@@ -38,6 +38,21 @@ export default function Fund() {
         withdraw_V1
     } = useFund();
     const {
+        startInvestmentPeriodDate_V1,
+        endInvestmentPeriodDate_V1,
+        currentInvestment_V1,
+        totalInvestedToDate_V1,
+        currentTierNo_V1,
+        currentTierPercentage_V1,
+        roiToDate_V1,
+        totalInvestors_V1,
+        disableDeposit_V1,
+        disableWithdraw_V1,
+        remainingTimeText_V1,
+        balance_V1,
+        withdraw_V1
+    } = useFund();
+    const {
         startInvestmentPeriodDate,
         endInvestmentPeriodDate,
         currentInvestment,
