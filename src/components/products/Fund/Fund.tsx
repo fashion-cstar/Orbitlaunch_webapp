@@ -417,7 +417,41 @@ export default function Fund() {
                                 </div>
                             </div>
                         )
-                        : null
+                        : (
+                            <div className="flex-1 rounded-2xl bg-[#001926] p-4 min-h-[250px] leading-7">
+                                <p className="text-l font-bold break-all">
+                                    Referral URL: &nbsp;
+                                    <span className="text-m cursor-pointer text-app-primary" onClick={() => {
+                                          navigator.clipboard.writeText(`https://orbitlaunch.io/fund/${window.btoa(account)}`);
+                                    }}>
+                                        {`https://app.orbitlaunch.io/fund/${window.btoa(account)}`}
+                                    </span>
+                                </p>
+                                <p className="text-l font-bold break-all">
+                                    Total Referrals Based on Connected Wallets: &nbsp;
+                                    <span className="text-m cursor-pointer text-app-primary"
+                                    >
+                                        {totalReferred}
+                                    </span>
+                                </p>
+                                <p className="text-l font-bold break-all">
+                                    Commision Earned: &nbsp;
+                                    <span className="text-m cursor-pointer text-app-primary">
+                                        {commissionEarned}
+                                    </span>
+                                </p>
+                                {
+                                    referredBy !== null && (
+                                        <p className="text-l font-bold break-all">
+                                            You Were Referred by:&nbsp;
+                                            <span className="text-m cursor-pointer text-app-primary">
+                                                {referredBy}
+                                            </span>
+                                        </p>
+                                   )
+                                }
+                            </div>
+                        )
                     }
                 </div>
                 <div className="flex flex-row space-x-4">
