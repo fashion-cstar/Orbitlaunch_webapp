@@ -21,7 +21,8 @@ export default function FundCard() {
         currentTierNo,
         currentTierPercentage,
         roiToDate,
-        totalInvestors
+        totalInvestors,
+        profitUpToDate
     } = useFund_V2();
 
     const getCurrentInvestors = (v1_investors: number, v2_investors: number) => {
@@ -39,7 +40,7 @@ export default function FundCard() {
                     <hr className="border-[#112B40] my-4" />
                     <div className="flex flex-col space-y-2 text-sm">
                         <p>Current Investors: <span className="text-[#867EE8]">{totalInvestorsFormatted}</span></p>
-                        <p>Profit to Date: <span className="text-[#867EE8]">$ {roiToDate}</span></p>
+                        <p>Profit to Date: <span className="text-[#867EE8]">$ {profitUpToDate}</span></p>
                         <p>Total Invested to Date: <span className="text-[#867EE8]">$ {
                             ethers.FixedNumber.fromString(ethers.utils.formatEther(ethers.utils.parseEther(totalInvestedToDate).add(ethers.utils.parseEther(totalInvestedToDate_V1)))).round(2).toString()
                         }</span></p>

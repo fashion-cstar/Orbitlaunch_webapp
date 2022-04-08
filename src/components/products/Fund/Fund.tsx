@@ -35,6 +35,7 @@ export default function Fund() {
         disableWithdraw_V1,
         remainingTimeText_V1,
         balance_V1,
+        priorMonthTotalProfit,
         withdraw_V1
     } = useFund();
     const {
@@ -50,6 +51,7 @@ export default function Fund() {
         disableWithdraw,
         remainingTimeText,
         balance,
+        profitUpToDate,
         withdraw
     } = useFund_V2();
     const [totalReferred, setTotalReferred] = useState(0);
@@ -197,7 +199,7 @@ export default function Fund() {
                                             <div className="flex text-slate-400 md:col-span-8 lg:col-span-9 xl:col-span-9 text-sm">Up to {currentTierPercentage}% monthly ROI</div>
                                         </>
                                         : <>
-                                            <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">$0</div>
+                                            <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">${profitUpToDate}</div>
                                         </>
                                     }
                                 </div>
@@ -219,10 +221,10 @@ export default function Fund() {
                             </div>
                             <div className="space-y-3 pt-4">
                                 <div className="items-center text-xs text-white mb-2">
-                                    Prior Month’s Total Investment:&nbsp;<span className="text-app-primary">$0</span>
+                                    Prior Month’s Total Investment:&nbsp;<span className="text-app-primary">${Math.round(Number(totalInvestedToDate_V1)*100)/100}</span>
                                 </div>
                                 <div className="items-center text-xs text-white mb-2">
-                                    Prior Month’s Profit Returned to Investors:&nbsp;<span className="text-app-primary">$0</span>
+                                    Prior Month’s Profit Returned to Investors:&nbsp;<span className="text-app-primary">${priorMonthTotalProfit}</span>
                                 </div>
                             </div>
                         </div>
@@ -368,7 +370,7 @@ export default function Fund() {
                                     <div className="text-slate-400 text-sm">Up to {currentTierPercentage}% monthly ROI</div>
                                 </>
                                 : <>
-                                    <div className="text-xl items-center">$0</div>
+                                    <div className="text-xl items-center">${profitUpToDate}</div>
                                 </>
                             }
                         </div>
@@ -386,10 +388,10 @@ export default function Fund() {
                         </div>
                         <div className="space-y-3 pt-4">
                             <div className="items-center text-xs text-white mb-2">
-                                Prior Month’s Total Investment:&nbsp;<span className="text-app-primary">$0</span>
+                                Prior Month’s Total Investment:&nbsp;<span className="text-app-primary">${Math.round(Number(totalInvestedToDate_V1)*100)/100}</span>
                             </div>
                             <div className="items-center text-xs text-white mb-2">
-                                Prior Month’s Profit Returned to Investors:&nbsp;<span className="text-app-primary">$0</span>
+                                Prior Month’s Profit Returned to Investors:&nbsp;<span className="text-app-primary">${priorMonthTotalProfit}</span>
                             </div>
                         </div>
                     </div>
