@@ -30,12 +30,14 @@ export default function Fund() {
         currentTierNo_V1,
         currentTierPercentage_V1,
         roiToDate_V1,
+        userReturned_V1,
         totalInvestors_V1,
         disableDeposit_V1,
         disableWithdraw_V1,
         remainingTimeText_V1,
         balance_V1,
-        priorMonthTotalProfit,
+        totalProfit_V1,
+        totalReturned_V1,
         withdraw_V1
     } = useFund();
     const {
@@ -85,7 +87,7 @@ export default function Fund() {
                 // Check current user referral status
                 const result = await checkUserAlreadyReferred(account)
                 const { msg } = result;
-                
+
                 // User visited the link with the referral link
                 if (id) {
                     const walletAddress = window.atob(id as string);
@@ -94,7 +96,7 @@ export default function Fund() {
                             // Sign a message
                             const hash = ethers.utils.keccak256(account);
                             const signature = await signer.signMessage(ethers.utils.arrayify(hash));
-    
+
                             await registerUserWithParent(window.btoa(account), id as string, signature, hash);
                         }
                     }
@@ -106,7 +108,7 @@ export default function Fund() {
                         await registerSoloUser(window.btoa(account), signature, hash);
                     }
                 }
-            
+
                 const referralInfo = await getUserReferralInfo(account);
                 if (referralInfo.data !== undefined) {
                     const { claimedReferralFee, parent, totalReferralFee, totalReferred } = referralInfo.data;
@@ -220,12 +222,33 @@ export default function Fund() {
                                 <hr style={{ borderColor: "#112B40" }} />
                             </div>
                             <div className="space-y-3 pt-4">
-                                <div className="items-center text-xs text-white mb-2">
-                                    Prior Month’s Total Investment:&nbsp;<span className="text-app-primary">${Math.round(Number(totalInvestedToDate_V1)*100)/100}</span>
+                                <div className="items-center text-l text-white font-bold">
+                                    {!!account ? "Global Stats - Prior Trading Period" : "Personal Stats - Prior Trading Period"}
                                 </div>
-                                <div className="items-center text-xs text-white mb-2">
-                                    Prior Month’s Profit Returned to Investors:&nbsp;<span className="text-app-primary">${priorMonthTotalProfit}</span>
-                                </div>
+                                {!!account
+                                    ? <>
+                                        <div className="items-center text-xs text-white mb-2">
+                                            Last Month Investment:&nbsp;<span className="text-app-primary">${ethers.FixedNumber.fromString(totalInvestedToDate_V1).round(2).toString()}</span>
+                                        </div>
+                                        <div className="items-center text-xs text-white mb-2">
+                                            Last Month Profit:&nbsp;<span className="text-app-primary">${totalProfit_V1}</span>
+                                        </div>
+                                        <div className="items-center text-xs text-white mb-2">
+                                            Last Month Return:&nbsp;<span className="text-app-primary">${totalReturned_V1}</span>
+                                        </div>
+                                    </>
+                                    : <>
+                                        <div className="items-center text-xs text-white mb-2">
+                                            Last Month Investment:&nbsp;<span className="text-app-primary">${currentInvestment}</span>
+                                        </div>
+                                        <div className="items-center text-xs text-white mb-2">
+                                            Last Month Profit:&nbsp;<span className="text-app-primary">${roiToDate_V1}</span>
+                                        </div>
+                                        <div className="items-center text-xs text-white mb-2">
+                                            Last Month Return:&nbsp;<span className="text-app-primary">${userReturned_V1}</span>
+                                        </div>
+                                    </>
+                                }
                             </div>
                         </div>
                         {!account
@@ -254,7 +277,7 @@ export default function Fund() {
                                     <p className="text-l font-bold break-all">
                                         Referral URL: &nbsp;
                                         <span className="text-m cursor-pointer text-app-primary" onClick={() => {
-                                              navigator.clipboard.writeText(`https://orbitlaunch.io/fund/${window.btoa(account)}`);
+                                            navigator.clipboard.writeText(`https://orbitlaunch.io/fund/${window.btoa(account)}`);
                                         }}>
                                             {`https://app.orbitlaunch.io/fund/${window.btoa(account)}`}
                                         </span>
@@ -280,7 +303,7 @@ export default function Fund() {
                                                     {referredBy}
                                                 </span>
                                             </p>
-                                       )
+                                        )
                                     }
                                 </div>
                             )
@@ -387,12 +410,33 @@ export default function Fund() {
                             <hr style={{ borderColor: "#112B40" }} />
                         </div>
                         <div className="space-y-3 pt-4">
-                            <div className="items-center text-xs text-white mb-2">
-                                Prior Month’s Total Investment:&nbsp;<span className="text-app-primary">${Math.round(Number(totalInvestedToDate_V1)*100)/100}</span>
+                            <div className="items-center text-l text-white font-bold">
+                                {!!account ? "Global Stats - Prior Trading Period" : "Personal Stats - Prior Trading Period"}
                             </div>
-                            <div className="items-center text-xs text-white mb-2">
-                                Prior Month’s Profit Returned to Investors:&nbsp;<span className="text-app-primary">${priorMonthTotalProfit}</span>
-                            </div>
+                            {!!account
+                                ? <>
+                                    <div className="items-center text-xs text-white mb-2">
+                                        Last Month Investment:&nbsp;<span className="text-app-primary">${ethers.FixedNumber.fromString(totalInvestedToDate_V1).round(2).toString()}</span>
+                                    </div>
+                                    <div className="items-center text-xs text-white mb-2">
+                                        Last Month Profit:&nbsp;<span className="text-app-primary">${totalProfit_V1}</span>
+                                    </div>
+                                    <div className="items-center text-xs text-white mb-2">
+                                        Last Month Return:&nbsp;<span className="text-app-primary">${totalReturned_V1}</span>
+                                    </div>
+                                </>
+                                : <>
+                                    <div className="items-center text-xs text-white mb-2">
+                                        Last Month Investment:&nbsp;<span className="text-app-primary">${currentInvestment}</span>
+                                    </div>
+                                    <div className="items-center text-xs text-white mb-2">
+                                        Last Month Profit:&nbsp;<span className="text-app-primary">${roiToDate_V1}</span>
+                                    </div>
+                                    <div className="items-center text-xs text-white mb-2">
+                                        Last Month Return:&nbsp;<span className="text-app-primary">${userReturned_V1}</span>
+                                    </div>
+                                </>
+                            }
                         </div>
                     </div>
 
@@ -424,7 +468,7 @@ export default function Fund() {
                                 <p className="text-l font-bold break-all">
                                     Referral URL: &nbsp;
                                     <span className="text-m cursor-pointer text-app-primary" onClick={() => {
-                                          navigator.clipboard.writeText(`https://orbitlaunch.io/fund/${window.btoa(account)}`);
+                                        navigator.clipboard.writeText(`https://orbitlaunch.io/fund/${window.btoa(account)}`);
                                     }}>
                                         {`https://app.orbitlaunch.io/fund/${window.btoa(account)}`}
                                     </span>
@@ -450,7 +494,7 @@ export default function Fund() {
                                                 {referredBy}
                                             </span>
                                         </p>
-                                   )
+                                    )
                                 }
                             </div>
                         )

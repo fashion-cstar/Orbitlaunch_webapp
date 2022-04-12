@@ -7,7 +7,7 @@ import {
     OrbitFundContractAddress,
     OrbitStableTokenAddress
 } from "@app/shared/AppConstant";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { getTierValues, tierInformation } from '@app/shared/TierLevels';
 import moment from 'moment';
 import { getRemainingTimeBetweenTwoDates } from '@app/shared/helpers/time';
@@ -114,27 +114,32 @@ export default function useFund() {
         currentInvestment_V1,
         totalInvestedToDate_V1,
         totalInvestors_V1,
-        roiToDate_V1, currentTierNo_V1,
+        roiToDate_V1, 
+        userReturned_V1,
+        currentTierNo_V1,
         currentTierPercentage_V1,
         disableDeposit_V1,
         disableWithdraw_V1,
         remainingTimeText_V1,
         balance_V1,
-        priorMonthTotalProfit
+        totalProfit_V1,
+        totalReturned_V1
     }, setInfo] = useState({
         startInvestmentPeriodDate_V1: '-',
         endInvestmentPeriodDate_V1: '-',
         currentInvestment_V1: '0.00',
         totalInvestedToDate_V1: '0.00',
         totalInvestors_V1: 0,
-        roiToDate_V1: '0.0',
+        roiToDate_V1: '0.00',
+        userReturned_V1: '0.00',
         currentTierNo_V1: 0,
         currentTierPercentage_V1: "0",
         disableDeposit_V1: true,
         disableWithdraw_V1: true,
         remainingTimeText_V1: '0 days 0 hours 0 minutes',
         balance_V1: '0.00',
-        priorMonthTotalProfit: '0.00'
+        totalProfit_V1: '0.00',
+        totalReturned_V1: '0.00'
     });
 
     const totalInvestedAmount = async () => {
@@ -367,8 +372,9 @@ export default function useFund() {
             let totalInvestment = ethers.utils.formatEther(await totalInvestedAmount());
             let tierResult = await getTierValues(ethers.BigNumber.from(Math.trunc(parseFloat(formattedConnectedBalance))));
 
-            let priorProfit = await getPriorMonthProfit()
-
+            let totalProfit = await getPriorMonthProfit()
+            let totalReturn = ethers.FixedNumber.fromString(totalInvestment).addUnsafe(ethers.FixedNumber.fromString(totalProfit)).round(2).toString()
+            let userReturn = (Number(ROIToDate) + Number(investmentAmountInDollars)).toLocaleString()
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
                 endInvestmentPeriodDate: depositPeriodResult.endDate,
@@ -376,13 +382,15 @@ export default function useFund() {
                 totalInvestedToDate: totalInvestment,
                 totalInvestors: 0,
                 roiToDate: ROIToDate.toLocaleString(),
+                userReturned: userReturn,
                 currentTierNo: tierResult.tierNo,
                 currentTierPercentage: tierResult.monthlyPercent,
                 disableDeposit: depositPeriodResult.disabledDeposit,
                 disableWithdraw: depositPeriodResult.disabledWithdraw,
                 remainingTimeText: depositPeriodResult.remainingTimeText,
                 balance: formattedConnectedBalance,
-                priorProfit: priorProfit
+                totalProfit: totalProfit,
+                totalReturn: totalReturn
             };
         }
 
@@ -390,7 +398,8 @@ export default function useFund() {
             let depositPeriodResult = await depositPeriodInfo();
             let totalInvestment = ethers.utils.formatEther(await totalInvestedAmount());
             let totalInvestorNumber = await getTotalInvestors();
-            let priorProfit = await getPriorMonthProfit()
+            let totalProfit = await getPriorMonthProfit()
+            let totalReturn = ethers.FixedNumber.fromString(totalInvestment).addUnsafe(ethers.FixedNumber.fromString(totalProfit)).round(2).toString()
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
                 endInvestmentPeriodDate: depositPeriodResult.endDate,
@@ -398,13 +407,15 @@ export default function useFund() {
                 totalInvestedToDate: totalInvestment,
                 totalInvestors: totalInvestorNumber,
                 roiToDate: '0.00',
+                userReturned: '0.00',
                 currentTierNo: 0,
                 currentTierPercentage: "0",
                 disableDeposit: depositPeriodResult.disabledDeposit,
                 disableWithdraw: depositPeriodResult.disabledWithdraw,
                 remainingTimeText: depositPeriodResult.remainingTimeText,
                 balance: '0.00',
-                priorProfit: priorProfit
+                totalProfit: totalProfit,
+                totalReturn: totalReturn
             }
         }
 
@@ -417,13 +428,15 @@ export default function useFund() {
                     totalInvestedToDate_V1: result.totalInvestedToDate,
                     totalInvestors_V1: result.totalInvestors,
                     roiToDate_V1: result.roiToDate,
+                    userReturned_V1: result.userReturned,
                     currentTierNo_V1: result.currentTierNo,
                     currentTierPercentage_V1: result.currentTierPercentage,
                     disableDeposit_V1: result.disableDeposit,
                     disableWithdraw_V1: result.disableWithdraw,
                     remainingTimeText_V1: result.remainingTimeText,
                     balance_V1: result.balance,
-                    priorMonthTotalProfit: result.priorProfit
+                    totalProfit_V1: result.totalProfit,
+                    totalReturned_V1: result.totalReturn
                 });
             }).catch(console.error);;
         }
@@ -436,13 +449,15 @@ export default function useFund() {
                     totalInvestedToDate_V1: result.totalInvestedToDate,
                     totalInvestors_V1: result.totalInvestors,
                     roiToDate_V1: result.roiToDate,
+                    userReturned_V1: result.userReturned,
                     currentTierNo_V1: result.currentTierNo,
                     currentTierPercentage_V1: result.currentTierPercentage,
                     disableDeposit_V1: result.disableDeposit,
                     disableWithdraw_V1: result.disableWithdraw,
                     remainingTimeText_V1: result.remainingTimeText,
                     balance_V1: result.balance,
-                    priorMonthTotalProfit: result.priorProfit
+                    totalProfit_V1: result.totalProfit,
+                    totalReturned_V1: result.totalReturn
                 });
             }).catch(console.error);
         }
@@ -457,13 +472,15 @@ export default function useFund() {
             totalInvestedToDate_V1,
             totalInvestors_V1,
             roiToDate_V1,
+            userReturned_V1,
             currentTierNo_V1,
             currentTierPercentage_V1,
             disableDeposit_V1,
             disableWithdraw_V1,
             remainingTimeText_V1,
             balance_V1,
-            priorMonthTotalProfit,
+            totalProfit_V1,
+            totalReturned_V1,
             agreeToTerms_V1,
             userAgreed_V1,
             depositBusd_V1,
@@ -471,7 +488,7 @@ export default function useFund() {
         }),
         [startInvestmentPeriodDate_V1, endInvestmentPeriodDate_V1, currentInvestment_V1, totalInvestors_V1,
             roiToDate_V1, currentTierNo_V1, currentTierPercentage_V1, disableDeposit_V1, disableWithdraw_V1,
-            remainingTimeText_V1, balance_V1, priorMonthTotalProfit, totalInvestedToDate_V1, agreeToTerms_V1, userAgreed_V1, depositBusd_V1, withdraw_V1]
+            remainingTimeText_V1, balance_V1, totalProfit_V1, totalInvestedToDate_V1, agreeToTerms_V1, userAgreed_V1, depositBusd_V1, withdraw_V1]
     );
 
     return fundInfo;

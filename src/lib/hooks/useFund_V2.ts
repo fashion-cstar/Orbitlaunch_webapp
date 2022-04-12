@@ -127,7 +127,7 @@ export default function useFund_V2() {
         currentInvestment: '0.00',
         totalInvestedToDate: '0.00',
         totalInvestors: 0,
-        roiToDate: '0.0',
+        roiToDate: '0.00',
         currentTierNo: 0,
         currentTierPercentage: "0",
         disableDeposit: true,
