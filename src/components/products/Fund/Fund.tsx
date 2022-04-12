@@ -228,17 +228,6 @@ export default function Fund() {
                                 {!!account
                                     ? <>
                                         <div className="items-center text-xs text-white mb-2">
-                                            Last Month Investment:&nbsp;<span className="text-app-primary">${ethers.FixedNumber.fromString(totalInvestedToDate_V1).round(2).toString()}</span>
-                                        </div>
-                                        <div className="items-center text-xs text-white mb-2">
-                                            Last Month Profit:&nbsp;<span className="text-app-primary">${totalProfit_V1}</span>
-                                        </div>
-                                        <div className="items-center text-xs text-white mb-2">
-                                            Last Month Return:&nbsp;<span className="text-app-primary">${totalReturned_V1}</span>
-                                        </div>
-                                    </>
-                                    : <>
-                                        <div className="items-center text-xs text-white mb-2">
                                             Last Month Investment:&nbsp;<span className="text-app-primary">${currentInvestment}</span>
                                         </div>
                                         <div className="items-center text-xs text-white mb-2">
@@ -246,6 +235,17 @@ export default function Fund() {
                                         </div>
                                         <div className="items-center text-xs text-white mb-2">
                                             Last Month Return:&nbsp;<span className="text-app-primary">${userReturned_V1}</span>
+                                        </div>
+                                    </>
+                                    : <>
+                                        <div className="items-center text-xs text-white mb-2">
+                                            Last Month Investment:&nbsp;<span className="text-app-primary">${ethers.FixedNumber.fromString(totalInvestedToDate_V1).round(2).toString()}</span>
+                                        </div>
+                                        <div className="items-center text-xs text-white mb-2">
+                                            Last Month Profit:&nbsp;<span className="text-app-primary">${totalProfit_V1}</span>
+                                        </div>
+                                        <div className="items-center text-xs text-white mb-2">
+                                            Last Month Return:&nbsp;<span className="text-app-primary">${totalReturned_V1}</span>
                                         </div>
                                     </>
                                 }
@@ -416,17 +416,6 @@ export default function Fund() {
                             {!!account
                                 ? <>
                                     <div className="items-center text-xs text-white mb-2">
-                                        Last Month Investment:&nbsp;<span className="text-app-primary">${ethers.FixedNumber.fromString(totalInvestedToDate_V1).round(2).toString()}</span>
-                                    </div>
-                                    <div className="items-center text-xs text-white mb-2">
-                                        Last Month Profit:&nbsp;<span className="text-app-primary">${totalProfit_V1}</span>
-                                    </div>
-                                    <div className="items-center text-xs text-white mb-2">
-                                        Last Month Return:&nbsp;<span className="text-app-primary">${totalReturned_V1}</span>
-                                    </div>
-                                </>
-                                : <>
-                                    <div className="items-center text-xs text-white mb-2">
                                         Last Month Investment:&nbsp;<span className="text-app-primary">${currentInvestment}</span>
                                     </div>
                                     <div className="items-center text-xs text-white mb-2">
@@ -434,6 +423,17 @@ export default function Fund() {
                                     </div>
                                     <div className="items-center text-xs text-white mb-2">
                                         Last Month Return:&nbsp;<span className="text-app-primary">${userReturned_V1}</span>
+                                    </div>
+                                </>
+                                : <>
+                                    <div className="items-center text-xs text-white mb-2">
+                                        Last Month Investment:&nbsp;<span className="text-app-primary">${ethers.FixedNumber.fromString(totalInvestedToDate_V1).round(2).toString()}</span>
+                                    </div>
+                                    <div className="items-center text-xs text-white mb-2">
+                                        Last Month Profit:&nbsp;<span className="text-app-primary">${totalProfit_V1}</span>
+                                    </div>
+                                    <div className="items-center text-xs text-white mb-2">
+                                        Last Month Return:&nbsp;<span className="text-app-primary">${totalReturned_V1}</span>
                                     </div>
                                 </>
                             }
