@@ -223,12 +223,12 @@ export default function Fund() {
                             </div>
                             <div className="space-y-3 pt-4">
                                 <div className="items-center text-l text-white font-bold">
-                                    {!!account ? "Global Stats - Prior Trading Period" : "Personal Stats - Prior Trading Period"}
+                                    {!!account ? "Personal Stats - Prior Trading Period" : "Global Stats - Prior Trading Period"}
                                 </div>
                                 {!!account
                                     ? <>
                                         <div className="items-center text-xs text-white mb-2">
-                                            Last Month Investment:&nbsp;<span className="text-app-primary">${currentInvestment}</span>
+                                            Last Month Investment:&nbsp;<span className="text-app-primary">${currentInvestment_V1}</span>
                                         </div>
                                         <div className="items-center text-xs text-white mb-2">
                                             Last Month Profit:&nbsp;<span className="text-app-primary">${roiToDate_V1}</span>
@@ -411,12 +411,12 @@ export default function Fund() {
                         </div>
                         <div className="space-y-3 pt-4">
                             <div className="items-center text-l text-white font-bold">
-                                {!!account ? "Global Stats - Prior Trading Period" : "Personal Stats - Prior Trading Period"}
+                                {!!account ? "Personal Stats - Prior Trading Period" : "Global Stats - Prior Trading Period"}
                             </div>
                             {!!account
                                 ? <>
                                     <div className="items-center text-xs text-white mb-2">
-                                        Last Month Investment:&nbsp;<span className="text-app-primary">${currentInvestment}</span>
+                                        Last Month Investment:&nbsp;<span className="text-app-primary">${currentInvestment_V1}</span>
                                     </div>
                                     <div className="items-center text-xs text-white mb-2">
                                         Last Month Profit:&nbsp;<span className="text-app-primary">${roiToDate_V1}</span>
