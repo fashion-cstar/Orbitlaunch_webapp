@@ -29,6 +29,7 @@ export default function Fund() {
         totalInvestedToDate_V1,
         currentTierNo_V1,
         currentTierPercentage_V1,
+        userLastInvestment_V1,
         roiToDate_V1,
         userReturned_V1,
         totalInvestors_V1,
@@ -40,6 +41,7 @@ export default function Fund() {
         totalReturned_V1,
         withdraw_V1
     } = useFund();
+
     const {
         startInvestmentPeriodDate,
         endInvestmentPeriodDate,
@@ -56,6 +58,7 @@ export default function Fund() {
         profitUpToDate,
         withdraw
     } = useFund_V2();
+
     const [totalReferred, setTotalReferred] = useState(0);
     const [referredBy, setReferredBy] = useState('');
     const [commissionEarned, setCommissionEarned] = useState(0);
@@ -228,7 +231,7 @@ export default function Fund() {
                                 {!!account
                                     ? <>
                                         <div className="items-center text-xs text-white mb-2">
-                                            Last Month Investment:&nbsp;<span className="text-app-primary">${currentInvestment_V1}</span>
+                                            Last Month Investment:&nbsp;<span className="text-app-primary">${userLastInvestment_V1}</span>
                                         </div>
                                         <div className="items-center text-xs text-white mb-2">
                                             Last Month Profit:&nbsp;<span className="text-app-primary">${roiToDate_V1}</span>
@@ -416,7 +419,7 @@ export default function Fund() {
                             {!!account
                                 ? <>
                                     <div className="items-center text-xs text-white mb-2">
-                                        Last Month Investment:&nbsp;<span className="text-app-primary">${currentInvestment_V1}</span>
+                                        Last Month Investment:&nbsp;<span className="text-app-primary">${userLastInvestment_V1}</span>
                                     </div>
                                     <div className="items-center text-xs text-white mb-2">
                                         Last Month Profit:&nbsp;<span className="text-app-primary">${roiToDate_V1}</span>

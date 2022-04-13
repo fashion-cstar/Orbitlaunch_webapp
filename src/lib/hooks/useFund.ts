@@ -114,6 +114,7 @@ export default function useFund() {
         currentInvestment_V1,
         totalInvestedToDate_V1,
         totalInvestors_V1,
+        userLastInvestment_V1,
         roiToDate_V1, 
         userReturned_V1,
         currentTierNo_V1,
@@ -130,6 +131,7 @@ export default function useFund() {
         currentInvestment_V1: '0.00',
         totalInvestedToDate_V1: '0.00',
         totalInvestors_V1: 0,
+        userLastInvestment_V1: '0.00',
         roiToDate_V1: '0.00',
         userReturned_V1: '0.00',
         currentTierNo_V1: 0,
@@ -375,12 +377,14 @@ export default function useFund() {
             let totalProfit = await getPriorMonthProfit()
             let totalReturn = ethers.FixedNumber.fromString(totalInvestment).addUnsafe(ethers.FixedNumber.fromString(totalProfit)).round(2).toString()
             let userReturn = (Number(ROIToDate) + Number(investmentAmountInDollars)).toLocaleString()
+            
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
                 endInvestmentPeriodDate: depositPeriodResult.endDate,
                 currentInvestment: userWithdrewResult ? '0.00' : investmentAmountInDollars,
                 totalInvestedToDate: totalInvestment,
                 totalInvestors: 0,
+                userLastInvestment: investmentAmountInDollars,
                 roiToDate: ROIToDate.toLocaleString(),
                 userReturned: userReturn,
                 currentTierNo: tierResult.tierNo,
@@ -400,12 +404,14 @@ export default function useFund() {
             let totalInvestorNumber = await getTotalInvestors();
             let totalProfit = await getPriorMonthProfit()
             let totalReturn = ethers.FixedNumber.fromString(totalInvestment).addUnsafe(ethers.FixedNumber.fromString(totalProfit)).round(2).toString()
+
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
                 endInvestmentPeriodDate: depositPeriodResult.endDate,
                 currentInvestment: '0.00',
                 totalInvestedToDate: totalInvestment,
                 totalInvestors: totalInvestorNumber,
+                userLastInvestment: '0.00',
                 roiToDate: '0.00',
                 userReturned: '0.00',
                 currentTierNo: 0,
@@ -427,6 +433,7 @@ export default function useFund() {
                     currentInvestment_V1: result.currentInvestment,
                     totalInvestedToDate_V1: result.totalInvestedToDate,
                     totalInvestors_V1: result.totalInvestors,
+                    userLastInvestment_V1: result.userLastInvestment,
                     roiToDate_V1: result.roiToDate,
                     userReturned_V1: result.userReturned,
                     currentTierNo_V1: result.currentTierNo,
@@ -448,6 +455,7 @@ export default function useFund() {
                     currentInvestment_V1: result.currentInvestment,
                     totalInvestedToDate_V1: result.totalInvestedToDate,
                     totalInvestors_V1: result.totalInvestors,
+                    userLastInvestment_V1: result.userLastInvestment,
                     roiToDate_V1: result.roiToDate,
                     userReturned_V1: result.userReturned,
                     currentTierNo_V1: result.currentTierNo,
@@ -471,6 +479,7 @@ export default function useFund() {
             currentInvestment_V1,
             totalInvestedToDate_V1,
             totalInvestors_V1,
+            userLastInvestment_V1,
             roiToDate_V1,
             userReturned_V1,
             currentTierNo_V1,
@@ -486,9 +495,9 @@ export default function useFund() {
             depositBusd_V1,
             withdraw_V1
         }),
-        [startInvestmentPeriodDate_V1, endInvestmentPeriodDate_V1, currentInvestment_V1, totalInvestors_V1,
-            roiToDate_V1, currentTierNo_V1, currentTierPercentage_V1, disableDeposit_V1, disableWithdraw_V1,
-            remainingTimeText_V1, balance_V1, totalProfit_V1, totalInvestedToDate_V1, agreeToTerms_V1, userAgreed_V1, depositBusd_V1, withdraw_V1]
+        [startInvestmentPeriodDate_V1, endInvestmentPeriodDate_V1, currentInvestment_V1, totalInvestors_V1,userLastInvestment_V1,
+            roiToDate_V1, userReturned_V1, currentTierNo_V1, currentTierPercentage_V1, disableDeposit_V1, disableWithdraw_V1,
+            remainingTimeText_V1, balance_V1, totalProfit_V1, totalReturned_V1, totalInvestedToDate_V1, agreeToTerms_V1, userAgreed_V1, depositBusd_V1, withdraw_V1]
     );
 
     return fundInfo;
