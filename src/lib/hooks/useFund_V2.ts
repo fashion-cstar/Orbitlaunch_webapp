@@ -119,20 +119,22 @@ export default function useFund_V2() {
         disableDeposit,
         disableWithdraw,
         remainingTimeText,
-        balance
+        balance,
+        profitUpToDate
     }, setInfo] = useState({
         startInvestmentPeriodDate: '-',
         endInvestmentPeriodDate: '-',
         currentInvestment: '0.00',
         totalInvestedToDate: '0.00',
         totalInvestors: 0,
-        roiToDate: '0.0',
+        roiToDate: '0.00',
         currentTierNo: 0,
         currentTierPercentage: "0",
         disableDeposit: true,
         disableWithdraw: true,
         remainingTimeText: '0 days 0 hours 0 minutes',
-        balance: '0.00'
+        balance: '0.00',
+        profitUpToDate: '0.00'
     });
 
     const totalInvestedAmount = async () => {
@@ -224,6 +226,22 @@ export default function useFund_V2() {
             };
         }
     }
+
+    const getProfitUpToDate = async () => {
+        return await (fetch(`https://backend-api-pi.vercel.app/api/Fund`)
+            .then((res: any) => res.json())
+            .then((res) => {
+                if (res)
+                    return res.totalRoiToDate.toFixed(2)
+                else
+                    return '0.00'
+            })
+            .catch(error => {
+                console.error("Failed to get profitToDate: " + error)
+                return '0.00'
+            }))
+    }
+
 
     const depositPeriodInfo = async () => {
         let returnedModel = {
@@ -337,17 +355,17 @@ export default function useFund_V2() {
             let depositPeriodResult = await depositPeriodInfo();
             let userWithdrewResult = await userWithdrew();
 
-            let totalInvestment = await depositInfos();
-            const investmentAmountInDollars = (parseFloat(totalInvestment) * parseFloat("1")).toFixed(2);
+            let userInvestment = await depositInfos();
+            const investmentAmountInDollars = (parseFloat(userInvestment) * parseFloat("1")).toFixed(2);
             const formattedConnectedBalance = formatEther(connectedUserBalance);
-
-            let tierResult = await getTierValues(ethers.BigNumber.from(Math.trunc(parseFloat(formattedConnectedBalance))));
-
+            let totalInvestment = ethers.utils.formatEther(await totalInvestedAmount());
+            let tierResult = await getTierValues(ethers.BigNumber.from(Math.trunc(parseFloat(formattedConnectedBalance))));            
+            let profitToDate = await getProfitUpToDate()
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
                 endInvestmentPeriodDate: depositPeriodResult.endDate,
                 currentInvestment: userWithdrewResult ? '0.00' : investmentAmountInDollars,
-                totalInvestedToDate: '0.00',
+                totalInvestedToDate: totalInvestment,
                 totalInvestors: 0,
                 roiToDate: '0.00',
                 currentTierNo: tierResult.tierNo,
@@ -355,7 +373,8 @@ export default function useFund_V2() {
                 disableDeposit: depositPeriodResult.disabledDeposit,
                 disableWithdraw: depositPeriodResult.disabledWithdraw,
                 remainingTimeText: depositPeriodResult.remainingTimeText,
-                balance: formattedConnectedBalance
+                balance: formattedConnectedBalance,
+                profitUpToDate: profitToDate
             };
         }
 
@@ -363,7 +382,7 @@ export default function useFund_V2() {
             let depositPeriodResult = await depositPeriodInfo();
             let totalInvestment = ethers.utils.formatEther(await totalInvestedAmount());
             let totalInvestorNumber = await getTotalInvestors();
-
+            let profitToDate = await getProfitUpToDate()
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
                 endInvestmentPeriodDate: depositPeriodResult.endDate,
@@ -376,7 +395,8 @@ export default function useFund_V2() {
                 disableDeposit: depositPeriodResult.disabledDeposit,
                 disableWithdraw: depositPeriodResult.disabledWithdraw,
                 remainingTimeText: depositPeriodResult.remainingTimeText,
-                balance: '0.00'
+                balance: '0.00',
+                profitUpToDate: profitToDate
             }
         }
 
@@ -395,6 +415,7 @@ export default function useFund_V2() {
                     disableWithdraw: result.disableWithdraw,
                     remainingTimeText: result.remainingTimeText,
                     balance: result.balance,
+                    profitUpToDate: result.profitUpToDate
                 });
             }).catch(console.error);;
         }
@@ -412,7 +433,8 @@ export default function useFund_V2() {
                     disableDeposit: result.disableDeposit,
                     disableWithdraw: result.disableWithdraw,
                     remainingTimeText: result.remainingTimeText,
-                    balance: result.balance
+                    balance: result.balance,
+                    profitUpToDate: result.profitUpToDate
                 });
             }).catch(console.error);
         }
@@ -433,6 +455,7 @@ export default function useFund_V2() {
             disableWithdraw,
             remainingTimeText,
             balance,
+            profitUpToDate,
             agreeToTerms,
             userAgreed,
             depositBusd,
@@ -440,7 +463,7 @@ export default function useFund_V2() {
         }),
         [startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, totalInvestors,
             roiToDate, currentTierNo, currentTierPercentage, disableDeposit, disableWithdraw,
-            remainingTimeText, balance, totalInvestedToDate, agreeToTerms, userAgreed, depositBusd, withdraw]
+            remainingTimeText, balance, profitUpToDate, totalInvestedToDate, agreeToTerms, userAgreed, depositBusd, withdraw]
     );
 
     return fundInfo;
