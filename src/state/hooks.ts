@@ -53,7 +53,7 @@ export function useToken(tokenContractAddress: string, blockchain: string): { na
   
     return token
   }
-  
+
   export function useTokenAllowance(): { tokenAllowanceCallback: (owner: string, spender: string, tokenContractAddress: string, blockchain: string) => Promise<BigNumber> } {
     const { account, library } = useEthers()
     const tokenAllowanceCallback = async function (owner: string, spender: string, tokenContractAddress: string, blockchain: string) {

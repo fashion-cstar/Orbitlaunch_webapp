@@ -2,7 +2,7 @@ import useOrbit from "@app/lib/hooks/useOrbit";
 
 export default function Indicators() {
   const { marketCap, liquidityPool, holders, price } = useOrbit();
-
+  
   return (
     <div className="flex flex-col">
       <div className="desktop-content flex flex-row space-x-4">
@@ -10,7 +10,7 @@ export default function Indicators() {
           <div className="mb-[6px] flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">
             <span>Market Cap</span>
           </div>
-          <div className="text-xl">$ {marketCap}</div>
+          <div className="text-xl">${marketCap}</div>
         </div>
         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
           <div className="mb-[6px] flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">
@@ -29,7 +29,7 @@ export default function Indicators() {
           <div className="mb-[6px] flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary">
             <span>Price</span>
           </div>
-          <div className="text-xl">$ {price}</div>
+          <div className="text-xl">${price}</div>
         </div>
       </div>
       <div className="mobile-content flex flex-col space-y-4">

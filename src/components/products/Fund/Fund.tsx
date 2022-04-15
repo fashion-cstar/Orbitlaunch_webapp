@@ -11,7 +11,7 @@ import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { tierInformation as tierInfo } from "@app/shared/TierLevels";
 import { checkUserAlreadyReferred, getUserReferralInfo, registerSoloUser, registerUserWithParent } from "@app/state/Referral";
 import { ReferralStatus } from "@app/constants/constant";
-
+import useOrbit from "@app/lib/hooks/useOrbit";
 import BuyButton from "../../common/BuyButton";
 import SliderCards from "../../common/SliderCards";
 import DepositPopup from "./DepositPopup";
@@ -22,6 +22,8 @@ export default function Fund() {
     const snackbar = useSnackbar();
     const depositModalId = "deposit-busd-modal";
     const { account, library } = useEthers();
+    const { marketCap, liquidityPool, holders, price } = useOrbit();
+
     const {
         startInvestmentPeriodDate_V1,
         endInvestmentPeriodDate_V1,
