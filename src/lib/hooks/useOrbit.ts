@@ -8,7 +8,6 @@ import {
   AppLPAddress,
 } from "@app/shared/AppConstant";
 import useSWR from "swr";
-import { useM31Holders } from '@app/state/hooks'
 import { formatToUSD } from "@app/shared/helpers/currencyHelper";
 
 export default function useOrbit() {
@@ -16,23 +15,40 @@ export default function useOrbit() {
   const lpBalance = useTokenBalance(AppTokenAddress, AppLPAddress);
   const burnBalance = useTokenBalance(AppTokenAddress, DEAD_ADDRESS);
 
-  const holdersData = useM31Holders()
-  // const { data: holdersData } = useSWR(
-  //   `/api/holders?baseCurrency=${AppTokenAddress}`,
-  //   () =>
-  //     axios
-  //       .get(`/api/holders?baseCurrency=${AppTokenAddress}`)
-  //       .then(({ data }) => data),
-  //   {
-  //     // 15 minutes
-  //     refreshInterval: 1000 * 60 * 15,
-  //     revalidateIfStale: false,
-  //     revalidateOnFocus: false,
-  //     revalidateOnReconnect: true,
-  //     // 30 seconds
-  //     errorRetryInterval: 1000 * 30,
-  //   }
-  // );
+  const { data: blockheight } = useSWR(
+    `https://api.covalenthq.com/v1/56/block_v2/latest/?key=ckey_4fea227d938b4927a6793aac90f`,
+    () =>
+      axios
+        .get(`https://api.covalenthq.com/v1/56/block_v2/latest/?key=ckey_4fea227d938b4927a6793aac90f`)
+        .then(({ data }) => data),
+    {
+      // 15 minutes
+      refreshInterval: 1000 * 60 * 15,
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true,
+      // 30 seconds
+      errorRetryInterval: 1000 * 30,
+    }
+  );
+  const latestheight = blockheight?.data?.items[0]?.height || ''
+    console.log("latestHeight: "+latestheight)
+  const { data: holdersData } = useSWR(
+    `/api/holders?baseCurrency=${AppTokenAddress}`,
+    () =>
+      axios
+        .get(`/api/holders?baseCurrency=${AppTokenAddress}`)
+        .then(({ data }) => data),
+    {
+      // 15 minutes
+      refreshInterval: 1000 * 60 * 15,
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true,
+      // 30 seconds
+      errorRetryInterval: 1000 * 30,
+    }
+  );
 
   const { data } = useSWR(
     `/api/tokenPrice?baseCurrency=${AppTokenAddress}`,
