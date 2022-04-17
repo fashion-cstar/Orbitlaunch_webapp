@@ -8,7 +8,7 @@ import {
   AppLPAddress,
 } from "@app/shared/AppConstant";
 import useSWR from "swr";
-
+import { useM31Holders } from '@app/state/hooks'
 import { formatToUSD } from "@app/shared/helpers/currencyHelper";
 
 export default function useOrbit() {
@@ -16,22 +16,23 @@ export default function useOrbit() {
   const lpBalance = useTokenBalance(AppTokenAddress, AppLPAddress);
   const burnBalance = useTokenBalance(AppTokenAddress, DEAD_ADDRESS);
 
-  const { data: holdersData } = useSWR(
-    `/api/holders?baseCurrency=${AppTokenAddress}`,
-    () =>
-      axios
-        .get(`/api/holders?baseCurrency=${AppTokenAddress}`)
-        .then(({ data }) => data),
-    {
-      // 15 minutes
-      refreshInterval: 1000 * 60 * 15,
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-      // 30 seconds
-      errorRetryInterval: 1000 * 30,
-    }
-  );
+  const holdersData = useM31Holders()
+  // const { data: holdersData } = useSWR(
+  //   `/api/holders?baseCurrency=${AppTokenAddress}`,
+  //   () =>
+  //     axios
+  //       .get(`/api/holders?baseCurrency=${AppTokenAddress}`)
+  //       .then(({ data }) => data),
+  //   {
+  //     // 15 minutes
+  //     refreshInterval: 1000 * 60 * 15,
+  //     revalidateIfStale: false,
+  //     revalidateOnFocus: false,
+  //     revalidateOnReconnect: true,
+  //     // 30 seconds
+  //     errorRetryInterval: 1000 * 30,
+  //   }
+  // );
 
   const { data } = useSWR(
     `/api/tokenPrice?baseCurrency=${AppTokenAddress}`,
@@ -81,7 +82,7 @@ export default function useOrbit() {
       price,
       totalSupply,
       marketCap,
-      holders: (!!holdersData) ? formatToUSD(holdersData.holders) : 0,
+      holders: (!!holdersData) ? formatToUSD(holdersData.holders.toString()) : 0,
       bnbPrice: data?.bnbPrice?.toFixed(4)
     }),
     [liquidityPool, price, totalSupply, holdersData]

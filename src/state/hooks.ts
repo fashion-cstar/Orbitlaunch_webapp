@@ -9,6 +9,34 @@ import { RpcProviders } from "@app/shared/PadConstant"
 import { getChainIdFromName } from 'src/utils'
 import useRefresh from './useRefresh'
 
+export function useM31Holders(): { holders: number } {
+  const [holders, setHolders] = useState(0)
+  const { slowRefresh } = useRefresh()
+
+  useEffect(() => {
+    const getHolders = async () => {
+      try {
+        fetch(`https://api.covalenthq.com/v1/56/tokens/0xB46aCB1f8D0fF6369C2f00146897aeA1dFCf2414/token_holders_changes/?quote-currency=USD&format=JSON&starting-block=12500100&ending-block=latest&key=ckey_4fea227d938b4927a6793aac90f`)
+          .then((res: any) => res.json())
+          .then((data) => {
+            const res = data?.data?.pagination?.total_count || 0
+            setHolders(res)
+            console.log("Holders: " + holders)
+          })
+          .catch(error => {
+            console.error("Failed to get project list: " + error)
+          })
+
+      } catch (error) {
+      }
+    }
+
+    getHolders()
+  }, [slowRefresh])
+
+  return { holders: holders }
+}
+
 export function useNativeTokenBalance(blockchain: string): BigNumber {
     const { account } = useEthers()
     const chainId = getChainIdFromName(blockchain);
