@@ -7,6 +7,7 @@ import { ethers } from "ethers"
 import { getContract, parseEther, calculateGasMargin } from 'src/utils'
 import ERC20_ABI from 'src/lib/contract/abis/erc20.json'
 import PAD_ABI from 'src/lib/contract/abis/orbitpad.json'
+import ORBIT_WHITELIST from 'src/lib/contract/abis/OrbitWhitelist.json'
 import { MaxUint256 } from '@ethersproject/constants'
 import { TransactionResponse } from '@ethersproject/providers'
 import { AddressZero } from '@ethersproject/constants'
@@ -51,6 +52,29 @@ export function useDepositInfo(padContractAddress: string, blockchain: string): 
   }, [account, slowRefresh])
 
   return userDeposited
+}
+
+export function useOrbitWhitelisted(padContractAddress: string, blockchain: string): boolean {
+  const { account } = useEthers()
+  const [userWhitelisted, setUserWhitelisted] = useState(false)
+  const chainId = getChainIdFromName(blockchain);  
+
+  useEffect(() => {
+    const fetchUserDeposited = async () => {
+      const padContract: Contract = getContract(padContractAddress, ORBIT_WHITELIST, RpcProviders[chainId], account ? account : undefined)
+      const iswhitelisted = await padContract.whitelist(account)
+      return iswhitelisted
+    }
+    if (!!account) {
+      fetchUserDeposited().then(result => {
+        setUserWhitelisted(result)
+      }).catch(error => { })
+    } else {
+      setUserWhitelisted(false)
+    }
+  }, [account])
+
+  return userWhitelisted
 }
 
 export function useLaunchTokenCallback(): {
