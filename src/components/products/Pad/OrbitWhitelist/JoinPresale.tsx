@@ -89,7 +89,8 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
     }, [userDepositedAmount])
 
     useEffect(() => {
-        let max = currentTierNo ? Number(project[`tierAllocation${currentTierNo}`]) : 0
+        // let max = currentTierNo ? Number(project[`tierAllocation${currentTierNo}`]) : 0
+        let max = 999999999
         if (max > 0) max = (max - formatEther(depositedAmount, fundDecimals, 5))
         if (max < 0) max = 0
         if (investCap.gt(BigNumber.from(0))) {
@@ -219,6 +220,7 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
     }
 
     const onMax = () => {
+        return
         let max = getDepositAvailable()
         setFundTokenAmount(max)
         if (launchTokenPrice) {
@@ -271,10 +273,10 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
                                 value={fundTokenAmount} name="BUSD" icon="./images/launchpad/TokenIcons/busd.svg" />
                             <ProjectTokenInput onChange={(val: any) => onProjectTokenChange(val)} onMax={onMax}
                                 value={projectTokenAmount} name={project.projectSymbol} icon={project.projectIcon} />
-                            <div className='text-white text-[14px] flex justify-between'>
+                            {/* <div className='text-white text-[14px] flex justify-between'>
                                 <div>Max Allocation Allowed</div>
                                 <div className='text-right'>{`$${userMaxAllocation} / ${getAllowedLaunchTokens()}`}</div>
-                            </div>
+                            </div> */}
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>Tokens Purchased</div>
                                 <div className='text-right'>{`$${formatEther(depositedAmount, fundDecimals, 2)} / ${getUserPurchasedLaunchTokens()}`}</div>
