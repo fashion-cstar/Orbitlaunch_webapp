@@ -11,7 +11,7 @@ import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal"
 import OrbitJoinPresale from './JoinPresale'
 import OrbitClaim from './Claim'
 
-const IdoProject = { contractAddress: '0x8e98907a9627eafe5cB5F33339B817064522cD83', blockchain: 'bsc', launchDate: 0, projectSymbol: 'ORBT', projectIcon: './images/launchpad/TokenIcons/orbt.svg' }
+const IdoProject = { contractAddress: '0x8e98907a9627eafe5cB5F33339B817064522cD83', blockchain: 'bsc', launchDate: 0, projectSymbol: 'ORBIT', projectIcon: './images/launchpad/TokenIcons/orbt.svg' }
 export default function OrbitWhitelist() {
     const [isOpenClaimTokens, setIsOpenClaimTokens] = useState(false);
     const [launchTokenPrice, setLaunchTokenPrice] = useState(0)
