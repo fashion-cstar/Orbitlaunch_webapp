@@ -1,8 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
-import moment from 'moment'
-import ConnectTier from '../components/Buttons/ConnectTier'
 import { Button } from "@mui/material"
-import { useLaunchTokenCallback, useOrbitWhitelisted, useProjectStatus } from 'src/state/Pad/hooks'
+import { useLaunchTokenCallback, useOrbitWhitelisted, useProjectStatus } from 'src/state/Pad/orbit_hooks'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther } from 'src/utils'
 import { useEthers } from "@usedapp/core"
@@ -12,8 +10,7 @@ import OrbitJoinPresale from './JoinPresale'
 import OrbitClaim from './Claim'
 
 const IdoProject = { contractAddress: '0x5CA612A818bd97819D07DfE4164291731ca523bb', blockchain: 'bsc', launchDate: 0, projectSymbol: 'ORBIT', projectIcon: './images/launchpad/TokenIcons/orbit.ico' }
-export default function OrbitWhitelist() {
-    const [isOpenClaimTokens, setIsOpenClaimTokens] = useState(false);
+export default function OrbitWhitelist() {    
     const [launchTokenPrice, setLaunchTokenPrice] = useState(0)
     const { launchTokenPriceCallback } = useLaunchTokenCallback()
     const { library, account, chainId } = useEthers()
@@ -54,19 +51,19 @@ export default function OrbitWhitelist() {
                         Contact us if you believe you are seeing this in error.
                     </span>
                 </div>}
-                {account && userWhitelisted && <>
+                {/* {account && userWhitelisted && <>
                     {projectStatus >= PROJECT_STATUS.VestingStarted && projectStatus <= PROJECT_STATUS.VestingClosed ?
                         (<OrbitClaim project={IdoProject}
                             launchTokenPrice={launchTokenPrice} />) :
-                        (<>
+                        (<> */}
                             <OrbitJoinPresale project={IdoProject}
                                 launchTokenPrice={launchTokenPrice}
                                 currentTierNo={0} projectStatus={projectStatus} />
                             <div className='text-[14px] text-white'>
                                 Once you have reserved your tokens you will be able to return to this page on 5th of May to claim your tokens.
                             </div>
-                        </>)}
-                </>}
+                        {/* </>)}
+                </>} */}
             </div>
         </>
     )

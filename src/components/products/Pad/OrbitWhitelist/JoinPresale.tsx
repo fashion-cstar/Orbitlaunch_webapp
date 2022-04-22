@@ -1,22 +1,19 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
-import Button from '@mui/material/Button';
-import Modal from 'src/components/common/Modal';
-import InputBox from '../components/Common/InputBox';
+import Button from '@mui/material/Button'
 import FundTokenInput from '../components/Common/FundTokenInput'
 import ProjectTokenInput from '../components/Common/ProjectTokenInput'
-import { useEthers, ChainId } from "@usedapp/core";
+import { useEthers, ChainId } from "@usedapp/core"
 import {
     useJoinPresaleCallback,
     usePadApproveCallback,
     useTotalInvestedAmount,
     useInvestCap,
     useDepositInfo
-} from 'src/state/Pad/hooks'
+} from 'src/state/Pad/orbit_hooks'
 import { useToken, useNativeTokenBalance, useTokenAllowance, useTokenBalance, useTokenBalanceCallback } from 'src/state/hooks'
-import { AddressZero } from '@ethersproject/constants'
-import CircularProgress from '@mui/material/CircularProgress';
-import Fade from '@mui/material/Fade';
-import { BigNumber } from '@ethersproject/bignumber';
+import CircularProgress from '@mui/material/CircularProgress'
+import Fade from '@mui/material/Fade'
+import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther } from 'src/utils'
 import { BUSDTokenAddress } from "@app/shared/PadConstant";
 import { parseEther } from 'src/utils'
@@ -90,17 +87,17 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
 
     useEffect(() => {
         // let max = currentTierNo ? Number(project[`tierAllocation${currentTierNo}`]) : 0
-        let max = 999999999
+        let max = 10000000000
         if (max > 0) max = (max - formatEther(depositedAmount, fundDecimals, 5))
         if (max < 0) max = 0
         if (investCap.gt(BigNumber.from(0))) {
             let temp: BigNumber = investCap.sub(totalInvestedAmount)
-            let restCap = formatEther(temp, fundDecimals, 5)
+            let restCap = formatEther(temp, fundDecimals, 5)            
             if (max > restCap) max = restCap
         }
-        if (max < 0) max = 0
+        if (max < 0) max = 0        
         setUserMaxAllocation(max)
-    }, [depositedAmount, fundDecimals, currentTierNo, project, investCap, totalInvestedAmount])
+    }, [depositedAmount, fundDecimals, investCap, totalInvestedAmount])
 
     useEffect(() => {
         try {
@@ -220,7 +217,6 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
     }
 
     const onMax = () => {
-        return
         let max = getDepositAvailable()
         setFundTokenAmount(max)
         if (launchTokenPrice) {
@@ -310,16 +306,6 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
                                 >
                                     Deposit
                                 </Button>
-
-                                {/* <Button
-                                    variant="contained"
-                                    sx={{ width: "100%", borderRadius: "12px" }}
-                                    onClick={onApprove}
-                                    disabled={true}
-                                >
-                                    Reserve Your Tokens Now
-                                </Button> */}
-
                             </div>
                         </div>
                     )}

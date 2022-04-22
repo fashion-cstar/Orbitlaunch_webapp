@@ -1,20 +1,16 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import Button from '@mui/material/Button';
-import Modal from 'src/components/common/Modal';
-import InputBox from '../components/Common/InputBox';
-import FundTokenInput from '../components/Common/FundTokenInput'
-import ProjectTokenInput from '../components/Common/ProjectTokenInput'
-import { useEthers, ChainId } from "@usedapp/core";
+import { useEthers, ChainId } from "@usedapp/core"
 import {
     useClaimCallback,
     useGetAvailableTokens,
     uselaunchTokenDecimals,
     useDepositInfo
-} from 'src/state/Pad/hooks'
+} from 'src/state/Pad/orbit_hooks'
 import { useToken, useNativeTokenBalance } from 'src/state/hooks'
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress'
 import Fade from '@mui/material/Fade';
-import { BigNumber } from '@ethersproject/bignumber';
+import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther } from 'src/utils'
 import { BUSDTokenAddress } from "@app/shared/PadConstant";
 import { parseEther } from 'src/utils'
@@ -46,7 +42,7 @@ export default function OrbitClaim({ launchTokenPrice, project }: ClaimModalProp
     const [fundDecimals, setFundDecimals] = useState(18)
     const [depositedAmount, setDepositedAmount] = useState(BigNumber.from(0))
     const [launchTokenDecimals, setLaunchTokenDecimals] = useState(18)
-    const launchDecimals = uselaunchTokenDecimals(project.contractAddress, project.blockchain)
+    const launchDecimals = uselaunchTokenDecimals(project.blockchain)
 
     useEffect(() => {
         if (launchDecimals) {

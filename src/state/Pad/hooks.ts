@@ -54,29 +54,6 @@ export function useDepositInfo(padContractAddress: string, blockchain: string): 
   return userDeposited
 }
 
-export function useOrbitWhitelisted(padContractAddress: string, blockchain: string): boolean {
-  const { account } = useEthers()
-  const [userWhitelisted, setUserWhitelisted] = useState(false)
-  const chainId = getChainIdFromName(blockchain);  
-
-  useEffect(() => {
-    const fetchUserDeposited = async () => {
-      const padContract: Contract = getContract(padContractAddress, ORBIT_WHITELIST, RpcProviders[chainId], account ? account : undefined)
-      const iswhitelisted = await padContract.whitelist(account)
-      return iswhitelisted
-    }
-    if (!!account) {
-      fetchUserDeposited().then(result => {
-        setUserWhitelisted(result)
-      }).catch(error => { })
-    } else {
-      setUserWhitelisted(false)
-    }
-  }, [account])
-
-  return userWhitelisted
-}
-
 export function useLaunchTokenCallback(): {
   launchTokenPriceCallback: (padContractAddress: string, blockchain: string) => Promise<BigNumber | undefined>,
   launchTokenDecimalsCallback: (padContractAddress: string, blockchain: string) => Promise<BigNumber | undefined>
