@@ -7,6 +7,7 @@ import { ethers } from "ethers"
 import { getContract, parseEther, calculateGasMargin } from 'src/utils'
 import ERC20_ABI from 'src/lib/contract/abis/erc20.json'
 import PAD_ABI from 'src/lib/contract/abis/orbitpad.json'
+import ORBIT_WHITELIST from 'src/lib/contract/abis/OrbitWhitelist.json'
 import { MaxUint256 } from '@ethersproject/constants'
 import { TransactionResponse } from '@ethersproject/providers'
 import { AddressZero } from '@ethersproject/constants'

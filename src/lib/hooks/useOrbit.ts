@@ -8,7 +8,6 @@ import {
   AppLPAddress,
 } from "@app/shared/AppConstant";
 import useSWR from "swr";
-
 import { formatToUSD } from "@app/shared/helpers/currencyHelper";
 
 export default function useOrbit() {
@@ -81,7 +80,7 @@ export default function useOrbit() {
       price,
       totalSupply,
       marketCap,
-      holders: (!!holdersData) ? formatToUSD(holdersData.holders) : 0,
+      holders: (!!holdersData) ? formatToUSD(holdersData.holders.toString()) : 0,
       bnbPrice: data?.bnbPrice?.toFixed(4)
     }),
     [liquidityPool, price, totalSupply, holdersData]
