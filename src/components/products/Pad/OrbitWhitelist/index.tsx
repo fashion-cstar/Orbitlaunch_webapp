@@ -11,7 +11,7 @@ import OrbitClaim from './Claim'
 import CircularProgress from '@mui/material/CircularProgress'
 import Fade from '@mui/material/Fade';
 
-const IdoProject = { contractAddress: '0x5CA612A818bd97819D07DfE4164291731ca523bb', blockchain: 'bsc', launchDate: 0, projectSymbol: 'ORBIT', projectIcon: './images/launchpad/TokenIcons/orbit.ico' }
+const IdoProject = { contractAddress: '0xa9921C7a252011336009ACc2723f89c409EF0e3D', blockchain: 'bsc', launchDate: 0, projectSymbol: 'ORBIT', projectIcon: './images/launchpad/TokenIcons/orbit.ico' }
 export default function OrbitWhitelist() {
     const [launchTokenPrice, setLaunchTokenPrice] = useState(0)
     const { launchTokenPriceCallback } = useLaunchTokenCallback()
