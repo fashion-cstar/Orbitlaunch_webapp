@@ -51,19 +51,19 @@ export default function OrbitWhitelist() {
                         Contact us if you believe you are seeing this in error.
                     </span>
                 </div>}
-                {/* {account && userWhitelisted && <>
+                {account && userWhitelisted && <>
                     {projectStatus >= PROJECT_STATUS.VestingStarted && projectStatus <= PROJECT_STATUS.VestingClosed ?
                         (<OrbitClaim project={IdoProject}
                             launchTokenPrice={launchTokenPrice} />) :
-                        (<> */}
+                        (<>
                             <OrbitJoinPresale project={IdoProject}
                                 launchTokenPrice={launchTokenPrice}
                                 currentTierNo={0} projectStatus={projectStatus} />
                             <div className='text-[14px] text-white'>
                                 Once you have reserved your tokens you will be able to return to this page on 5th of May to claim your tokens.
                             </div>
-                        {/* </>)}
-                </>} */}
+                        </>)}
+                </>}
             </div>
         </>
     )
