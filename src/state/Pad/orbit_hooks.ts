@@ -136,7 +136,7 @@ export function uselaunchTokenDecimals(blockchain: string): BigNumber {
         const fetchLaunchTokenDecimals = async () => {
             const orbitContract: Contract = getContract(orbitToken_Address, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
             const decimals = await orbitContract.decimals()
-            return decimals
+            return BigNumber.from(decimals)
         }
         if (orbitToken_Address) {
             fetchLaunchTokenDecimals().then(result => {
@@ -329,7 +329,7 @@ export function useStartTime(padContractAddress: string, blockchain: string): Bi
     useEffect(() => {
         const fetchStartTime = async () => {
             const padContract: Contract = getContract(padContractAddress, ORBIT_WHITELIST_ABI, RpcProviders[chainId], account ? account : undefined)
-            const timeat = await padContract.startTime()
+            const timeat = await padContract.presaleStartTime()            
             return timeat
         }
         if (padContractAddress) {
@@ -351,7 +351,7 @@ export function useEndTime(padContractAddress: string, blockchain: string): BigN
     useEffect(() => {
         const fetchEndTime = async () => {
             const padContract: Contract = getContract(padContractAddress, ORBIT_WHITELIST_ABI, RpcProviders[chainId], account ? account : undefined)
-            const timeat = await padContract.endTime()
+            const timeat = await padContract.presaleEndTime()
             return timeat
         }
         if (padContractAddress) {

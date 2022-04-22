@@ -45,7 +45,7 @@ export default function OrbitClaim({ launchTokenPrice, project }: ClaimModalProp
     const launchDecimals = uselaunchTokenDecimals(project.blockchain)
 
     useEffect(() => {
-        if (launchDecimals) {
+        if (launchDecimals) {            
             if (launchDecimals.gt(0)) setLaunchTokenDecimals(launchDecimals.toNumber())
         }
     }, [launchDecimals])
