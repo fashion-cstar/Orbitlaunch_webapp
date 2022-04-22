@@ -64,6 +64,22 @@ export function useOrbitWhitelisted(padContractAddress: string, blockchain: stri
     return userWhitelisted
 }
 
+export function useWhitelistedCallback(): {
+    whitelistedCallback: (padContractAddress: string, blockchain: string) => Promise<boolean | undefined>,    
+} {
+    const { account, library } = useEthers()
+    const whitelistedCallback = async function (padContractAddress: string, blockchain: string) {
+        const chainId = getChainIdFromName(blockchain);
+        const padContract: Contract = getContract(padContractAddress, ORBIT_WHITELIST_ABI, RpcProviders[chainId], account ? account : undefined)
+        if (!padContract) return
+        return padContract.whitelist(account).then((res: boolean) => {
+            return res
+        })
+    }
+
+    return { whitelistedCallback }
+}
+
 export function useLaunchTokenCallback(): {
     launchTokenPriceCallback: (padContractAddress: string, blockchain: string) => Promise<BigNumber | undefined>,
     launchTokenDecimalsCallback: (padContractAddress: string, blockchain: string) => Promise<BigNumber | undefined>
