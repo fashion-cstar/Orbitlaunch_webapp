@@ -8,7 +8,7 @@ export default function Home() {
     return (
         <>
             <Head>
-                <title>OrbitFund</title>
+                <title>Orbit Whitelist</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <OrbitWhitelist></OrbitWhitelist>
