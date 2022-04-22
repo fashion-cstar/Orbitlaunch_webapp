@@ -205,10 +205,10 @@ export function useJoinPresaleCallback(): {
                 return padContract.deposit(parseEther(amount, decimals), {
                     gasLimit: calculateGasMargin(gas), value: parseEther(amount, decimals)
                 }).then((response: TransactionResponse) => {
-                    response.wait().then((_: any) => {
-                        return response.hash
-                    }).catch(error => { })
-                    //   return response.hash
+                    // response.wait().then((_: any) => {
+                    //     return response.hash
+                    // }).catch(error => { })
+                      return response.hash
                 })
             })
         } else {
@@ -218,10 +218,10 @@ export function useJoinPresaleCallback(): {
                     return padContract.deposit(parseEther(amount, decimals), {
                         gasLimit: calculateGasMargin(gas)
                     }).then((response: TransactionResponse) => {
-                        response.wait().then((_: any) => {
-                            return response.hash
-                        }).catch(error => { })
-                        // return response.hash
+                        // response.wait().then((_: any) => {
+                        //     return response.hash
+                        // }).catch(error => { })
+                        return response.hash
                     })
                 })
             })
