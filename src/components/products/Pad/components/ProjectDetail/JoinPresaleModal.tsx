@@ -6,15 +6,14 @@ import FundTokenInput from '../Common/FundTokenInput'
 import ProjectTokenInput from '../Common/ProjectTokenInput'
 import { useEthers, ChainId } from "@usedapp/core";
 import {
-    useJoinPresaleCallback,
-    usePadApproveCallback,
+    useJoinPresaleCallback,    
     useTotalInvestedAmount,
     useInvestCap,
     useDepositInfo,
     useOpenedToNonM31Holders,
     useMaxAllocationNonM31
 } from 'src/state/Pad/hooks'
-import { useToken, useNativeTokenBalance, useTokenAllowance, useTokenBalance, useTokenBalanceCallback } from 'src/state/hooks'
+import { useToken, useNativeTokenBalance, useTokenAllowance, useTokenBalance, useTokenBalanceCallback, useApproveCallback } from 'src/state/hooks'
 import { AddressZero } from '@ethersproject/constants'
 import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
@@ -43,7 +42,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const [fundTokenAmount, setFundTokenAmount] = useState(0)
     const [projectTokenAmount, setProjectTokenAmount] = useState(0)
     const { joinPresaleCallback } = useJoinPresaleCallback()
-    const { padApproveCallback } = usePadApproveCallback()
+    const { approveCallback } = useApproveCallback()
     const [isApproved, setIsApproved] = useState(false)
     const [isDeposited, setDeposited] = useState(false)
     const [userMaxAllocation, setUserMaxAllocation] = useState(0)
@@ -132,7 +131,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     async function onApprove() {
         setIsWalletApproving(true)
         try {
-            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount + 1), project.blockchain).then((hash: string) => {
+            approveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount + 1), project.blockchain).then((hash: string) => {
                 setIsApproved(true)
                 setIsWalletApproving(false)
             }).catch((error: any) => {

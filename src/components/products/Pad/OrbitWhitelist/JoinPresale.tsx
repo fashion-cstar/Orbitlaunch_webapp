@@ -4,13 +4,12 @@ import FundTokenInput from '../components/Common/FundTokenInput'
 import ProjectTokenInput from '../components/Common/ProjectTokenInput'
 import { useEthers, ChainId } from "@usedapp/core"
 import {
-    useJoinPresaleCallback,
-    usePadApproveCallback,
+    useJoinPresaleCallback,    
     useTotalInvestedAmount,
     useInvestCap,
     useDepositInfo
 } from 'src/state/Pad/orbit_hooks'
-import { useToken, useNativeTokenBalance, useTokenAllowance, useTokenBalance, useTokenBalanceCallback } from 'src/state/hooks'
+import { useToken, useNativeTokenBalance, useTokenAllowance, useTokenBalance, useTokenBalanceCallback, useApproveCallback } from 'src/state/hooks'
 import CircularProgress from '@mui/material/CircularProgress'
 import Fade from '@mui/material/Fade'
 import { BigNumber } from '@ethersproject/bignumber'
@@ -40,7 +39,7 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
     const [fundTokenAmount, setFundTokenAmount] = useState(0)
     const [projectTokenAmount, setProjectTokenAmount] = useState(0)
     const { joinPresaleCallback } = useJoinPresaleCallback()
-    const { padApproveCallback } = usePadApproveCallback()
+    const { approveCallback } = useApproveCallback()
     const [isApproved, setIsApproved] = useState(false)
     const [isDeposited, setDeposited] = useState(false)
     const [userMaxAllocation, setUserMaxAllocation] = useState(0)
@@ -121,7 +120,7 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
     async function onApprove() {
         setIsWalletApproving(true)
         try {
-            padApproveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount + 1), project.blockchain).then((hash: string) => {
+            approveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount + 1), project.blockchain).then((hash: string) => {
                 setIsApproved(true)
                 setIsWalletApproving(false)
             }).catch((error: any) => {
