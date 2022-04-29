@@ -25,8 +25,8 @@ export const M31TokenAddress: { [chainId in ChainId]?: string } = {
 }
 
 export const RpcProviders: { [chainId in ChainId]?: JsonRpcProvider } = {
-    [ChainId.Mainnet]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/eth/mainnet'),
-    [ChainId.Rinkeby]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/eth/rinkeby'),
+    [ChainId.Mainnet]: new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/b6a2f439eeb57f2c3c4334a6/eth/mainnet'),
+    [ChainId.Rinkeby]: new ethers.providers.JsonRpcProvider('https://rinkeby.infura.io/v3/b6a2f439eeb57f2c3c4334a6/eth/rinkeby'),
     [ChainId.BSC]: new ethers.providers.JsonRpcProvider('https://bsc-dataseed.binance.org'),
     [ChainId.BSCTestnet]: new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545')
 }
