@@ -10,7 +10,9 @@ import {
     usePadApproveCallback,
     useTotalInvestedAmount,
     useInvestCap,
-    useDepositInfo
+    useDepositInfo,
+    useOpenedToNonM31Holders,
+    useMaxAllocationNonM31
 } from 'src/state/Pad/hooks'
 import { useToken, useNativeTokenBalance, useTokenAllowance, useTokenBalance, useTokenBalanceCallback } from 'src/state/hooks'
 import { AddressZero } from '@ethersproject/constants'
@@ -59,6 +61,8 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     const [isWalletApproving, setIsWalletApproving] = useState(false)
     const totalInvestedAmount = useTotalInvestedAmount(project.contractAddress, project.blockchain)
     const investCap = useInvestCap(project.contractAddress, project.blockchain)
+    const openToNonM31Holders = useOpenedToNonM31Holders(project.contractAddress, project.blockchain);
+    const nonM31MaxAllocation = useMaxAllocationNonM31(project.contractAddress, project.blockchain);
 
     useEffect(() => {
         if (nativeBalance) {
@@ -97,6 +101,11 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
             let restCap = formatEther(temp, fundDecimals, 5)
             if (max > restCap) max = restCap
         }
+
+        if (openToNonM31Holders) {
+            max = formatEther(nonM31MaxAllocation, fundDecimals, 5);
+        }
+
         if (max < 0) max = 0
         setUserMaxAllocation(max)
     }, [depositedAmount, fundDecimals, currentTierNo, project, investCap, totalInvestedAmount])
