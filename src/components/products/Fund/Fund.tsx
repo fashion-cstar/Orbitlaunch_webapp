@@ -74,7 +74,7 @@ export default function Fund() {
 
     const handleWithdrawalSubmit = async () => {
         const weiAmount = ethers.utils.parseEther(balance);
-        const withdrawalResult = await withdraw(weiAmount);
+        const withdrawalResult = await withdraw_V1(weiAmount);
         if (!withdrawalResult.ok) {
             snackbar.snackbar.show(withdrawalResult.message, "error");
             return;
@@ -147,9 +147,9 @@ export default function Fund() {
                             ? (<>
                                 <Button
                                     type="button"
-                                    disabled={currentTierNo === 0 || disableWithdraw}
+                                    disabled={disableWithdraw_V1 || currentTierNo === 0}
                                     variant="outlined"
-                                    onClick={disableWithdraw ? null : async () => await handleWithdrawalSubmit()}
+                                    onClick={disableWithdraw_V1 ? null : async () => await handleWithdrawalSubmit()}
                                     sx={{ borderRadius: "12px" }}
                                 >
                                     Withdrawal
@@ -338,10 +338,10 @@ export default function Fund() {
                             <>
                                 <Button
                                     type="button"
-                                    disabled={disableWithdraw || currentTierNo === 0}
+                                    disabled={disableWithdraw_V1 || currentTierNo === 0}
                                     className="w-full"
                                     variant="outlined"
-                                    onClick={disableWithdraw ? null : async () => await handleWithdrawalSubmit()}
+                                    onClick={disableWithdraw_V1 ? null : async () => await handleWithdrawalSubmit()}
                                     sx={{ borderRadius: "12px" }}
                                 >
                                     Withdrawal
