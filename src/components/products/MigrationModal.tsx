@@ -67,13 +67,28 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
                 setUserOrbtBalance(BigNumber.from(0))
             }
         }
-    }, [account, isOpen])
 
-    useEffect(() => {
         if (accountM31Balance) {
             setUserM31Balance(accountM31Balance)
         }
-    }, [accountM31Balance])
+
+        const checkUserApproved = async () => {
+            let res = await tokenAllowanceCallback(account, MigrationOrbitAddress, AppTokenAddress, 'bsc')
+
+            if (accountM31Balance.isZero()) {
+                setIsApproved(false);
+            }
+            else if (res.gte(accountM31Balance)) {
+                setIsApproved(true);
+            }
+        }
+
+        if (account && accountM31Balance) {
+            checkUserApproved();
+        }
+
+    }, [account, isOpen, accountM31Balance])
+
 
     useEffect(() => {
         if (accountOrbtBalance) {
@@ -145,7 +160,6 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
     async function onMigration() {
         setAttempting(true)
         let res = await tokenAllowanceCallback(account, MigrationOrbitAddress, AppTokenAddress, 'bsc')
-        console.log('Allowance Call', res);
         if (res) {
             try {
                 if (res.gte(parseEther(inputAmount, m31Decimals))) {
