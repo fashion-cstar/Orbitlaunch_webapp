@@ -15,6 +15,7 @@ import useOrbit from "@app/lib/hooks/useOrbit";
 import BuyButton from "../../common/BuyButton";
 import SliderCards from "../../common/SliderCards";
 import DepositPopup from "./DepositPopup";
+import useFundWithV3 from "@app/lib/hooks/useFundWithV3";
 
 export default function Fund() {
     const activateProvider = Web3ModalButton();
@@ -23,7 +24,7 @@ export default function Fund() {
     const depositModalId = "deposit-busd-modal";
     const { account, library } = useEthers();
     const { marketCap, liquidityPool, holders, price } = useOrbit();
-
+    const [version, setVersion] = useState(2);
     const {
         startInvestmentPeriodDate_V1,
         endInvestmentPeriodDate_V1,
@@ -61,13 +62,26 @@ export default function Fund() {
         withdraw
     } = useFund_V2();
 
+    const {
+        disableDeposit: disableDepositV3,
+        currentTierNo: currentTierNoV3,
+        currentInvestment: currentInvestmentV3
+    } = useFundWithV3();
+
     const [totalReferred, setTotalReferred] = useState(0);
     const [referredBy, setReferredBy] = useState('');
     const [commissionEarned, setCommissionEarned] = useState(0);
     const tierInformation = tierInfo;
     const { id } = router.query;
 
-    const handleOpenDepositModal = () => {
+    const handleOpenDepositModalV2 = () => {
+        setVersion(2);
+        const modal = document.getElementById(depositModalId);
+        modal.style.display = "flex";
+    }
+
+    const handleOpenDepositModalV3 = () => {
+        setVersion(3);
         const modal = document.getElementById(depositModalId);
         modal.style.display = "flex";
     }
@@ -136,7 +150,7 @@ export default function Fund() {
 
     return (
         <>
-            <DepositPopup id={depositModalId} />
+            <DepositPopup id={depositModalId} version={version} />
             <div className="desktop-content flex flex-col space-y-4 w-full">
 
                 <div className="flex flex-row items-center">
@@ -157,11 +171,20 @@ export default function Fund() {
                                 <Button
                                     type="button"
                                     disabled={disableDeposit || currentTierNo === 0}
-                                    onClick={(disableDeposit || currentTierNo === 0) ? null : handleOpenDepositModal}
+                                    onClick={(disableDeposit || currentTierNo === 0) ? null : handleOpenDepositModalV2}
                                     variant="outlined"
                                     sx={{ borderRadius: "12px" }}
                                 >
-                                    {disableDeposit ? 'Deposit window closed' : 'Deposit BUSD'}
+                                    {disableDeposit ? 'Deposit window closed (v2)' : 'Deposit BUSD (v2)'}
+                                </Button>
+                                <Button
+                                    type="button"
+                                    disabled={disableDepositV3 || currentTierNoV3 === 0}
+                                    onClick={(disableDepositV3 || currentTierNoV3 === 0) ? null : handleOpenDepositModalV3}
+                                    variant="outlined"
+                                    sx={{ borderRadius: "12px" }}
+                                >
+                                    {disableDeposit ? 'Deposit window closed (v3)' : 'Deposit BUSD (v3)'}
                                 </Button>
                             </>)
                             : (
@@ -184,13 +207,15 @@ export default function Fund() {
                             <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                 <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                             </div>
-                            <div className="text-xl">{!!account ? `$${currentInvestment}` : getCurrentInvestors(totalInvestors, totalInvestors_V1).toString()}</div>
+                            <div className="text-xl">
+                                {!!account ? `$${(parseFloat(currentInvestment) + parseFloat(currentInvestmentV3)).toFixed(2)}` : getCurrentInvestors(totalInvestors, totalInvestors_V1).toString()}
+                            </div>
                         </div>
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                             <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                 <span>{!!account ? 'ROI to Date' : 'Total Invested to Date'}</span>
                             </div>
-                            <div className="text-xl">${!!account ? roiToDate_V1 :
+                            <div className="text-xl">${!!account ? roiToDate :
                                 ethers.FixedNumber.fromString(ethers.utils.formatEther(ethers.utils.parseEther(totalInvestedToDate).add(ethers.utils.parseEther(totalInvestedToDate_V1)))).round(2).toString()
                             }</div>
                         </div>
@@ -350,11 +375,21 @@ export default function Fund() {
                                     type="button"
                                     className="w-full"
                                     disabled={disableDeposit || currentTierNo === 0}
-                                    onClick={(disableDeposit || currentTierNo === 0) ? null : handleOpenDepositModal}
+                                    onClick={(disableDeposit || currentTierNo === 0) ? null : handleOpenDepositModalV2}
                                     variant="outlined"
                                     sx={{ borderRadius: "12px" }}
                                 >
-                                    {disableDeposit ? 'Deposit window closed' : 'Deposit BUSD'}
+                                    {disableDeposit ? 'Deposit window closed (v2)' : 'Deposit BUSD (v2)'}
+                                </Button>
+                                <Button
+                                    type="button"
+                                    className="w-full"
+                                    disabled={disableDepositV3 || currentTierNoV3 === 0}
+                                    onClick={(disableDepositV3 || currentTierNoV3 === 0) ? null : handleOpenDepositModalV3}
+                                    variant="outlined"
+                                    sx={{ borderRadius: "12px" }}
+                                >
+                                    {disableDeposit ? 'Deposit window closed (v3)' : 'Deposit BUSD (v3)'}
                                 </Button>
                             </>
                         )
