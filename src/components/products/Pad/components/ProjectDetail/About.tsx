@@ -21,7 +21,7 @@ export default function About({ ido, projectStatus, handleClickJoinPresale, hand
                 <p>{ido.shortDescription}</p>
             </div>
             <div className="mt-12">                
-                {(projectStatus >= 7 && projectStatus<=8)? < Button
+                {(projectStatus >= 6 && projectStatus<=8)? < Button
                     variant="contained"
                     sx={{ width: "100%", borderRadius: "12px" }}
                     onClick={handleClickClaimTokens}
