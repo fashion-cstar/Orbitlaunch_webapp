@@ -148,42 +148,6 @@ export function uselaunchTokenDecimals(blockchain: string): BigNumber {
     return launchTokenDecimals
 }
 
-export function usePadApproveCallback(): {
-    padApproveCallback: (padContractAddress: string, tokenContractAddress: string, amount: number, blockchain: string) => Promise<string>
-} {
-    const { account, library } = useEthers()
-    const padApproveCallback = async function (padContractAddress: string, tokenContractAddress: string, amount: number, blockchain: string) {
-        const chainId = getChainIdFromName(blockchain);
-        const padContract: Contract = getContract(padContractAddress, ORBIT_WHITELIST_ABI, RpcProviders[chainId], account ? account : undefined)
-        const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, library, account ? account : undefined)
-        let decimals = await tokenContract.decimals()
-        if (!account || !library || !padContract) return
-        return tokenContract.estimateGas.approve(padContract.address, MaxUint256).then(estimatedGas => {
-            return tokenContract.estimateGas.approve(padContract.address, parseEther(amount, decimals)).then(estimatedGasLimit => {
-                const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
-                return tokenContract.approve(padContract.address, parseEther(amount, decimals), {
-                    gasLimit: calculateGasMargin(gas)
-                }).then((response: TransactionResponse) => {
-                    response.wait().then((_: any) => {
-                        return response.hash
-                    }).catch(error => { })
-                    //   return response.hash
-                })
-            }).catch((error: any) => {
-                const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGas
-                return tokenContract.approve(padContract.address, MaxUint256, {
-                    gasLimit: calculateGasMargin(gas)
-                }).then((response: TransactionResponse) => {
-                    response.wait().then((_: any) => {
-                        return response.hash
-                    }).catch(error => { })
-                    //   return response.hash
-                })
-            })
-        })
-    }
-    return { padApproveCallback }
-}
 export function useJoinPresaleCallback(): {
     joinPresaleCallback: (padContractAddress: string, tokenContractAddress: string, amount: number, blockchain: string) => Promise<string>
 } {

@@ -3,11 +3,13 @@ import { formatEther } from "@ethersproject/units"
 import { Contract } from '@ethersproject/contracts'
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useEthers, ChainId } from "@usedapp/core"
-import { getContract } from 'src/utils'
 import ERC20_ABI from 'src/lib/contract/abis/erc20.json'
 import { RpcProviders } from "@app/shared/PadConstant"
 import { getChainIdFromName } from 'src/utils'
 import useRefresh from './useRefresh'
+import { TransactionResponse } from '@ethersproject/providers'
+import { getContract, parseEther, calculateGasMargin } from 'src/utils'
+import { MaxUint256 } from '@ethersproject/constants'
 
 export function useNativeTokenBalance(blockchain: string): BigNumber {
     const { account } = useEthers()
@@ -100,4 +102,40 @@ export function useToken(tokenContractAddress: string, blockchain: string): { na
       })
     }
     return { tokenBalanceCallback }
+  }
+
+  export function useApproveCallback(): {
+    approveCallback: (recvAddress: string, tokenContractAddress: string, amount: number, blockchain: string) => Promise<string>
+  } {
+    const { account, library } = useEthers()
+    const approveCallback = async function (recvAddress: string, tokenContractAddress: string, amount: number, blockchain: string) {
+      const chainId = getChainIdFromName(blockchain);      
+      const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, library, account ? account : undefined)
+      let decimals = await tokenContract.decimals()
+      if (!account || !library) return
+      return tokenContract.estimateGas.approve(recvAddress, MaxUint256).then(estimatedGas => {
+        return tokenContract.estimateGas.approve(recvAddress, parseEther(amount, decimals)).then(estimatedGasLimit => {
+          const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+          return tokenContract.approve(recvAddress, parseEther(amount, decimals), {
+            gasLimit: calculateGasMargin(gas)
+          }).then((response: TransactionResponse) => {
+            response.wait().then((_: any) => {
+              return response.hash
+            }).catch(error => {})
+            // return response.hash
+          })
+        }).catch((error: any) => {
+          const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGas
+          return tokenContract.approve(recvAddress, MaxUint256, {
+            gasLimit: calculateGasMargin(gas)
+          }).then((response: TransactionResponse) => {
+            response.wait().then((_: any) => {
+              return response.hash
+            }).catch(error => {})
+            // return response.hash
+          })
+        })
+      })
+    }
+    return { approveCallback }
   }

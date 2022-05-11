@@ -7,8 +7,6 @@ import { ethers } from "ethers"
 import { getContract, parseEther, calculateGasMargin } from 'src/utils'
 import ERC20_ABI from 'src/lib/contract/abis/erc20.json'
 import PAD_ABI from 'src/lib/contract/abis/orbitpad.json'
-import ORBIT_WHITELIST from 'src/lib/contract/abis/OrbitWhitelist.json'
-import { MaxUint256 } from '@ethersproject/constants'
 import { TransactionResponse } from '@ethersproject/providers'
 import { AddressZero } from '@ethersproject/constants'
 import { M31TokenAddress, RpcProviders } from "@app/shared/PadConstant"
@@ -122,42 +120,6 @@ export function uselaunchTokenDecimals(padContractAddress: string, blockchain: s
   return launchTokenDecimals
 }
 
-export function usePadApproveCallback(): {
-  padApproveCallback: (padContractAddress: string, tokenContractAddress: string, amount: number, blockchain: string) => Promise<string>
-} {
-  const { account, library } = useEthers()
-  const padApproveCallback = async function (padContractAddress: string, tokenContractAddress: string, amount: number, blockchain: string) {
-    const chainId = getChainIdFromName(blockchain);
-    const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
-    const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, library, account ? account : undefined)
-    let decimals = await tokenContract.decimals()
-    if (!account || !library || !padContract) return
-    return tokenContract.estimateGas.approve(padContract.address, MaxUint256).then(estimatedGas => {
-      return tokenContract.estimateGas.approve(padContract.address, parseEther(amount, decimals)).then(estimatedGasLimit => {
-        const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
-        return tokenContract.approve(padContract.address, parseEther(amount, decimals), {
-          gasLimit: calculateGasMargin(gas)
-        }).then((response: TransactionResponse) => {
-          // response.wait().then((_: any) => {
-          //   return response.hash
-          // }).catch(error => {})
-          return response.hash
-        })
-      }).catch((error: any) => {
-        const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGas
-        return tokenContract.approve(padContract.address, MaxUint256, {
-          gasLimit: calculateGasMargin(gas)
-        }).then((response: TransactionResponse) => {
-          // response.wait().then((_: any) => {
-          //   return response.hash
-          // }).catch(error => {})
-          return response.hash
-        })
-      })
-    })
-  }
-  return { padApproveCallback }
-}
 export function useJoinPresaleCallback(): {
   joinPresaleCallback: (padContractAddress: string, tokenContractAddress: string, amount: number, blockchain: string) => Promise<string>
 } {
