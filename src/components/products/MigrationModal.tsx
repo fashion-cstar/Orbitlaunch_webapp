@@ -228,6 +228,13 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
         }
     }
 
+    useEffect(() => {
+        setInputAmount(formatEther(userM31Balance, m31Decimals, 2));
+    }, [userM31Balance]);
+
+    // console.log(inputAmount);
+    // console.log(!account , isOverMax , ethBalance <= 0 , inputAmount === 0 , isApproved , isWalletApproving);
+
     return (
         <div>
             <Modal
@@ -238,7 +245,7 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
                 <div className='m-4 md:m-6 w-[300px] md:w-[400px]'>
                     {!attempting && !hash && (
                         <div className='w-full flex flex-col gap-4 mt-6'>
-                            <MigrateInput name={"M31"} value={formatEther(userM31Balance, m31Decimals, 2)} balance={formatEther(userM31Balance, m31Decimals, 2).toString()} onChange={(val: any) => onInputChange(val)} />
+                            <MigrateInput name={"M31"} value={formatEther(userM31Balance, m31Decimals, 2)} balance={formatEther(userM31Balance, m31Decimals, 2).toString()} onChange={(val: any) => {}} />
                             <div className='flex justify-between items-center py-2'>
                                 <div className='basis-1/3'>
                                     <div className='flex gap-2'>
