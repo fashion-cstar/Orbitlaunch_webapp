@@ -145,6 +145,7 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
     async function onMigration() {
         setAttempting(true)
         let res = await tokenAllowanceCallback(account, MigrationOrbitAddress, AppTokenAddress, 'bsc')
+        console.log('Allowance Call', res);
         if (res) {
             try {
                 if (res.gte(parseEther(inputAmount, m31Decimals))) {
