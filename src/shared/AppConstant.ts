@@ -39,8 +39,8 @@ export const PancakeRouterContractAddress =
   "0x10ed43c718714eb63d5aa57b78b54704e256024e";
 
 // migrate
-export const OrbtTokenAddress = "0x8dcfced61b0f343cee6829c30d77d4bd698426db"
-export const MigrationOrbitAddress = "0x3367cDA140fe536E55b65E523044AFB946Df23B5"
+export const OrbtTokenAddress = "0x5B7Ce66AAeEF370019bfdE7F0566A3aD977C1306"
+export const MigrationOrbitAddress = "0x5B7Ce66AAeEF370019bfdE7F0566A3aD977C1306"
 
 // Use v2 as v1 for now
 export const OrbitFundContractAddress = "0xabc3b533fbcc4380fe1db477417125c5e7118609"; // testnet: 0x26E17791ee9a2116DDf78620D966b8967f0F85B2
