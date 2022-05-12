@@ -44,13 +44,13 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
     const [isMigrated, setMigrated] = useState(false)
     const [userMaxMigration, setUserMaxMigration] = useState(0)
     const { tokenBalanceCallback } = useTokenBalanceCallback()
-    const accountM31Balance = useTokenBalance(AppTokenAddress, 'bsc')
+    const accountM31Balance = useTokenBalance(M31TokenAddress, 'bsc')
     const accountOrbtBalance = useTokenBalance(OrbtTokenAddress, 'bsc')
     const [userM31Balance, setUserM31Balance] = useState<BigNumber>(BigNumber.from(0))
     const [userOrbtBalance, setUserOrbtBalance] = useState<BigNumber>(BigNumber.from(0))
     const nativeBalance = useNativeTokenBalance('bsc')
     const [ethBalance, setEthBalance] = useState(0)
-    const m31Token = useToken(AppTokenAddress, 'bsc')
+    const m31Token = useToken(M31TokenAddress, 'bsc')
     const [m31Decimals, setM31Decimals] = useState(18)
 
     useEffect(() => {
@@ -74,7 +74,7 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
         }
 
         const checkUserApproved = async () => {
-            let res = await tokenAllowanceCallback(account, MigrationOrbitAddress, AppTokenAddress, 'bsc')
+            let res = await tokenAllowanceCallback(account, MigrationOrbitAddress, M31TokenAddress, 'bsc')
 
             if (accountM31Balance.isZero()) {
                 setIsApproved(false);
