@@ -410,7 +410,7 @@ export default function Fund() {
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                         </div>
-                        <div className="text-xl">{!!account ? `$${currentInvestment}` : getCurrentInvestors(totalInvestors, totalInvestors_V1).toString()}</div>
+                        <div className="text-xl">{!!account ? `$${(parseFloat(currentInvestment) + parseFloat(currentInvestmentV3)).toFixed(2)}` : getCurrentInvestors(totalInvestors, totalInvestors_V1).toString()}</div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
