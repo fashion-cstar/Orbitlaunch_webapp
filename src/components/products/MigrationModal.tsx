@@ -113,7 +113,7 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
     async function onApprove() {
         setIsWalletApproving(true)
         try {
-            approveCallback(MigrationOrbitAddress, AppTokenAddress, Math.round(inputAmount + 1), 'bsc').then((hash: string) => {
+            approveCallback(MigrationOrbitAddress, M31TokenAddress, Math.round(inputAmount + 1), 'bsc').then((hash: string) => {
                 setIsApproved(true)
                 setIsWalletApproving(false)
             }).catch((error: any) => {
@@ -160,7 +160,7 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
 
     async function onMigration() {
         setAttempting(true)
-        let res = await tokenAllowanceCallback(account, MigrationOrbitAddress, AppTokenAddress, 'bsc')
+        let res = await tokenAllowanceCallback(account, MigrationOrbitAddress, M31TokenAddress, 'bsc')
         if (res) {
             try {
                 if (res.gte(parseEther(inputAmount, m31Decimals))) {
