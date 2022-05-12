@@ -25,7 +25,7 @@ function getLanguageFromURL() {
  */
 export class TVChartContainer extends PureComponent {
 	static defaultProps = {
-		symbol: 'M31/BNB',
+		symbol: 'ORBIT/BNB',
 		interval: '15',
 		containerId: 'tv_chart_container',
 		datafeedUrl: 'https://demo-feed-data.tradingview.com',
@@ -41,7 +41,7 @@ export class TVChartContainer extends PureComponent {
 
 	componentDidMount() {
 		const widgetOptions = {
-			symbol: "M31/BNB",
+			symbol: "ORBIT/BNB",
 			// BEWARE: no trailing slash is expected in feed URL
 			datafeed: config(AppTokenAddress),
 			interval: this.props.interval,

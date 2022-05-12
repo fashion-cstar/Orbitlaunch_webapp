@@ -19,9 +19,9 @@ function BalanceAmount({ isMobile }: { isMobile: boolean }) {
   return (
     <>
       {isMobile ? (
-        <div className="flex justify-center text-[6px]">{m31Amount} M31 (${amountInDolls.toFixed(2)})</div>
+        <div className="flex justify-center text-[6px]">{m31Amount} ORBIT (${amountInDolls.toFixed(2)})</div>
       ) : (
-        <div className="flex justify-center text-xs">{m31Amount} M31 (${amountInDolls.toFixed(2)})</div>
+        <div className="flex justify-center text-xs">{m31Amount} ORBIT (${amountInDolls.toFixed(2)})</div>
       )}
     </>
   )

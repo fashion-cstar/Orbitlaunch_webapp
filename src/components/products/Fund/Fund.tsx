@@ -286,7 +286,7 @@ export default function Fund() {
                                 <div className="flex-1 rounded-2xl bg-[#001926] p-4 min-h-[250px]">
                                     <div className="space-y-4">
                                         <div className="items-center text-l text-white font-bold">
-                                            Learn About OrbitFund (Andromeda M31)
+                                            Learn About OrbitFund (ORBIT)
                                         </div>
                                         <hr style={{ borderColor: "#112B40" }} />
                                     </div>
@@ -487,7 +487,7 @@ export default function Fund() {
                             <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                                 <div className="space-y-4">
                                     <div className="items-center text-l text-white font-bold">
-                                        Learn About OrbitFund (Andromeda M31)
+                                        Learn About OrbitFund (ORBIT)
                                     </div>
                                     <hr style={{ borderColor: "#112B40" }} />
                                 </div>

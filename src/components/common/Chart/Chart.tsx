@@ -91,7 +91,7 @@ export default function Chart(props) {
 }
 
 Chart.defaultProps = {
-  symbol: "M31/BUSD",
+  symbol: "Orbit/BUSD",
   interval: "15",
   containerId: "tv_chart_container",
   datafeedUrl: "https://demo-feed-data.tradingview.com",

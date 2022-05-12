@@ -69,7 +69,7 @@ export default function SliderCards({ cardInformationList, selectedCardIndex }: 
                                                     </div>
                                                 </div>
                                                 <div className="items-center text-xs text-white mb-2">
-                                                    Requires {info.shownRequiredTokens} M31
+                                                    Requires {info.shownRequiredTokens} ORBIT
                                                 </div>
                                                 <div className="items-center text-xs text-white mb-2">
                                                     Up to {info.monthlyPercent}% Monthly

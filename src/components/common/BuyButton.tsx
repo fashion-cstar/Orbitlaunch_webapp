@@ -33,7 +33,7 @@ export default function BuyButton({ className }: BuyButtonProps) {
                     target="_blank"
                     sx={{ minWidth: "90px", borderRadius: "12px" }}
                 >
-                    Buy M31
+                    Buy Orbit
                 </Button>
             }
         </>

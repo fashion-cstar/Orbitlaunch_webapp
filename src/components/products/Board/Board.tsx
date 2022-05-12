@@ -29,7 +29,7 @@ export default function Board() {
           <div className="flex-1 space-y-4">
             <Indicators />
             <div className="rounded-2xl bg-[#001926] p-4">
-              <Chart address={AppTokenAddress} symbol={"M31"} bnbPrice={bnbPrice} />
+              <Chart address={AppTokenAddress} symbol={"ORBIT"} bnbPrice={bnbPrice} />
             </div>
           </div>
           <div className="desktop-content flex flex-col rounded-2xl bg-[#001926] p-4">
@@ -38,7 +38,7 @@ export default function Board() {
             <div className="flex-1 rounded-2xl bg-[#06111c]">
               <TwitterTimelineEmbed
                 sourceType="profile"
-                screenName="orbitlaunchm31"
+                screenName="orbitecosystem"
                 theme="dark"
                 options={{ height: "100%", width: 303 }}
                 noHeader
@@ -81,7 +81,7 @@ export default function Board() {
           <div className="flex-1 rounded-2xl bg-[#06111c]">
             <TwitterTimelineEmbed
               sourceType="profile"
-              screenName="orbitlaunchm31"
+              screenName="orbitecosystem"
               theme="dark"
               options={{ height: "100%", width: 303 }}
               noHeader

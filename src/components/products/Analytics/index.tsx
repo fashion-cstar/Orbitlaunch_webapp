@@ -72,7 +72,7 @@ export default function Analytics() {
                         <div className="xl:basis-2/3 w-full">
                             <div className="flex flex-col gap-4">
                                 <div>
-                                    <Chart address={AppTokenAddress} symbol={"M31"} bnbPrice={bnbPrice} />
+                                    <Chart address={AppTokenAddress} symbol={"ORBIT"} bnbPrice={bnbPrice} />
                                 </div>
                                 <div className="rounded-2xl p-4" style={{background: "radial-gradient(circle, #034028 0%, #03232d 45%, #001926 100%)", backgroundRepeat: "no-repeat"}}>
                                     <PublicSafetyRating />

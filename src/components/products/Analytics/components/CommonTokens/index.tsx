@@ -16,7 +16,7 @@ export default function CommonTokens() {
             <div className="flex-1">
                 <div className="flex gap-3 mt-8 items-stretch">
                     <div className="basis-1/2">
-                        <TokensCard token="M31" percent={45} amount={37516} percentOfSupply={13.8} >
+                        <TokensCard token="ORBIT" percent={45} amount={37516} percentOfSupply={13.8} >
                             <M31Icon />
                         </TokensCard>
                     </div>

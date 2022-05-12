@@ -9,7 +9,7 @@ const options = {
     },
     series: [
         {
-            name: 'M31',
+            name: 'ORBIT',
             type: 'area',
             data: [{
                 x: 2,
