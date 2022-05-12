@@ -25,9 +25,9 @@ export default function Header() {
 
           <div className="flex flex-row items-center space-x-4">
             <a className="w-[20px]" href={'https://www.orbitlaunch.io'} target="_blank"><EarthIcon /></a>
-            <a className="w-[20px]" href={'https://instagram.com/orbitlaunchm31'} target="_blank"><InstagramIcon /></a>
-            <a className="w-[20px]" href={'https://twitter.com/orbitlaunchm31'} target="_blank"><TwitterIcon /></a>
-            <a className="w-[20px]" href={'https://t.me/orbitlaunchbsc'} target="_blank"><TelegramIcon /></a>
+            <a className="w-[20px]" href={'https://instagram.com/orbitecosystem'} target="_blank"><InstagramIcon /></a>
+            <a className="w-[20px]" href={'https://twitter.com/orbitecosystem'} target="_blank"><TwitterIcon /></a>
+            <a className="w-[20px]" href={'https://t.me/orbitecosystem'} target="_blank"><TelegramIcon /></a>
           </div>
         </div>
       </div>
