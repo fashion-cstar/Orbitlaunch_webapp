@@ -14,7 +14,8 @@ import Modal from 'src/components/common/Modal'
 import {
     AppTokenAddress,
     OrbtTokenAddress,
-    MigrationOrbitAddress
+    MigrationOrbitAddress,
+    M31TokenAddress
 } from "@app/shared/AppConstant"
 import { BigNumber } from '@ethersproject/bignumber'
 import {
@@ -133,7 +134,7 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
 
     const callUserOrbitCallback = () => {
         try {
-            tokenBalanceCallback(AppTokenAddress, 'bsc').then((res: BigNumber) => {
+            tokenBalanceCallback(M31TokenAddress, 'bsc').then((res: BigNumber) => {
                 setUserM31Balance(res)
             }).catch((error: any) => {
                 console.log(error)
@@ -260,7 +261,7 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
                 <div className='m-4 md:m-6 w-[300px] md:w-[400px]'>
                     {!attempting && !hash && (
                         <div className='w-full flex flex-col gap-4 mt-6'>
-                            <MigrateInput name={"ORBIT"} value={formatEther(userM31Balance, m31Decimals, 2)} balance={formatEther(userM31Balance, m31Decimals, 2).toString()} onChange={(val: any) => {}} />
+                            <MigrateInput name={"M31"} value={formatEther(userM31Balance, m31Decimals, 2)} balance={formatEther(userM31Balance, m31Decimals, 2).toString()} onChange={(val: any) => {}} />
                             <div className='flex justify-between items-center py-2'>
                                 <div className='basis-1/3'>
                                     <div className='flex gap-2'>

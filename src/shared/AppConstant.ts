@@ -55,6 +55,7 @@ export const OrbitStableTokenAddress = "0xB96A921FD923FF5C23d2A4f5d3d099b47d9D95
 export const OrbitStableTokenAddressWithV3 = "0x297a70eee1504a174fa22e78648365381a1d9304";
 
 export const AppTokenAddress = "0x4bf5cd1AC6FfF12E88AEDD3c70EB4148F90F8894";//TODO: "0xb46acb1f8d0ff6369c2f00146897aea1dfcf2414"; / testnet 0x8401e6E7ba1A1EC011BDf34CD59Fb11545FaE523
+export const M31TokenAddress = "0xB46aCB1f8D0fF6369C2f00146897aeA1dFCf2414";
 export const AppLPAddress = "0x517cd2967ce02deee007b98323b43b6df8087f86"//TODO: "0x931B22A138893258c58f3e4143B17086a97862F6"; / testnet 0xba5282c6e9Fe1aDC51A7Da876D7ACD88069dF865
 
 export const AppERC20TokenAddress =
