@@ -5,7 +5,8 @@ import {
     AppTokenAddress,
     BusdContractAddress,
     OrbitFundContractAddress,
-    OrbitStableTokenAddress
+    OrbitStableTokenAddress,
+    LAST_MONTH_PROFIT_URL
 } from "@app/shared/AppConstant";
 import { BigNumber, ethers } from "ethers";
 import { getTierValues, tierInformation } from '@app/shared/TierLevels';
@@ -235,7 +236,7 @@ export default function useFund() {
     }
 
     const getPriorMonthProfit = async () => {
-        return await (fetch(`https://backend-api-pi.vercel.app/api/Fund/1`)
+        return await (fetch(LAST_MONTH_PROFIT_URL)
             .then((res: any) => res.json())
             .then((res) => {
                 if (res)

@@ -29,6 +29,7 @@ export const RESOLUTION_TO_INTERVAL = {
   "1M": 43200,
 };
 
+export const LAST_MONTH_PROFIT_URL = "https://backend-api-pi.vercel.app/api/Fund/2"
 export const TV_CHART_CONTAINER_ID = "tv-chart-container";
 
 export const BNBTokenAddress = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
