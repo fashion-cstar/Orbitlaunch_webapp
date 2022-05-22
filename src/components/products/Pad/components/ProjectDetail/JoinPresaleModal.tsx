@@ -6,7 +6,7 @@ import FundTokenInput from '../Common/FundTokenInput'
 import ProjectTokenInput from '../Common/ProjectTokenInput'
 import { useEthers, ChainId } from "@usedapp/core";
 import {
-    useJoinPresaleCallback,    
+    useJoinPresaleCallback,
     useTotalInvestedAmount,
     useInvestCap,
     useDepositInfo,
@@ -157,37 +157,34 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
 
     async function onDeposit() {
         setAttempting(true)
-        let res = await tokenAllowanceCallback(account, project.contractAddress, BUSDTokenAddress[chainId], project.blockchain)
-        if (res) {
-            try {
-                if (res.gte(parseEther(fundTokenAmount, fundDecimals))) {
-                    console.log(res)
-                    try {
-                        joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
-                            setHash(hash)
-                            successDeposited()
-                        }).catch(error => {
-                            setAttempting(false)
-                            console.log(error)
-                            let err: any = error
-                            if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                            if (err?.error) {
-                                if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                            }
-                        })
-                    } catch (error) {
+        try {
+            let res = await tokenAllowanceCallback(account, project.contractAddress, BUSDTokenAddress[chainId], project.blockchain)
+            if (res.gte(parseEther(fundTokenAmount, fundDecimals))) {
+                try {
+                    joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
+                        setHash(hash)
+                        setAttempting(false)
+                        successDeposited()
+                    }).catch(error => {
                         setAttempting(false)
                         console.log(error)
-                    }
-                    return true
-                } else {
-                    onDeposit()
+                        let err: any = error
+                        if (err?.message) snackbar.snackbar.show(err?.message, "error")
+                        if (err?.error) {
+                            if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
+                        }
+                    })
+                } catch (error) {
+                    setAttempting(false)
+                    console.log(error)
                 }
-            } catch (ex) {
+                return true
+            } else {
                 onDeposit()
             }
+        } catch (ex) {
+            console.log(ex)
         }
-
         return null;
     }
 
@@ -235,14 +232,16 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     }
 
     const onclose = () => {
-        setHash(undefined)
-        setAttempting(false)
-        setIsApproved(false)
-        setIsWalletApproving(false)
-        setDeposited(false)
-        setFundTokenAmount(0)
-        setProjectTokenAmount(0)
-        handleClose()
+        if (!(isWalletApproving || attempting)) {
+            setHash(undefined)
+            setAttempting(false)
+            setIsApproved(false)
+            setIsWalletApproving(false)
+            setDeposited(false)
+            setFundTokenAmount(0)
+            setProjectTokenAmount(0)
+            handleClose()
+        }
     }
 
     const getAvailableSupply = () => {

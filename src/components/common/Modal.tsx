@@ -36,9 +36,6 @@ export default function Modal({
             <div className="px-4 w-full w-auto h-full md:h-auto mt-8">
                 <div className={`p-3 rounded-2xl shadow dark:bg-gray-700`} style={gradientColor}>
                     <div className="flex flex-row justify-between mt-2">
-                        {/* <div className="flex-1 justify-start py-4">
-                            <LogoHorizontal className="h-[16px]"/>
-                        </div> */}
                         <div className='text-white text-[24px] md:text-[32px] ml-6'>
                             {header}
                         </div>

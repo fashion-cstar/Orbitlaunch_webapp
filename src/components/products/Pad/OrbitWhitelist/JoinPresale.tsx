@@ -4,7 +4,7 @@ import FundTokenInput from '../components/Common/FundTokenInput'
 import ProjectTokenInput from '../components/Common/ProjectTokenInput'
 import { useEthers, ChainId } from "@usedapp/core"
 import {
-    useJoinPresaleCallback,    
+    useJoinPresaleCallback,
     useTotalInvestedAmount,
     useInvestCap,
     useDepositInfo
@@ -79,7 +79,7 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
     }, [accountBUSDBalance])
 
     useEffect(() => {
-        if (userDepositedAmount) {            
+        if (userDepositedAmount) {
             setDepositedAmount(userDepositedAmount)
         }
     }, [userDepositedAmount])
@@ -91,10 +91,10 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
         if (max < 0) max = 0
         if (investCap.gt(BigNumber.from(0))) {
             let temp: BigNumber = investCap.sub(totalInvestedAmount)
-            let restCap = formatEther(temp, fundDecimals, 5)            
+            let restCap = formatEther(temp, fundDecimals, 5)
             if (max > restCap) max = restCap
         }
-        if (max < 0) max = 0        
+        if (max < 0) max = 0
         setUserMaxAllocation(max)
     }, [depositedAmount, fundDecimals, investCap, totalInvestedAmount])
 
@@ -146,35 +146,32 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
 
     async function onDeposit() {
         setAttempting(true)
-        let res = await tokenAllowanceCallback(account, project.contractAddress, BUSDTokenAddress[chainId], project.blockchain)
-        if (res) {
-            try {
-                if (res.gte(parseEther(fundTokenAmount, fundDecimals))) {
-                    console.log(res)
-                    try {
-                        joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
-                            setHash(hash)
-                            successDeposited()
-                        }).catch(error => {
-                            setAttempting(false)
-                            console.log(error)
-                            let err: any = error
-                            if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                            if (err?.error) {
-                                if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                            }
-                        })
-                    } catch (error) {
+        try {
+            let res = await tokenAllowanceCallback(account, project.contractAddress, BUSDTokenAddress[chainId], project.blockchain)
+            if (res.gte(parseEther(fundTokenAmount, fundDecimals))) {                
+                try {
+                    joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
+                        setHash(hash)
+                        successDeposited()
+                    }).catch(error => {
                         setAttempting(false)
                         console.log(error)
-                    }
-                    return true
-                } else {
-                    onDeposit()
+                        let err: any = error
+                        if (err?.message) snackbar.snackbar.show(err?.message, "error")
+                        if (err?.error) {
+                            if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
+                        }
+                    })
+                } catch (error) {
+                    setAttempting(false)
+                    console.log(error)
                 }
-            } catch (ex) {
+                return true
+            } else {
                 onDeposit()
             }
+        } catch (ex) {
+            console.log(ex)
         }
 
         return null;

@@ -74,13 +74,16 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
         }
 
         const checkUserApproved = async () => {
-            let res = await tokenAllowanceCallback(account, MigrationOrbitAddress, M31TokenAddress, 'bsc')
-
             if (accountM31Balance.isZero()) {
                 setIsApproved(false);
             }
-            else if (res.gte(accountM31Balance)) {
-                setIsApproved(true);
+            else {
+                try {
+                    let res = await tokenAllowanceCallback(account, MigrationOrbitAddress, M31TokenAddress, 'bsc')
+                    if (res.gte(accountM31Balance)) {
+                        setIsApproved(true);
+                    }
+                } catch (error) { setIsApproved(false) }
             }
         }
 
@@ -160,35 +163,33 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
 
     async function onMigration() {
         setAttempting(true)
-        let res = await tokenAllowanceCallback(account, MigrationOrbitAddress, M31TokenAddress, 'bsc')
-        if (res) {
-            try {
-                if (res.gte(parseEther(inputAmount, m31Decimals))) {
-                    console.log(res)
-                    try {
-                        migrationCallback(MigrationOrbitAddress, AppTokenAddress, inputAmount, 'bsc').then((hash: string) => {
-                            setHash(hash)
-                            successMigrated()
-                        }).catch(error => {
-                            setAttempting(false)
-                            console.log(error)
-                            let err: any = error
-                            if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                            if (err?.error) {
-                                if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                            }
-                        })
-                    } catch (error) {
+        try {
+            let res = await tokenAllowanceCallback(account, MigrationOrbitAddress, M31TokenAddress, 'bsc')
+            if (res.gte(parseEther(inputAmount, m31Decimals))) {
+                try {
+                    migrationCallback(MigrationOrbitAddress, AppTokenAddress, inputAmount, 'bsc').then((hash: string) => {
+                        setHash(hash)
+                        setAttempting(false)
+                        successMigrated()
+                    }).catch(error => {
                         setAttempting(false)
                         console.log(error)
-                    }
-                    return true
-                } else {
-                    onMigration()
+                        let err: any = error
+                        if (err?.message) snackbar.snackbar.show(err?.message, "error")
+                        if (err?.error) {
+                            if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
+                        }
+                    })
+                } catch (error) {
+                    setAttempting(false)
+                    console.log(error)
                 }
-            } catch (ex) {
+                return true
+            } else {
                 onMigration()
             }
+        } catch (ex) {
+            console.log(ex)
         }
 
         return null;
@@ -213,7 +214,7 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
         setMigrated(false)
         setInputAmount(0)
         setOutputAmount(0)
-        handleClose()
+        closeModal()
     }
 
     const onInputChange = (val: any) => {
@@ -251,85 +252,91 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
     // console.log(inputAmount);
     // console.log(!account , isOverMax , ethBalance <= 0 , inputAmount === 0 , isApproved , isWalletApproving);
 
+    const closeModal = () => {
+        if (!(isWalletApproving || attempting)) handleClose()
+    }
+
     return (
         <div>
             <Modal
                 isOpen={isOpen}
                 header="OrbitMigrate"
-                handleClose={handleClose}
+                handleClose={closeModal}
             >
-                <div className='m-4 md:m-6 w-[300px] md:w-[400px]'>
-                    {!attempting && !hash && (
-                        <div className='w-full flex flex-col gap-4 mt-6'>
-                            <MigrateInput name={"M31"} value={formatEther(userM31Balance, m31Decimals, 2)} balance={formatEther(userM31Balance, m31Decimals, 2).toString()} onChange={(val: any) => {}} />
-                            <div className='flex justify-between items-center py-2'>
-                                <div className='basis-1/3'>
-                                    <div className='flex gap-2'>
-                                        <span className='text-[14px] text-white'>1:1 Migration</span>
-                                        <QuestionMark />
+                <div className='m-4 md:m-6 min-w-[300px]'>
+                    <div className='w-full md:w-[430px] max-w-[430px]'>
+                        {!attempting && !hash && (
+                            <div className='w-full flex flex-col gap-4 mt-6'>
+                                <MigrateInput name={"M31"} value={formatEther(userM31Balance, m31Decimals, 2)} balance={formatEther(userM31Balance, m31Decimals, 2).toString()} onChange={(val: any) => { }} />
+                                <div className='flex justify-between items-center py-2'>
+                                    <div className='basis-1/3'>
+                                        <div className='flex gap-2'>
+                                            <span className='text-[14px] text-white'>1:1 Migration</span>
+                                            <QuestionMark />
+                                        </div>
                                     </div>
-                                </div>
-                                <div className='basis-1/3 flex justify-center items-center'>
-                                    <div className='rounded-full bg-[#867EE8] p-2'>
-                                        <SwapIcon />
+                                    <div className='basis-1/3 flex justify-center items-center'>
+                                        <div className='rounded-full bg-[#867EE8] p-2'>
+                                            <SwapIcon />
+                                        </div>
                                     </div>
+                                    <div className='basis-1/3'></div>
                                 </div>
-                                <div className='basis-1/3'></div>
+                                <MigrateOutput name={"ORBT"} value={formatEther(userM31Balance, m31Decimals, 2)} balance={formatEther(userM31Balance, m31Decimals, 2).toString()} onChange={(val: any) => onOutputChange(val)} />
+                                <div className='text-white text-[14px] flex justify-between'>
+                                    <div>BNB Balance</div>
+                                    <div className='text-right'>{`${ethBalance} ${getNativeSymbol('bsc')}`}</div>
+                                </div>
+                                <div className='flex gap-4 mt-2'>
+                                    {!isApproved ?
+                                        <Button
+                                            variant="contained"
+                                            sx={{ width: "100%", borderRadius: "12px" }}
+                                            onClick={onApprove}
+                                            disabled={!account || isOverMax || ethBalance <= 0 || inputAmount === 0 || isApproved || isWalletApproving}
+                                        >
+                                            Approve
+                                        </Button> :
+                                        <Button
+                                            variant="contained"
+                                            sx={{ width: "100%", borderRadius: "12px" }}
+                                            onClick={onMigration}
+                                            disabled={!isApproved}
+                                        >
+                                            Swap
+                                        </Button>
+                                    }
+                                </div>
                             </div>
-                            <MigrateOutput name={"ORBT"} value={formatEther(userM31Balance, m31Decimals, 2)} balance={formatEther(userM31Balance, m31Decimals, 2).toString()} onChange={(val: any) => onOutputChange(val)} />
-                            <div className='text-white text-[14px] flex justify-between'>
-                                <div>BNB Balance</div>
-                                <div className='text-right'>{`${ethBalance} ${getNativeSymbol('bsc')}`}</div>
-                            </div>
-                            <div className='flex gap-4 mt-2'>                 
-                                {!isApproved ?
-                                    <Button
-                                        variant="contained"
-                                        sx={{ width: "100%", borderRadius: "12px" }}
-                                        onClick={onApprove}
-                                        disabled={!account || isOverMax || ethBalance <= 0 || inputAmount === 0 || isApproved || isWalletApproving}
-                                    >
-                                        Approve
-                                    </Button> :
-                                    <Button
-                                        variant="contained"
-                                        sx={{ width: "100%", borderRadius: "12px" }}
-                                        onClick={onMigration}
-                                        disabled={!isApproved}
-                                    >
-                                        Swap
-                                    </Button>
-                                }
-                            </div>
-                        </div>
 
-                    )}
-                    {attempting && !hash && (
-                        <div className="flex justify-center items-center flex-col gap-12 h-[200px]">
-                            <Fade in={true} style={{ transitionDelay: '800ms' }} unmountOnExit>
-                                <CircularProgress />
-                            </Fade>
-                            <div>
-                                {`Migrating `}
+                        )}
+                        {attempting && !hash && (
+                            <div className="flex justify-center items-center flex-col gap-12 h-[200px]">
+                                <Fade in={true} style={{ transitionDelay: '800ms' }} unmountOnExit>
+                                    <CircularProgress />
+                                </Fade>
+                                <div>
+                                    {`Migrating `}
+                                </div>
                             </div>
-                        </div>
-                    )}
-                    {hash && (
-                        <div className='w-full'>
-                            <div className='w-full flex justify-center py-4'>
-                                <TaskAltIcon sx={{ fontSize: 120, color: '#00aa00' }} />
+                        )}
+                        {hash && (
+                            <div className='w-full'>
+                                <div className='w-full flex justify-center py-4'>
+                                    <TaskAltIcon sx={{ fontSize: 120, color: '#00aa00' }} />
+                                </div>
+                                <div className='flex flex-col gap-2'>
+                                    <div className='text-[16px] text-[#aaaaaa] text-center'>Transaction submitted</div>
+                                    <div className='text-[16px] text-[#aaaaaa] text-center'>{'Hash: ' + hash.slice(0, 10) + '...' + hash.slice(56, 65)}</div>
+                                    {chainId && (
+                                        <a className='text-[16px] mt-4 text-[#aaaaee] underline text-center' target="_blank" href={getEtherscanLink(chainId, hash, 'transaction')}>
+                                            {chainId && `View on ${CHAIN_LABELS[chainId]}`}
+                                        </a>
+                                    )}
+                                </div>
                             </div>
-                            <div className='flex flex-col gap-2'>
-                                <div className='text-[16px] text-[#aaaaaa] text-center'>Transaction submitted</div>
-                                <div className='text-[16px] text-[#aaaaaa] text-center'>{'Hash: ' + hash.slice(0, 10) + '...' + hash.slice(56, 65)}</div>
-                                {chainId && (
-                                    <a className='text-[16px] mt-4 text-[#aaaaee] underline text-center' target="_blank" href={getEtherscanLink(chainId, hash, 'transaction')}>
-                                        {chainId && `View on ${CHAIN_LABELS[chainId]}`}
-                                    </a>
-                                )}
-                            </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </Modal>
         </div>

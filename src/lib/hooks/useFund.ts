@@ -19,7 +19,7 @@ import { getContract, getProviderOrSigner } from '@app/utils';
 
 export default function useFund() {
     const { account, library } = useEthers();
-    const connectedUserBalance = useTokenBalance(AppTokenAddress, account);
+    const connectedUserBalance = useTokenBalance(AppTokenAddress, account);    
 
     const agreeToTerms_V1 = async () => {
         try {

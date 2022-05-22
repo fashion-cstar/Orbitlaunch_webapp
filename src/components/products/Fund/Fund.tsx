@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { useEthers } from "@usedapp/core";
 import { ethers } from "ethers";
 import { Button } from "@mui/material";
-
 import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
 import useFund from "@app/lib/hooks/useFund";
 import useFund_V2 from "@app/lib/hooks/useFund_V2";
@@ -16,7 +15,11 @@ import BuyButton from "../../common/BuyButton";
 import SliderCards from "../../common/SliderCards";
 import DepositPopup from "./DepositPopup";
 import useFundWithV3 from "@app/lib/hooks/useFundWithV3";
+import { useTierAndUnlockTime } from 'src/state/LockActions'
+import { TierTokenLockContractAddress } from "@app/shared/AppConstant";
+import FundLockTierModal from "../TierActions/FundLockTierModal";
 
+const FOURTEEN_DAYS = 14
 export default function Fund() {
     const activateProvider = Web3ModalButton();
     const router = useRouter();
@@ -25,21 +28,14 @@ export default function Fund() {
     const { account, library } = useEthers();
     const { marketCap, liquidityPool, holders, price } = useOrbit();
     const [version, setVersion] = useState(2);
+    const { userClaimedTier, unlockTimes } = useTierAndUnlockTime(TierTokenLockContractAddress, 'bsc', false)
     const {
-        startInvestmentPeriodDate_V1,
-        endInvestmentPeriodDate_V1,
-        currentInvestment_V1,
         totalInvestedToDate_V1,
-        currentTierNo_V1,
-        currentTierPercentage_V1,
         userLastInvestment_V1,
         roiToDate_V1,
         userReturned_V1,
         totalInvestors_V1,
-        disableDeposit_V1,
         disableWithdraw_V1,
-        remainingTimeText_V1,
-        balance_V1,
         totalProfit_V1,
         totalReturned_V1,
         withdraw_V1
@@ -55,11 +51,8 @@ export default function Fund() {
         roiToDate,
         totalInvestors,
         disableDeposit,
-        disableWithdraw,
-        remainingTimeText,
         balance,
         profitUpToDate,
-        withdraw
     } = useFund_V2();
 
     const {
@@ -73,28 +66,41 @@ export default function Fund() {
     const [commissionEarned, setCommissionEarned] = useState(0);
     const tierInformation = tierInfo;
     const { id } = router.query;
+    const [isOpenLockTier, setIsOpenLockTier] = useState(false)
 
     const handleOpenDepositModalV2 = () => {
-        setVersion(2);
-        const modal = document.getElementById(depositModalId);
-        modal.style.display = "flex";
+        if (Math.floor(unlockTimes / 86400) < FOURTEEN_DAYS) {
+            setIsOpenLockTier(true)
+        } else {
+            setVersion(2);
+            const modal = document.getElementById(depositModalId);
+            modal.style.display = "flex";
+        }
     }
 
     const handleOpenDepositModalV3 = () => {
-        setVersion(3);
-        const modal = document.getElementById(depositModalId);
-        modal.style.display = "flex";
+        if (Math.floor(unlockTimes / 86400) < FOURTEEN_DAYS) {
+            setIsOpenLockTier(true)
+        } else {
+            setVersion(3);
+            const modal = document.getElementById(depositModalId);
+            modal.style.display = "flex";
+        }
     }
 
     const handleWithdrawalSubmit = async () => {
-        const weiAmount = ethers.utils.parseEther(balance);
-        const withdrawalResult = await withdraw_V1(weiAmount);
-        if (!withdrawalResult.ok) {
-            snackbar.snackbar.show(withdrawalResult.message, "error");
-            return;
-        }
+        if (Math.floor(unlockTimes / 86400) < FOURTEEN_DAYS) {
+            setIsOpenLockTier(true)
+        } else {
+            const weiAmount = ethers.utils.parseEther(balance);
+            const withdrawalResult = await withdraw_V1(weiAmount);
+            if (!withdrawalResult.ok) {
+                snackbar.snackbar.show(withdrawalResult.message, "error");
+                return;
+            }
 
-        snackbar.snackbar.show("Deposit is succesfull", "success");
+            snackbar.snackbar.show("Deposit is succesfull", "success");
+        }
     }
 
     useEffect(() => {
@@ -148,9 +154,13 @@ export default function Fund() {
         return Number(v1_investors) + Number(v2_investors)
     }
 
+    const closeLockTierModal = () => {
+        setIsOpenLockTier(false)
+    }
     return (
         <>
             <DepositPopup id={depositModalId} version={version} />
+            <FundLockTierModal isOpen={isOpenLockTier} handleClose={closeLockTierModal} />
             <div className="desktop-content flex flex-col space-y-4 w-full">
 
                 <div className="flex flex-row items-center">
@@ -180,7 +190,7 @@ export default function Fund() {
                                 <Button
                                     type="button"
                                     disabled={disableDepositV3 || currentTierNoV3 === 0}
-                                    onClick={(disableDepositV3 || currentTierNoV3 === 0) ? null : handleOpenDepositModalV3}
+                                    onClick={(disableDepositV3 || currentTierNoV3 === 0) ? null : handleOpenDepositModalV3}                                    
                                     variant="outlined"
                                     sx={{ borderRadius: "12px" }}
                                 >
@@ -244,7 +254,7 @@ export default function Fund() {
                     <div className="flex flex-row space-x-4">
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                             <div className="space-y-4">
-                                <div className="items-center text-l text-white font-bold">
+                                <div className="items-center text-l text-white">
                                     Deposit Window Closes on <span className="text-app-primary">{startInvestmentPeriodDate}</span><br />
                                     (Trading period lasts 4 weeks/28 days)<br />
                                     Withdrawal Window Opens on <span className="text-app-primary">{endInvestmentPeriodDate}</span>
@@ -252,29 +262,29 @@ export default function Fund() {
                                 <hr style={{ borderColor: "#112B40" }} />
                             </div>
                             <div className="space-y-3 pt-4">
-                                <div className="items-center text-l text-white font-bold">
+                                <div className="items-center text-l text-white">
                                     {!!account ? "Personal Stats - Prior Trading Period" : "Global Stats - Prior Trading Period"}
                                 </div>
                                 {!!account
                                     ? <>
-                                        <div className="items-center text-xs text-white mb-2">
+                                        <div className="items-center text-xs text-white mb-2 font-light">
                                             Last Month Investment:&nbsp;<span className="text-app-primary">${userLastInvestment_V1}</span>
                                         </div>
-                                        <div className="items-center text-xs text-white mb-2">
+                                        <div className="items-center text-xs text-white mb-2 font-light">
                                             Last Month Profit:&nbsp;<span className="text-app-primary">${roiToDate_V1}</span>
                                         </div>
-                                        <div className="items-center text-xs text-white mb-2">
+                                        <div className="items-center text-xs text-white mb-2 font-light">
                                             Last Month Return:&nbsp;<span className="text-app-primary">${userReturned_V1}</span>
                                         </div>
                                     </>
                                     : <>
-                                        <div className="items-center text-xs text-white mb-2">
+                                        <div className="items-center text-xs text-white mb-2 font-light">
                                             Last Month Investment:&nbsp;<span className="text-app-primary">${ethers.FixedNumber.fromString(totalInvestedToDate_V1).round(2).toString()}</span>
                                         </div>
-                                        <div className="items-center text-xs text-white mb-2">
+                                        <div className="items-center text-xs text-white mb-2 font-light">
                                             Last Month Profit:&nbsp;<span className="text-app-primary">${totalProfit_V1}</span>
                                         </div>
-                                        <div className="items-center text-xs text-white mb-2">
+                                        <div className="items-center text-xs text-white mb-2 font-light">
                                             Last Month Return:&nbsp;<span className="text-app-primary">${totalReturned_V1}</span>
                                         </div>
                                     </>
@@ -285,7 +295,7 @@ export default function Fund() {
                             ? (
                                 <div className="flex-1 rounded-2xl bg-[#001926] p-4 min-h-[250px]">
                                     <div className="space-y-4">
-                                        <div className="items-center text-l text-white font-bold">
+                                        <div className="items-center text-l text-white">
                                             Learn About OrbitFund (ORBIT)
                                         </div>
                                         <hr style={{ borderColor: "#112B40" }} />
@@ -304,7 +314,7 @@ export default function Fund() {
                             )
                             : (
                                 <div className="flex-1 rounded-2xl bg-[#001926] p-4 min-h-[250px] leading-7">
-                                    <p className="text-l font-bold break-all">
+                                    <p className="text-l break-all">
                                         Referral URL: &nbsp;
                                         <span className="text-m cursor-pointer text-app-primary" onClick={() => {
                                             navigator.clipboard.writeText(`https://orbitlaunch.io/fund/${window.btoa(account)}`);
@@ -312,14 +322,14 @@ export default function Fund() {
                                             {`https://app.orbitlaunch.io/fund/${window.btoa(account)}`}
                                         </span>
                                     </p>
-                                    <p className="text-l font-bold break-all">
+                                    <p className="text-l break-all">
                                         Total Referrals Based on Connected Wallets: &nbsp;
                                         <span className="text-m cursor-pointer text-app-primary"
                                         >
                                             {totalReferred}
                                         </span>
                                     </p>
-                                    <p className="text-l font-bold break-all">
+                                    <p className="text-l break-all">
                                         Commision Earned: &nbsp;
                                         <span className="text-m cursor-pointer text-app-primary">
                                             {commissionEarned}
@@ -327,7 +337,7 @@ export default function Fund() {
                                     </p>
                                     {
                                         referredBy !== null && (
-                                            <p className="text-l font-bold break-all">
+                                            <p className="text-l break-all">
                                                 You Were Referred by:&nbsp;
                                                 <span className="text-m cursor-pointer text-app-primary">
                                                     {referredBy}
@@ -354,7 +364,7 @@ export default function Fund() {
 
             <div className="mobile-content flex flex-col space-y-4 w-full">
                 <div className="flex flex-row items-center">
-                    <h1 className="text-[35px] font-medium">OrbitFund</h1>
+                    <h1 className="text-[35px]">OrbitFund</h1>
                     <div className="absolute right-10"><BuyButton /></div>
                 </div>
                 <div className="flex flex-row items-center space-x-4">
@@ -442,7 +452,7 @@ export default function Fund() {
                 <div className="flex flex-row space-x-4">
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="space-y-4">
-                            <div className="items-center text-l text-white font-bold">
+                            <div className="items-center text-l text-white">
                                 Deposit Window Closes on <span className="text-app-primary">{startInvestmentPeriodDate}</span><br />
                                 (Trading period lasts 4 weeks/28 days)<br />
                                 Withdrawal Window Opens on <span className="text-app-primary">{endInvestmentPeriodDate}</span>
@@ -450,29 +460,29 @@ export default function Fund() {
                             <hr style={{ borderColor: "#112B40" }} />
                         </div>
                         <div className="space-y-3 pt-4">
-                            <div className="items-center text-l text-white font-bold">
+                            <div className="items-center text-l text-white">
                                 {!!account ? "Personal Stats - Prior Trading Period" : "Global Stats - Prior Trading Period"}
                             </div>
                             {!!account
                                 ? <>
-                                    <div className="items-center text-xs text-white mb-2">
+                                    <div className="items-center text-xs text-white mb-2 font-light">
                                         Last Month Investment:&nbsp;<span className="text-app-primary">${userLastInvestment_V1}</span>
                                     </div>
-                                    <div className="items-center text-xs text-white mb-2">
+                                    <div className="items-center text-xs text-white mb-2 font-light">
                                         Last Month Profit:&nbsp;<span className="text-app-primary">${roiToDate_V1}</span>
                                     </div>
-                                    <div className="items-center text-xs text-white mb-2">
+                                    <div className="items-center text-xs text-white mb-2 font-light">
                                         Last Month Return:&nbsp;<span className="text-app-primary">${userReturned_V1}</span>
                                     </div>
                                 </>
                                 : <>
-                                    <div className="items-center text-xs text-white mb-2">
+                                    <div className="items-center text-xs text-white mb-2 font-light">
                                         Last Month Investment:&nbsp;<span className="text-app-primary">${ethers.FixedNumber.fromString(totalInvestedToDate_V1).round(2).toString()}</span>
                                     </div>
-                                    <div className="items-center text-xs text-white mb-2">
+                                    <div className="items-center text-xs text-white mb-2 font-light">
                                         Last Month Profit:&nbsp;<span className="text-app-primary">${totalProfit_V1}</span>
                                     </div>
-                                    <div className="items-center text-xs text-white mb-2">
+                                    <div className="items-center text-xs text-white mb-2 font-light">
                                         Last Month Return:&nbsp;<span className="text-app-primary">${totalReturned_V1}</span>
                                     </div>
                                 </>
@@ -486,7 +496,7 @@ export default function Fund() {
                         ? (
                             <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                                 <div className="space-y-4">
-                                    <div className="items-center text-l text-white font-bold">
+                                    <div className="items-center text-l text-white">
                                         Learn About OrbitFund (ORBIT)
                                     </div>
                                     <hr style={{ borderColor: "#112B40" }} />
@@ -505,7 +515,7 @@ export default function Fund() {
                         )
                         : (
                             <div className="flex-1 rounded-2xl bg-[#001926] p-4 min-h-[250px] leading-7">
-                                <p className="text-l font-bold break-all">
+                                <p className="text-l break-all">
                                     Referral URL: &nbsp;
                                     <span className="text-m cursor-pointer text-app-primary" onClick={() => {
                                         navigator.clipboard.writeText(`https://orbitlaunch.io/fund/${window.btoa(account)}`);
@@ -513,14 +523,14 @@ export default function Fund() {
                                         {`https://app.orbitlaunch.io/fund/${window.btoa(account)}`}
                                     </span>
                                 </p>
-                                <p className="text-l font-bold break-all">
+                                <p className="text-l break-all">
                                     Total Referrals Based on Connected Wallets: &nbsp;
                                     <span className="text-m cursor-pointer text-app-primary"
                                     >
                                         {totalReferred}
                                     </span>
                                 </p>
-                                <p className="text-l font-bold break-all">
+                                <p className="text-l break-all">
                                     Commision Earned: &nbsp;
                                     <span className="text-m cursor-pointer text-app-primary">
                                         {commissionEarned}
@@ -528,7 +538,7 @@ export default function Fund() {
                                 </p>
                                 {
                                     referredBy !== null && (
-                                        <p className="text-l font-bold break-all">
+                                        <p className="text-l break-all">
                                             You Were Referred by:&nbsp;
                                             <span className="text-m cursor-pointer text-app-primary">
                                                 {referredBy}

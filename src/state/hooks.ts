@@ -94,7 +94,7 @@ export function useToken(tokenContractAddress: string, blockchain: string): { na
   
   export function useTokenBalanceCallback(): { tokenBalanceCallback: (tokenAddress: string, blockchain: string) => Promise<BigNumber> } {
     const { account, library } = useEthers()
-    const tokenBalanceCallback = async function (tokenAddress: string, blockchain: string) {
+    const tokenBalanceCallback = async function (tokenAddress: string, blockchain: string) {      
       const chainId = getChainIdFromName(blockchain);
       const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
       return tokenContract.balanceOf(account).then((res: BigNumber) => {
@@ -119,9 +119,9 @@ export function useToken(tokenContractAddress: string, blockchain: string): { na
           return tokenContract.approve(recvAddress, parseEther(amount, decimals), {
             gasLimit: calculateGasMargin(gas)
           }).then((response: TransactionResponse) => {
-            response.wait().then((_: any) => {
+            return response.wait().then((_: any) => {              
               return response.hash
-            }).catch(error => {})
+            })
             // return response.hash
           })
         }).catch((error: any) => {
@@ -129,9 +129,9 @@ export function useToken(tokenContractAddress: string, blockchain: string): { na
           return tokenContract.approve(recvAddress, MaxUint256, {
             gasLimit: calculateGasMargin(gas)
           }).then((response: TransactionResponse) => {
-            response.wait().then((_: any) => {
+            return response.wait().then((_: any) => {
               return response.hash
-            }).catch(error => {})
+            })
             // return response.hash
           })
         })
