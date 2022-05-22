@@ -96,6 +96,7 @@ export default function ClaimTierAction({
             }).catch(error => {
                 setIsLocking(false)
                 console.log(error)
+                console.debug("lockAndClaimTier Error: ", error)
                 let err: any = error
                 if (err?.message) snackbar.snackbar.show(err?.message, "error")
                 if (err?.error) {

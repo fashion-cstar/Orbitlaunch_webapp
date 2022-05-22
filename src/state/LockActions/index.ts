@@ -24,8 +24,7 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
     const lockContract: Contract = getContract(lockContractAddress, TierTokenLockABI, RpcProviders[chainId], account ? account : undefined)
     const lockAndClaimTierCallback = async function (amount: BigNumber, lockDays: number) {
         if (!account || !library || !lockContractAddress) return
-        return lockContract.estimateGas.lockAndClaimTier(amount, BigNumber.from(lockDays)).then(estimatedGasLimit => {
-            console.log(estimatedGasLimit)
+        return lockContract.estimateGas.lockAndClaimTier(amount, BigNumber.from(lockDays)).then(estimatedGasLimit => {       
             const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
             return lockContract.lockAndClaimTier(amount, BigNumber.from(lockDays), {
                 gasLimit: calculateGasMargin(gas)
