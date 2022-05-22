@@ -137,15 +137,18 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
 
     const handleGoDashboard = async () => {
         await router.push('/')
+        handleClose()
     }
 
     const setClaimTierSuccess = () => {
         setSelectTier('')
+        callUserOrbitCallback()
         updateTierAndUnlockTime()
     }
 
     const setUnlockSuccess = () => {
         setSelectTier('')
+        callUserOrbitCallback()
         updateTierAndUnlockTime()     
     }
 

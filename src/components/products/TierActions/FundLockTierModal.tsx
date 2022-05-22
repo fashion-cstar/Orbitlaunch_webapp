@@ -121,6 +121,7 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
     const setClaimTierSuccess = () => {
         snackbar.snackbar.show("Your tier has been upgraded!", "success");
         setSelectTier('')
+        callUserOrbitCallback()
         updateTierAndUnlockTime()
         handleClose()
     }

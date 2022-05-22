@@ -1,12 +1,10 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import LoadingButton from '@mui/lab/LoadingButton';
 import { BigNumber } from '@ethersproject/bignumber';
-import { useToken, useTokenBalanceCallback, useTokenAllowance, useApproveCallback } from 'src/state/hooks'
-import { useLockContract, useTierAndUnlockTime } from 'src/state/LockActions'
+import { useLockContract } from 'src/state/LockActions'
 import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
-import { formatEther, parseEther } from '@app/utils'
-import { useEthers } from "@usedapp/core"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
+import { TransactionResponse } from '@ethersproject/providers'
 
 interface ClaimTierActionProps {
     lockedAmount: BigNumber    
@@ -30,10 +28,12 @@ export default function UnlockTierAction({
     const handleUnlock = () => {
         setIsUnlocking(true)
         try {
-            unlockTokenCallback().then((res) => {
+            unlockTokenCallback().then((response:TransactionResponse) => {
+                response.wait().then((_: any) => {
                 setIsUnlocking(false)
                 setUnlockSuccess()
                 snackbar.snackbar.show("Unlocked successfully!", "success");
+                })
             }).catch((error: any) => {
                 setIsUnlocking(false)
                 console.log(error)

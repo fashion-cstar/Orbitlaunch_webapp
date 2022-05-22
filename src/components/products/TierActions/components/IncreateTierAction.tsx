@@ -7,6 +7,7 @@ import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
 import { formatEther } from '@app/utils'
 import { useEthers } from "@usedapp/core"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
+import { TransactionResponse } from '@ethersproject/providers'
 
 interface IncreaseTierActionProps {
     newLockingAmount: BigNumber
@@ -85,10 +86,12 @@ export default function IncreaseTierAction({
 
     async function onTierLock() {        
         try {
-            increaseTierCallback(newLockingAmount).then((hash: string) => {
-                setHash(hash)
+            increaseTierCallback(newLockingAmount).then((response: TransactionResponse) => {
+                response.wait().then((_: any) => {
+                setHash(response.hash)
                 setClaimTierSuccess()
                 setIsLocking(false)
+                })
             }).catch(error => {
                 setIsLocking(false)
                 console.log(error)

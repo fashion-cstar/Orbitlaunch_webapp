@@ -12,11 +12,11 @@ import moment from 'moment'
 import useRefresh from '../useRefresh'
 
 export function useLockContract(lockContractAddress: string, blockchain: string): {
-    lockAndClaimTierCallback: (amount: BigNumber, lockDays: number,) => Promise<string>,
+    lockAndClaimTierCallback: (amount: BigNumber, lockDays: number,) => Promise<TransactionResponse>,
     userTierAndUnlockTimeCallback: (address: string) => Promise<string>,
-    extendLockTimeCallback: (additionalDays: number) => Promise<string>,
-    increaseTierCallback: (amount: BigNumber) => Promise<string>,
-    unlockTokenCallback: () => Promise<string>
+    extendLockTimeCallback: (additionalDays: number) => Promise<TransactionResponse>,
+    increaseTierCallback: (amount: BigNumber) => Promise<TransactionResponse>,
+    unlockTokenCallback: () => Promise<TransactionResponse>
 } {
     // get claim data for this account
     const { account, library } = useEthers()
@@ -29,7 +29,7 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
             return lockContract.lockAndClaimTier(amount, BigNumber.from(lockDays), {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
-                return response.hash
+                return response
             })
         })
     }
@@ -48,7 +48,7 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
             return lockContract.extendLockTime(BigNumber.from(additionalDays), {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
-                return response.hash
+                return response
             })
         })
     }
@@ -60,7 +60,7 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
             return lockContract.increaseTier(amount, {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
-                return response.hash
+                return response
             })
         })
     }

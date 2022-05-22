@@ -3,6 +3,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { useLockContract } from 'src/state/LockActions'
 import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
+import { TransactionResponse } from '@ethersproject/providers'
 
 interface ExtendLockTimeActionProps {
     lockDays: number
@@ -19,7 +20,7 @@ export default function ExtendLockTimeAction({
     setIsLocking,
     setHash }: ExtendLockTimeActionProps) {
 
-    const { extendLockTimeCallback } = useLockContract(TierTokenLockContractAddress, 'bsc')    
+    const { extendLockTimeCallback } = useLockContract(TierTokenLockContractAddress, 'bsc')
     const snackbar = useSnackbar()
 
     const handleExtendTier = async () => {
@@ -28,19 +29,21 @@ export default function ExtendLockTimeAction({
 
     async function onExtendLockTime() {
         try {
-            extendLockTimeCallback(lockDays).then((hash: string) => {
-                setHash(hash)
-                setClaimTierSuccess()
-                setIsLocking(false)
+            extendLockTimeCallback(lockDays).then((response: TransactionResponse) => {
+                response.wait().then((_: any) => {
+                    setHash(response.hash)
+                    setClaimTierSuccess()
+                    setIsLocking(false)
+                })
             }).catch(error => {
-                setIsLocking(false)
-                console.log(error)
-                let err: any = error
-                if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                if (err?.error) {
-                    if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                }
-            })
+                    setIsLocking(false)
+                    console.log(error)
+                    let err: any = error
+                    if (err?.message) snackbar.snackbar.show(err?.message, "error")
+                    if (err?.error) {
+                        if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
+                    }
+                })
         } catch (error) {
             setIsLocking(false)
             console.log(error)

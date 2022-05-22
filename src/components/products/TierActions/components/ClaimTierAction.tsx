@@ -7,6 +7,7 @@ import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
 import { formatEther } from '@app/utils'
 import { useEthers } from "@usedapp/core"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
+import { TransactionResponse } from '@ethersproject/providers'
 
 interface ClaimTierActionProps {
     buttonText: string
@@ -87,12 +88,14 @@ export default function ClaimTierAction({
         return null;
     }
 
-    async function onTierLock() {        
-        try {            
-            lockAndClaimTierCallback(newLockingAmount, lockDays).then((hash: string) => {
-                setHash(hash)
-                setClaimTierSuccess()
-                setIsLocking(false)
+    async function onTierLock() {
+        try {
+            lockAndClaimTierCallback(newLockingAmount, lockDays).then((response: TransactionResponse) => {
+                response.wait().then((_: any) => {
+                    setHash(response.hash)
+                    setClaimTierSuccess()
+                    setIsLocking(false)
+                })
             }).catch(error => {
                 setIsLocking(false)
                 console.log(error)
