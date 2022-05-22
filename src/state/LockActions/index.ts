@@ -24,7 +24,7 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
     const lockContract: Contract = getContract(lockContractAddress, TierTokenLockABI, library, account ? account : undefined)
     const lockAndClaimTierCallback = async function (amount: BigNumber, lockDays: number) {
         if (!account || !library || !lockContractAddress) return
-        return lockContract.estimateGas.lockAndClaimTier(amount, BigNumber.from(lockDays)).then(estimatedGasLimit => {       
+        return lockContract.estimateGas.lockAndClaimTier(amount, BigNumber.from(lockDays)).then(estimatedGasLimit => {
             const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
             return lockContract.lockAndClaimTier(amount, BigNumber.from(lockDays), {
                 gasLimit: calculateGasMargin(gas)
@@ -103,14 +103,14 @@ export function useTierAndUnlockTime(lockContractAddress: string, blockchain: st
             setTier(result[0]?.toNumber() == 10 ? 0 : result[0]?.toNumber() + 1)
             let cur = moment(moment.now())
             let unlockTimestamp = moment(result[1]?.toNumber() * 1000)
-            setUnlockTimes(unlockTimestamp.diff(cur, 'seconds'))
+            setUnlockTimes(unlockTimestamp.diff(cur, 'seconds') < 0 ? 0 : unlockTimestamp.diff(cur, 'seconds'))
         }).catch(error => { console.log(error) })
         fetchUserLockAmount().then(result => {
             setLockedAmount(result?.amount)
         }).catch(error => { console.log(error) })
     }
 
-    useEffect(() => {        
+    useEffect(() => {
         if (lockContractAddress) {
             updateTierAndUnlockTime()
         }
