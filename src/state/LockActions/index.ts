@@ -21,7 +21,7 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
     // get claim data for this account
     const { account, library } = useEthers()
     const chainId = getChainIdFromName(blockchain);
-    const lockContract: Contract = getContract(lockContractAddress, TierTokenLockABI, RpcProviders[chainId], account ? account : undefined)
+    const lockContract: Contract = getContract(lockContractAddress, TierTokenLockABI, library, account ? account : undefined)
     const lockAndClaimTierCallback = async function (amount: BigNumber, lockDays: number) {
         if (!account || !library || !lockContractAddress) return
         return lockContract.estimateGas.lockAndClaimTier(amount, BigNumber.from(lockDays)).then(estimatedGasLimit => {       
