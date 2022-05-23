@@ -72,7 +72,7 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
             return lockContract.unlockToken({
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
-                return response.hash
+                return response
             })
         })
     }
@@ -103,7 +103,7 @@ export function useTierAndUnlockTime(lockContractAddress: string, blockchain: st
             setTier(result[0]?.toNumber() == 10 ? 0 : result[0]?.toNumber() + 1)
             let cur = moment(moment.now())
             let unlockTimestamp = moment(result[1]?.toNumber() * 1000)
-            setUnlockTimes(unlockTimestamp.diff(cur, 'seconds') < 0 ? 0 : unlockTimestamp.diff(cur, 'seconds'))
+            setUnlockTimes(unlockTimestamp.diff(cur, 'seconds') < 0 ? 0 : unlockTimestamp.diff(cur, 'seconds') + 60)
         }).catch(error => { console.log(error) })
         fetchUserLockAmount().then(result => {
             setLockedAmount(result?.amount)

@@ -8,134 +8,116 @@ import { RpcProviders } from "@app/shared/PadConstant"
 import { getChainIdFromName } from 'src/utils'
 import useRefresh from './useRefresh'
 import { TransactionResponse } from '@ethersproject/providers'
-import { getContract, parseEther, calculateGasMargin } from 'src/utils'
-import { MaxUint256 } from '@ethersproject/constants'
+import { getContract, parseEther, getProviderOrSigner } from 'src/utils'
 
 export function useNativeTokenBalance(blockchain: string): BigNumber {
-    const { account } = useEthers()
-    const chainId = getChainIdFromName(blockchain);
-    const [balance, setBalance] = useState(BigNumber.from(0))
-    const { slowRefresh, fastRefresh } = useRefresh()
+  const { account } = useEthers()
+  const chainId = getChainIdFromName(blockchain);
+  const [balance, setBalance] = useState(BigNumber.from(0))
+  const { slowRefresh, fastRefresh } = useRefresh()
 
-    useEffect(() => {
-        const fetchNativeToken = async () => {
-            const balance = await RpcProviders[chainId].getBalance(account);
-            return balance
-        }
-        if (account) {
-            fetchNativeToken().then(result => {
-                setBalance(result)
-            }).catch(error => { })
-        } else {
-            setBalance(BigNumber.from(0))
-        }
-    }, [account, slowRefresh])
-    return balance
+  useEffect(() => {
+    const fetchNativeToken = async () => {
+      const balance = await RpcProviders[chainId].getBalance(account);
+      return balance
+    }
+    if (account) {
+      fetchNativeToken().then(result => {
+        setBalance(result)
+      }).catch(error => { })
+    } else {
+      setBalance(BigNumber.from(0))
+    }
+  }, [account, slowRefresh])
+  return balance
 }
 
 export function useToken(tokenContractAddress: string, blockchain: string): { name: string, symbol: string, decimals: number } {
-    const { account, library } = useEthers()
-    const [token, setToken] = useState<any>()
-    const chainId = getChainIdFromName(blockchain);
-  
-    useEffect(() => {
-      const fetchToken = async () => {
-        const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
-        const name = await tokenContract.name()
-        const decimals = await tokenContract.decimals()
-        const symbol = await tokenContract.symbol()
-        return { name: name, symbol: symbol, decimals: decimals }
-      }
-      if (tokenContractAddress) {
-        fetchToken().then(result => {
-          setToken(result)
-        }).catch(error => { })
-      }
-    }, [tokenContractAddress])
-  
-    return token
-  }
+  const { account, library } = useEthers()
+  const [token, setToken] = useState<any>()
+  const chainId = getChainIdFromName(blockchain);
 
-  export function useTokenAllowance(): { tokenAllowanceCallback: (owner: string, spender: string, tokenContractAddress: string, blockchain: string) => Promise<BigNumber> } {
-    const { account, library } = useEthers()
-    const tokenAllowanceCallback = async function (owner: string, spender: string, tokenContractAddress: string, blockchain: string) {
-      const chainId = getChainIdFromName(blockchain);
+  useEffect(() => {
+    const fetchToken = async () => {
       const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
-      return tokenContract.allowance(owner, spender).then((res: BigNumber) => {
-        return res
-      })
+      const name = await tokenContract.name()
+      const decimals = await tokenContract.decimals()
+      const symbol = await tokenContract.symbol()
+      return { name: name, symbol: symbol, decimals: decimals }
     }
-    return { tokenAllowanceCallback }
-  }
+    if (tokenContractAddress) {
+      fetchToken().then(result => {
+        setToken(result)
+      }).catch(error => { })
+    }
+  }, [tokenContractAddress])
 
-  export function useTokenBalance(tokenAddress: string, blockchain: string): BigNumber {
-    const { account } = useEthers()
-    const [balance, setBalance] = useState<BigNumber>(BigNumber.from(0))
+  return token
+}
+
+export function useTokenAllowance(): { tokenAllowanceCallback: (owner: string, spender: string, tokenContractAddress: string, blockchain: string) => Promise<BigNumber> } {
+  const { account, library } = useEthers()
+  const tokenAllowanceCallback = async function (owner: string, spender: string, tokenContractAddress: string, blockchain: string) {
     const chainId = getChainIdFromName(blockchain);
-    const { slowRefresh, fastRefresh } = useRefresh()
-  
-    useEffect(() => {
-      const fetchUserBalance = async () => {
-        const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
-        const amount = await tokenContract.balanceOf(account)
-        return amount
-      }
-      if (!!account && !!tokenAddress) {
-        fetchUserBalance().then(result => {
-          setBalance(result)
-        }).catch(error => { })
-      } else {
-        setBalance(BigNumber.from(0))
-      }
-    }, [account, tokenAddress, slowRefresh])
-  
-    return balance
+    const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+    return tokenContract.allowance(owner, spender).then((res: BigNumber) => {
+      return res
+    })
   }
-  
-  export function useTokenBalanceCallback(): { tokenBalanceCallback: (tokenAddress: string, blockchain: string) => Promise<BigNumber> } {
-    const { account, library } = useEthers()
-    const tokenBalanceCallback = async function (tokenAddress: string, blockchain: string) {      
-      const chainId = getChainIdFromName(blockchain);
-      const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
-      return tokenContract.balanceOf(account).then((res: BigNumber) => {
-        return res
-      })
-    }
-    return { tokenBalanceCallback }
-  }
+  return { tokenAllowanceCallback }
+}
 
-  export function useApproveCallback(): {
-    approveCallback: (recvAddress: string, tokenContractAddress: string, amount: number, blockchain: string) => Promise<string>
-  } {
-    const { account, library } = useEthers()
-    const approveCallback = async function (recvAddress: string, tokenContractAddress: string, amount: number, blockchain: string) {
-      const chainId = getChainIdFromName(blockchain);      
-      const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, library, account ? account : undefined)
-      let decimals = await tokenContract.decimals()
-      if (!account || !library) return
-      return tokenContract.estimateGas.approve(recvAddress, MaxUint256).then(estimatedGas => {
-        return tokenContract.estimateGas.approve(recvAddress, parseEther(amount, decimals)).then(estimatedGasLimit => {
-          const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
-          return tokenContract.approve(recvAddress, parseEther(amount, decimals), {
-            gasLimit: calculateGasMargin(gas)
-          }).then((response: TransactionResponse) => {
-            return response.wait().then((_: any) => {              
-              return response.hash
-            })
-            // return response.hash
-          })
-        }).catch((error: any) => {
-          const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGas
-          return tokenContract.approve(recvAddress, MaxUint256, {
-            gasLimit: calculateGasMargin(gas)
-          }).then((response: TransactionResponse) => {
-            return response.wait().then((_: any) => {
-              return response.hash
-            })
-            // return response.hash
-          })
-        })
-      })
+export function useTokenBalance(tokenAddress: string, blockchain: string): BigNumber {
+  const { account } = useEthers()
+  const [balance, setBalance] = useState<BigNumber>(BigNumber.from(0))
+  const chainId = getChainIdFromName(blockchain);
+  const { slowRefresh, fastRefresh } = useRefresh()
+
+  useEffect(() => {
+    const fetchUserBalance = async () => {
+      const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+      const amount = await tokenContract.balanceOf(account)
+      return amount
     }
-    return { approveCallback }
+    if (!!account && !!tokenAddress) {
+      fetchUserBalance().then(result => {
+        setBalance(result)
+      }).catch(error => { })
+    } else {
+      setBalance(BigNumber.from(0))
+    }
+  }, [account, tokenAddress, slowRefresh])
+
+  return balance
+}
+
+export function useTokenBalanceCallback(): { tokenBalanceCallback: (tokenAddress: string, blockchain: string) => Promise<BigNumber> } {
+  const { account, library } = useEthers()
+  const tokenBalanceCallback = async function (tokenAddress: string, blockchain: string) {
+    const chainId = getChainIdFromName(blockchain);
+    const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+    return tokenContract.balanceOf(account).then((res: BigNumber) => {
+      return res
+    })
   }
+  return { tokenBalanceCallback }
+}
+
+export function useApproveCallback(): {
+  approveCallback: (recvAddress: string, tokenContractAddress: string, amount: number, blockchain: string) => Promise<string>
+} {
+  const { account, library } = useEthers()
+  const approveCallback = async function (recvAddress: string, tokenContractAddress: string, amount: number, blockchain: string) {
+    const chainId = getChainIdFromName(blockchain);
+    const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, library, account ? account : undefined)
+    let decimals = await tokenContract.decimals()
+    if (!account || !library) return
+    const provider = getProviderOrSigner(library, account) as any;
+    return tokenContract.connect(provider).approve(recvAddress, parseEther(amount, decimals)).then((response: TransactionResponse) => {
+      return response.wait().then((_: any) => {
+        return response.hash
+      })
+    })
+  }
+  return { approveCallback }
+}

@@ -42,6 +42,7 @@ export default function ClaimTierAction({
     const { lockAndClaimTierCallback } = useLockContract(TierTokenLockContractAddress, 'bsc')
     const snackbar = useSnackbar()
     const [isWalletApproving, setIsWalletApproving] = useState(false)
+    const [isApproved, setIsApproved] = useState(false)
 
     const checkUserApproved = async (): Promise<boolean> => {
         try {
@@ -54,41 +55,35 @@ export default function ClaimTierAction({
         } catch (error) { return false }
     }
 
-    const handleLockTier = async () => {
-        let res = await checkUserApproved()
-        setIsLocking(true)
-        if (!res) {
-            onApprove()
-        } else {
-            onTierLock()
-        }
-    }
-
     async function onApprove() {
         setIsWalletApproving(true)
-        try {
-            await approveCallback(TierTokenLockContractAddress, ORBIT_TOKEN, formatEther(newLockingAmount, orbitDecimals, 4), 'bsc').then((hash: string) => {
-                setIsWalletApproving(false)
-                onTierLock()
-            }).catch((error: any) => {
+        let res = await checkUserApproved()
+        if (!res) {
+            try {
+                await approveCallback(TierTokenLockContractAddress, ORBIT_TOKEN, formatEther(newLockingAmount, orbitDecimals, 4), 'bsc').then((hash: string) => {
+                    setIsWalletApproving(false)
+                    setIsApproved(true)
+                }).catch((error: any) => {
+                    console.log(error)
+                    setIsWalletApproving(false)
+                    let err: any = error
+                    if (err?.message) snackbar.snackbar.show(err?.message, "error")
+                    if (err?.error) {
+                        if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
+                    }
+                })
+            } catch (error) {
                 console.log(error)
-                setIsLocking(false)
                 setIsWalletApproving(false)
-                let err: any = error
-                if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                if (err?.error) {
-                    if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                }
-            })
-        } catch (error) {
-            console.log(error)
-            setIsWalletApproving(false)
-            setIsLocking(false)
+            }
+        } else {
+            setIsApproved(true)
         }
         return null;
     }
 
     async function onTierLock() {
+        setIsLocking(true)
         try {
             lockAndClaimTierCallback(newLockingAmount, lockDays).then((response: TransactionResponse) => {
                 response.wait().then((_: any) => {
@@ -114,16 +109,26 @@ export default function ClaimTierAction({
     }
 
     return (
-        <div className='w-full'>
+        <div className='w-full flex gap-6 justify-between'>
+            <LoadingButton
+                variant="contained"
+                sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
+                loading={isWalletApproving}
+                loadingPosition="start"
+                onClick={onApprove}
+                disabled={Number(selectedTier) <= 0 || userClaimedTier === Number(selectedTier) || isApproved}
+            >
+                {isWalletApproving ? 'Approving ...' : "Approve"}
+            </LoadingButton>
             <LoadingButton
                 variant="contained"
                 sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
                 loading={isLocking}
                 loadingPosition="start"
-                onClick={handleLockTier}
-                disabled={Number(selectedTier) <= 0 || userClaimedTier === Number(selectedTier)}
+                onClick={onTierLock}
+                disabled={Number(selectedTier) <= 0 || userClaimedTier === Number(selectedTier) || !isApproved}
             >
-                {isLocking ? !isWalletApproving ? 'Claiming your tier...' : 'Approving your tokens...' : buttonText}
+                {isLocking ? 'Locking ...' : buttonText}
             </LoadingButton>
         </div>
     );

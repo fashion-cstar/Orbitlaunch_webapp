@@ -112,7 +112,7 @@ export default function TierSelectBox({ selectedTier, userClaimedTier, maxAvaila
                                     }
                                 }
                             } else {
-                                return (<MenuItem value={item.value} disabled={balanceTier >= (index + 1)} style={MenuItemStyle(false)}>
+                                return (<MenuItem value={item.value} disabled={balanceTier > (index + 1) || balanceTier===0} style={MenuItemStyle(false)}>
                                     <div className='w-full flex justify-between items-center'>
                                         <div className='text-[16px] text-white'>{item.label}</div>
                                         <div className='text-[14px]'>

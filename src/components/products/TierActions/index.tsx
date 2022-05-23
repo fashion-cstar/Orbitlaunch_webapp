@@ -100,7 +100,7 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
         const fetch = async () => {
             let bal = formatEther(userOrbitBalance, orbitDecimals, 4)
             let tierResult = await getTierValues(BigNumber.from(Math.trunc(parseFloat(bal.toString()))))
-            setBalanceTier(tierResult.tierNo)
+            setBalanceTier(tierResult.tierNo)            
         }
         fetch()
     }, [userOrbitBalance])
@@ -108,7 +108,7 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
     const callUserOrbitCallback = () => {
         try {
             tokenBalanceCallback(ORBIT_TOKEN, 'bsc').then((res: BigNumber) => {
-                setUserOrbitBalance(res)
+                setUserOrbitBalance(res)                
             }).catch((error: any) => {
                 console.log(error)
             })
@@ -210,7 +210,7 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
                             </div>
                             <div className="flex-1 rounded-2xl bg-[#001926] p-4 w-full">
                                 <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
-                                    <span>orbt balance (holding + locked)</span>
+                                    <span>orbit balance (holding + locked)</span>
                                 </div>
                                 <div className="text-xl text-white">{`${formatEther(userTotalOrbitAmount, orbitDecimals, 4).toLocaleString()} ORBIT`}</div>
                             </div>
