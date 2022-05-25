@@ -18,8 +18,8 @@ import useFundWithV3 from "@app/lib/hooks/useFundWithV3";
 import { useTierAndUnlockTime } from 'src/state/LockActions'
 import { TierTokenLockContractAddress } from "@app/shared/AppConstant";
 import FundLockTierModal from "../TierActions/FundLockTierModal";
+import { FOURTEEN_DAYS } from "@app/utils";
 
-const FOURTEEN_DAYS = 14
 export default function Fund() {
     const activateProvider = Web3ModalButton();
     const router = useRouter();

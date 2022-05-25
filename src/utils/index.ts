@@ -215,3 +215,5 @@ export const getJoinPresaleButtonActive = (ps: number): boolean => {
     || ps === PROJECT_STATUS.PresaleFilled) return true
   return false
 }
+
+export const FOURTEEN_DAYS = 14

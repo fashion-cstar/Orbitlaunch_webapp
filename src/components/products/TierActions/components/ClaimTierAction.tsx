@@ -8,6 +8,7 @@ import { formatEther } from '@app/utils'
 import { useEthers } from "@usedapp/core"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { TransactionResponse } from '@ethersproject/providers'
+import { FOURTEEN_DAYS } from "@app/utils";
 
 interface ClaimTierActionProps {
     buttonText: string
@@ -39,7 +40,7 @@ export default function ClaimTierAction({
     const { library, account, chainId } = useEthers()
     const { tokenAllowanceCallback } = useTokenAllowance()
     const { approveCallback } = useApproveCallback()
-    const { lockAndClaimTierCallback } = useLockContract(TierTokenLockContractAddress, 'bsc')
+    const { lockAndClaimTierCallback, increaseTierCallback } = useLockContract(TierTokenLockContractAddress, 'bsc')
     const snackbar = useSnackbar()
     const [isWalletApproving, setIsWalletApproving] = useState(false)
     const [isApproved, setIsApproved] = useState(false)
@@ -84,32 +85,56 @@ export default function ClaimTierAction({
 
     async function onTierLock() {
         setIsLocking(true)
-        try {
-            lockAndClaimTierCallback(newLockingAmount, lockDays).then((response: TransactionResponse) => {
-                response.wait().then((_: any) => {
-                    setHash(response.hash)
-                    setClaimTierSuccess()
+        if (lockDays===FOURTEEN_DAYS){
+            try {
+                increaseTierCallback(newLockingAmount).then((response: TransactionResponse) => {
+                    response.wait().then((_: any) => {
+                        setHash(response.hash)
+                        setClaimTierSuccess()
+                        setIsLocking(false)
+                    })
+                }).catch(error => {
                     setIsLocking(false)
+                    console.log(error)
+                    let err: any = error
+                    if (err?.message) snackbar.snackbar.show(err?.message, "error")
+                    if (err?.error) {
+                        if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
+                    }
                 })
-            }).catch(error => {
+            } catch (error) {
                 setIsLocking(false)
                 console.log(error)
-                console.debug("lockAndClaimTier Error: ", error)
-                let err: any = error
-                if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                if (err?.error) {
-                    if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                }
-            })
-        } catch (error) {
-            setIsLocking(false)
-            console.log(error)
+            }
+        }else{
+            try {
+                lockAndClaimTierCallback(newLockingAmount, lockDays).then((response: TransactionResponse) => {
+                    response.wait().then((_: any) => {
+                        setHash(response.hash)
+                        setClaimTierSuccess()
+                        setIsLocking(false)
+                    })
+                }).catch(error => {
+                    setIsLocking(false)
+                    console.log(error)
+                    console.debug("lockAndClaimTier Error: ", error)
+                    let err: any = error
+                    if (err?.message) snackbar.snackbar.show(err?.message, "error")
+                    if (err?.error) {
+                        if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
+                    }
+                })
+            } catch (error) {
+                setIsLocking(false)
+                console.log(error)
+            }
         }
         return null;
     }
 
     return (
         <div className='w-full flex gap-6 justify-between'>
+            {!isApproved?
             <LoadingButton
                 variant="contained"
                 sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
@@ -119,8 +144,7 @@ export default function ClaimTierAction({
                 disabled={Number(selectedTier) <= 0 || userClaimedTier === Number(selectedTier) || isApproved}
             >
                 {isWalletApproving ? 'Approving ...' : "Approve"}
-            </LoadingButton>
-            <LoadingButton
+            </LoadingButton>:<LoadingButton
                 variant="contained"
                 sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
                 loading={isLocking}
@@ -129,7 +153,7 @@ export default function ClaimTierAction({
                 disabled={Number(selectedTier) <= 0 || userClaimedTier === Number(selectedTier) || !isApproved}
             >
                 {isLocking ? 'Locking ...' : buttonText}
-            </LoadingButton>
+            </LoadingButton>}
         </div>
     );
 }

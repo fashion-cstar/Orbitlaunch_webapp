@@ -105,26 +105,26 @@ export default function IncreaseTierAction({
 
     return (
         <div className='w-full flex gap-6 justify-between'>
-            <LoadingButton
-                variant="contained"
-                sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
-                loading={isWalletApproving}
-                loadingPosition="start"
-                onClick={onApprove}
-                disabled={Number(selectedTier) <= 0 || userClaimedTier === Number(selectedTier) || isApproved}
-            >
-                {isWalletApproving ? 'Approving ...' : "Approve"}
-            </LoadingButton>
-            <LoadingButton
-                variant="contained"
-                sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
-                loading={isLocking}
-                loadingPosition="start"
-                onClick={onTierLock}
-                disabled={Number(selectedTier) <= 0 || userClaimedTier === Number(selectedTier) || !isApproved}
-            >
-                {isLocking ? 'Upgrading ...' : "Upgrade your tier"}
-            </LoadingButton>
+            {!isApproved ?
+                <LoadingButton
+                    variant="contained"
+                    sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
+                    loading={isWalletApproving}
+                    loadingPosition="start"
+                    onClick={onApprove}
+                    disabled={Number(selectedTier) <= 0 || userClaimedTier === Number(selectedTier) || isApproved}
+                >
+                    {isWalletApproving ? 'Approving ...' : "Approve"}
+                </LoadingButton> : <LoadingButton
+                    variant="contained"
+                    sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
+                    loading={isLocking}
+                    loadingPosition="start"
+                    onClick={onTierLock}
+                    disabled={Number(selectedTier) <= 0 || userClaimedTier === Number(selectedTier) || !isApproved}
+                >
+                    {isLocking ? 'Upgrading ...' : "Upgrade your tier"}
+                </LoadingButton>}
         </div>
     );
 }

@@ -29,7 +29,7 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
     // const ORBIT_TOKEN = OrbtTokenAddress
     const ORBIT_TOKEN = "0x8401e6e7ba1a1ec011bdf34cd59fb11545fae523"
     const { library, account, chainId } = useEthers()
-    const router = useRouter()    
+    const router = useRouter()
     const [hash, setHash] = useState<string | undefined>()
     const [selectedTier, setSelectTier] = useState('')
     const userOrbitToken = useToken(ORBIT_TOKEN, 'bsc')
@@ -45,13 +45,13 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
     const [newLockingAmount, setLockingAmount] = useState(BigNumber.from(0))
     const [lockDays, setLockDays] = useState(28)
     const [isLocking, setIsLocking] = useState(false)
-    const [isUnlocking, setIsUnlocking] = useState(false)    
+    const [isUnlocking, setIsUnlocking] = useState(false)
 
     const init = () => {
         setLockStep(0)
         if (userClaimedTier > 0) {
             setSelectTier(userClaimedTier.toString())
-        }else{
+        } else {
             setSelectTier('')
         }
         setHash(undefined)
@@ -100,7 +100,7 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
         const fetch = async () => {
             let bal = formatEther(userOrbitBalance, orbitDecimals, 4)
             let tierResult = await getTierValues(BigNumber.from(Math.trunc(parseFloat(bal.toString()))))
-            setBalanceTier(tierResult.tierNo)            
+            setBalanceTier(tierResult.tierNo)
         }
         fetch()
     }, [userOrbitBalance])
@@ -108,7 +108,7 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
     const callUserOrbitCallback = () => {
         try {
             tokenBalanceCallback(ORBIT_TOKEN, 'bsc').then((res: BigNumber) => {
-                setUserOrbitBalance(res)                
+                setUserOrbitBalance(res)
             }).catch((error: any) => {
                 console.log(error)
             })
@@ -149,11 +149,11 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
     const setUnlockSuccess = () => {
         setSelectTier('')
         callUserOrbitCallback()
-        updateTierAndUnlockTime()     
+        updateTierAndUnlockTime()
     }
 
     const closeModal = () => {
-        if (!(isLocking || isUnlocking)){
+        if (!(isLocking || isUnlocking)) {
             handleClose()
         }
     }
@@ -223,10 +223,11 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
                         </div>
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4 w-full lg:w-[460px] max-w-[480px] ">
                             {lockStep === 0 && <>
-                                <div className='text-white text-[32px] mb-4'>Your tier</div>
+                                <div className='text-white text-[32px] mb-4'>{userClaimedTier > 0 ? 'Upgrade Tier' : 'Your tier'}</div>
                                 <div className='w-full flex flex-col gap-4'>
                                     <div className='text-white text-[16px] font-light whitespace-normal'>
-                                        Your tier is currently unallocated. Please select the tier you wish to claim and the amount of tokens will be locked for 14 days in order to access this utility.
+                                        {userClaimedTier > 0 ? 'Your tier is currently locked but you can upgrade your tier. Please select the tier you wish to upgrade and claim your tier below.' :
+                                            'Your tier is currently unallocated. Please select the tier you wish to claim and the amount of tokens will be locked for 14 days in order to access this utility.'}
                                     </div>
                                     <TierSelectBox
                                         onSelectTier={onSelectTier}
@@ -251,7 +252,7 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
                                         <div className='text-white text-[15px] font-light whitespace-normal'>
                                             {`You are locking ${formatEther(newLockingAmount, orbitDecimals, 0).toLocaleString()} tokens. Please select your lock period.`}
                                         </div>
-                                        <LockDaysSelector lockDays={lockDays} setLockDays={(value: number) => {if (!isLocking) setLockDays(value)}} />
+                                        <LockDaysSelector lockDays={lockDays} setLockDays={(value: number) => { if (!isLocking) setLockDays(value) }} />
                                         <ClaimTierAction
                                             buttonText={'Lock your tier'}
                                             newLockingAmount={newLockingAmount}
