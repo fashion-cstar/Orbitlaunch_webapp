@@ -11,6 +11,14 @@ export const BITQUERY_HEADERS = {
 export const BITQUERY_GRAPHQL_URL =
   process.env.NEXT_PUBLIC_BITQUERY_API_URL || "https://graphql.bitquery.io";
 
+export const TestOrbtTokenAddress = "0x8401e6e7ba1a1ec011bdf34cd59fb11545fae523";
+export const TestBusdTokenAddress = "0xcbdeb985e2189e615eae14f5784733c0122c253c";
+export const TestOrbitFundContractAddress = "0xcE19Fa72d648CF379B501F00aC18A4927714a09E";
+export const TestOrbitPadContractAddress = "0x7e0dc332939f5b6F2C3132AC89157CcE50c5662B";
+export const TestOrbitStableTokenAddress = "0x35539ac9ef1dccfd74cc4c39a849af6b5fd2674b";
+//lock actions
+export const TierTokenLockContractAddress = "0xed8623c22c3bC8ADeBe9Fb8A6D17020C433f3055"
+
 export const CORS = "cors";
 export const DEAD_ADDRESS = "0x000000000000000000000000000000000000dead";
 export const NETWORK_BSC = "bsc";
@@ -39,8 +47,6 @@ export const PancakeSwapContractAddress =
 export const PancakeRouterContractAddress =
   "0x10ed43c718714eb63d5aa57b78b54704e256024e";
 
-//lock actions
-export const TierTokenLockContractAddress = "0xed8623c22c3bC8ADeBe9Fb8A6D17020C433f3055"
 // migrate
 export const OrbtTokenAddress = "0x4bf5cd1AC6FfF12E88AEDD3c70EB4148F90F8894"
 export const MigrationOrbitAddress = "0x5B7Ce66AAeEF370019bfdE7F0566A3aD977C1306"

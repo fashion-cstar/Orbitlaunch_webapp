@@ -10,15 +10,15 @@ import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { tierInformation as tierInfo } from "@app/shared/TierLevels";
 import { checkUserAlreadyReferred, getUserReferralInfo, registerSoloUser, registerUserWithParent } from "@app/state/Referral";
 import { ReferralStatus } from "@app/constants/constant";
-import useOrbit from "@app/lib/hooks/useOrbit";
 import BuyButton from "../../common/BuyButton";
 import SliderCards from "../../common/SliderCards";
 import DepositPopup from "./DepositPopup";
 import useFundWithV3 from "@app/lib/hooks/useFundWithV3";
+import useFundWithV4 from "@app/lib/hooks/useFundWithV4";
 import { useTierAndUnlockTime } from 'src/state/LockActions'
 import { TierTokenLockContractAddress } from "@app/shared/AppConstant";
 import FundLockTierModal from "../TierActions/FundLockTierModal";
-import { FOURTEEN_DAYS } from "@app/utils";
+import { TWENTY_SIX_DAYS, ONEDAY_SECS } from "@app/utils";
 
 export default function Fund() {
     const activateProvider = Web3ModalButton();
@@ -26,7 +26,6 @@ export default function Fund() {
     const snackbar = useSnackbar();
     const depositModalId = "deposit-busd-modal";
     const { account, library } = useEthers();
-    const { marketCap, liquidityPool, holders, price } = useOrbit();
     const [version, setVersion] = useState(2);
     const { userClaimedTier, unlockTimes } = useTierAndUnlockTime(TierTokenLockContractAddress, 'bsc', false)
     const {
@@ -69,38 +68,36 @@ export default function Fund() {
     const [isOpenLockTier, setIsOpenLockTier] = useState(false)
 
     const handleOpenDepositModalV2 = () => {
-        if (Math.floor(unlockTimes / 86400) < FOURTEEN_DAYS) {
-            setIsOpenLockTier(true)
-        } else {
-            setVersion(2);
-            const modal = document.getElementById(depositModalId);
-            modal.style.display = "flex";
-        }
+        setVersion(2);
+        const modal = document.getElementById(depositModalId);
+        modal.style.display = "flex";
     }
 
     const handleOpenDepositModalV3 = () => {
-        if (Math.floor(unlockTimes / 86400) < FOURTEEN_DAYS) {
+        setVersion(3);
+        const modal = document.getElementById(depositModalId);
+        modal.style.display = "flex";
+    }
+
+    const handleOpenDepositModalV4 = () => {
+        if (Math.floor(unlockTimes / ONEDAY_SECS) < TWENTY_SIX_DAYS) {
             setIsOpenLockTier(true)
         } else {
-            setVersion(3);
+            setVersion(4);
             const modal = document.getElementById(depositModalId);
             modal.style.display = "flex";
         }
     }
 
     const handleWithdrawalSubmit = async () => {
-        if (Math.floor(unlockTimes / 86400) < FOURTEEN_DAYS) {
-            setIsOpenLockTier(true)
-        } else {
-            const weiAmount = ethers.utils.parseEther(balance);
-            const withdrawalResult = await withdraw_V1(weiAmount);
-            if (!withdrawalResult.ok) {
-                snackbar.snackbar.show(withdrawalResult.message, "error");
-                return;
-            }
-
-            snackbar.snackbar.show("Deposit is succesfull", "success");
+        const weiAmount = ethers.utils.parseEther(balance);
+        const withdrawalResult = await withdraw_V1(weiAmount);
+        if (!withdrawalResult.ok) {
+            snackbar.snackbar.show(withdrawalResult.message, "error");
+            return;
         }
+
+        snackbar.snackbar.show("Deposit is succesfull", "success");
     }
 
     useEffect(() => {
@@ -190,12 +187,21 @@ export default function Fund() {
                                 <Button
                                     type="button"
                                     disabled={disableDepositV3 || currentTierNoV3 === 0}
-                                    onClick={(disableDepositV3 || currentTierNoV3 === 0) ? null : handleOpenDepositModalV3}                                    
+                                    onClick={(disableDepositV3 || currentTierNoV3 === 0) ? null : handleOpenDepositModalV3}
                                     variant="outlined"
                                     sx={{ borderRadius: "12px" }}
                                 >
                                     {disableDeposit ? 'Deposit window closed (v3)' : 'Deposit BUSD (v3)'}
                                 </Button>
+                                {/* <Button
+                                    type="button"
+                                    disabled={disableDepositV3 || currentTierNoV3 === 0}
+                                    onClick={(disableDepositV3 || currentTierNoV3 === 0) ? null : handleOpenDepositModalV3}
+                                    variant="outlined"
+                                    sx={{ borderRadius: "12px" }}
+                                >
+                                    {disableDeposit ? 'Deposit window closed (TestV4)' : 'Deposit BUSD (v3)'}
+                                </Button> */}
                             </>)
                             : (
                                 <Button

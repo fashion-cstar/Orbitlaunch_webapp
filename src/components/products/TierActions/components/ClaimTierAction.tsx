@@ -85,7 +85,7 @@ export default function ClaimTierAction({
 
     async function onTierLock() {
         setIsLocking(true)
-        if (lockDays===FOURTEEN_DAYS){
+        if (lockDays===FOURTEEN_DAYS && userClaimedTier>0){
             try {
                 increaseTierCallback(newLockingAmount).then((response: TransactionResponse) => {
                     response.wait().then((_: any) => {

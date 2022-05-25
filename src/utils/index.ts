@@ -217,3 +217,7 @@ export const getJoinPresaleButtonActive = (ps: number): boolean => {
 }
 
 export const FOURTEEN_DAYS = 14
+export const TWENTY_SIX_DAYS = 14
+export const THIRTEEN_DAYS = 14
+// export const ONEDAY_SECS = 86400
+export const ONEDAY_SECS = 60
