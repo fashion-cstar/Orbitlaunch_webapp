@@ -19,6 +19,8 @@ import { getContract, getProviderOrSigner } from '@app/utils';
 export default function useFundWithV4() {
     const { account, library } = useEthers();
     const connectedUserBalance = useTokenBalance(OrbtTokenAddress, account);
+    const [isWalletApproving, setIsWalletApproving] = useState(false)
+    const [isDepositing, setIsDepositing] = useState(false)
 
     const agreeToTerms = async () => {
         try {
@@ -80,17 +82,21 @@ export default function useFundWithV4() {
             const provider = getProviderOrSigner(library, account) as any;
 
             const weiAmount = ethers.utils.parseEther(amount);
+            setIsWalletApproving(true)
             const approveTxHash = await busdContract
                 .connect(provider)
-                .approve(OrbitFundContractAddressWithV4Token, weiAmount);
-
+                .approve(OrbitFundContractAddressWithV4Token, weiAmount);            
             return approveTxHash.wait().then(async (_: any) => {
+                setIsWalletApproving(false)
+                setIsDepositing(true)
                 return await orbitFundContract.deposit(weiAmount)
                     .then(() => {
+                        setIsDepositing(false)
                         return {
                             ok: true
                         };
                     }).catch((err: any) => {
+                        setIsDepositing(false)
                         console.error("ERROR: " + (err.data?.message || err));
                         return {
                             ok: false,
@@ -100,6 +106,7 @@ export default function useFundWithV4() {
             });
         }
         catch (err) {
+            setIsWalletApproving(false)
             console.error("ERROR: " + (err.data?.message || err));
             return {
                 ok: false,
@@ -264,7 +271,7 @@ export default function useFundWithV4() {
         returnedModel.disabledWithdraw = endTime.ok
             ? nowTime <= returnedModel.endDate.getTime()
             : returnedModel.disabledWithdraw;
-
+        
         const comparedDate = returnedModel.disabledDeposit ? returnedModel.startDate : returnedModel.endDate;
         const remainingTimeResult = returnedModel.disabledDeposit
             ? getRemainingTimeBetweenTwoDates(nowTime, comparedDate.getTime())
@@ -351,12 +358,12 @@ export default function useFundWithV4() {
 
     useEffect(() => {
 
-        const fetchConnectedData = async () => {
+        const fetchConnectedData = async () => {            
             let depositPeriodResult = await depositPeriodInfo();
             let userWithdrewResult = await userWithdrew();
 
             let userInvestment = await depositInfos();
-            const investmentAmountInDollars = (parseFloat(userInvestment) * parseFloat("1")).toFixed(2);
+            const investmentAmountInDollars = (parseFloat(userInvestment) * parseFloat("1")).toFixed(2);            
             const formattedConnectedBalance = formatEther(connectedUserBalance);
             let totalInvestment = ethers.utils.formatEther(await totalInvestedAmount());
             let tierResult = await getTierValues(ethers.BigNumber.from(Math.trunc(parseFloat(formattedConnectedBalance))));            
@@ -443,6 +450,8 @@ export default function useFundWithV4() {
 
     const fundInfo = useMemo(
         () => ({
+            isWalletApproving,
+            isDepositing,
             startInvestmentPeriodDate,
             endInvestmentPeriodDate,
             currentInvestment,
@@ -461,7 +470,7 @@ export default function useFundWithV4() {
             depositBusd,
             withdraw
         }),
-        [startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, totalInvestors,
+        [ isWalletApproving, isDepositing, startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, totalInvestors,
             roiToDate, currentTierNo, currentTierPercentage, disableDeposit, disableWithdraw,
             remainingTimeText, balance, profitUpToDate, totalInvestedToDate, agreeToTerms, userAgreed, depositBusd, withdraw]
     );

@@ -19,6 +19,7 @@ import TierSelectBox from "./components/TierSelectBox"
 import LockDaysSelector from "./components/LockDaysSelector"
 import ClaimTierAction from './components/ClaimTierAction';
 import UnlockTierAction from './components/UnlockTierAction';
+import useRefresh from 'src/state/useRefresh'
 
 interface TierModalProps {
     isOpen: boolean
@@ -29,6 +30,7 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
     // const ORBIT_TOKEN = OrbtTokenAddress
     const ORBIT_TOKEN = "0x8401e6e7ba1a1ec011bdf34cd59fb11545fae523"
     const { library, account, chainId } = useEthers()
+    const { triggerRefresh } = useRefresh()
     const router = useRouter()
     const [hash, setHash] = useState<string | undefined>()
     const [selectedTier, setSelectTier] = useState('')
@@ -143,13 +145,13 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
     const setClaimTierSuccess = () => {
         setSelectTier('')
         callUserOrbitCallback()
-        updateTierAndUnlockTime()
+        triggerRefresh()
     }
 
     const setUnlockSuccess = () => {
         setSelectTier('')
         callUserOrbitCallback()
-        updateTierAndUnlockTime()
+        triggerRefresh()
     }
 
     const closeModal = () => {

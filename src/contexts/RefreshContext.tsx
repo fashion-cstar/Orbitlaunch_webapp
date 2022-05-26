@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react'
 const FAST_INTERVAL = 10000
 const SLOW_INTERVAL = 60000
 
-const RefreshContext = React.createContext({ slow: 0, fast: 0 })
+const RefreshContext = React.createContext({ slow: 0, fast: 0, triggerRefresh: () => {} })
 
 // Check if the tab is active in the user browser
 const useIsBrowserTabActive = () => {
@@ -30,6 +30,11 @@ const RefreshContextProvider = ({ children }) => {
   const [fast, setFast] = useState(0)
   const isBrowserTabActiveRef = useIsBrowserTabActive()
 
+  const triggerRefresh = () => {
+    setFast((prev) => prev + 1)
+    setSlow((prev) => prev + 1)
+  }
+
   useEffect(() => {
     const interval = setInterval(async () => {
       if (isBrowserTabActiveRef.current) {
@@ -48,7 +53,7 @@ const RefreshContextProvider = ({ children }) => {
     return () => clearInterval(interval)
   }, [isBrowserTabActiveRef])
   
-  return <RefreshContext.Provider value={{ slow, fast }}>{children}</RefreshContext.Provider>
+  return <RefreshContext.Provider value={{ slow, fast, triggerRefresh }}>{children}</RefreshContext.Provider>
 }
 
 export { RefreshContext, RefreshContextProvider }

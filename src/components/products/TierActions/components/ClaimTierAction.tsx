@@ -56,7 +56,7 @@ export default function ClaimTierAction({
         } catch (error) { return false }
     }
 
-    async function onApprove() {
+    async function onApprove() {        
         setIsWalletApproving(true)
         let res = await checkUserApproved()
         if (!res) {
@@ -64,6 +64,7 @@ export default function ClaimTierAction({
                 await approveCallback(TierTokenLockContractAddress, ORBIT_TOKEN, formatEther(newLockingAmount, orbitDecimals, 4), 'bsc').then((hash: string) => {
                     setIsWalletApproving(false)
                     setIsApproved(true)
+                    snackbar.snackbar.show("Approved!", "success");
                 }).catch((error: any) => {
                     console.log(error)
                     setIsWalletApproving(false)
@@ -78,6 +79,7 @@ export default function ClaimTierAction({
                 setIsWalletApproving(false)
             }
         } else {
+            snackbar.snackbar.show("Approved!", "success");
             setIsApproved(true)
         }
         return null;
@@ -91,7 +93,7 @@ export default function ClaimTierAction({
                     response.wait().then((_: any) => {
                         setHash(response.hash)
                         setClaimTierSuccess()
-                        setIsLocking(false)
+                        setIsLocking(false)                        
                     })
                 }).catch(error => {
                     setIsLocking(false)

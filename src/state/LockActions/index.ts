@@ -19,7 +19,7 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
     unlockTokenCallback: () => Promise<TransactionResponse>
 } {
     // get claim data for this account
-    const { account, library } = useEthers()
+    const { account, library } = useEthers()    
     const chainId = getChainIdFromName(blockchain);
     const lockContract: Contract = getContract(lockContractAddress, TierTokenLockABI, library, account ? account : undefined)
     const lockAndClaimTierCallback = async function (amount: BigNumber, lockDays: number) {
@@ -85,7 +85,7 @@ export function useTierAndUnlockTime(lockContractAddress: string, blockchain: st
     const [unlockTimes, setUnlockTimes] = useState(0)
     const [lockedAmount, setLockedAmount] = useState(BigNumber.from(0))
     const chainId = getChainIdFromName(blockchain);
-    const { slowRefresh, fastRefresh } = useRefresh()
+    const { slowRefresh } = useRefresh()
 
     const fetchTierAndUnlockTime = async () => {
         const lockContract: Contract = getContract(lockContractAddress, TierTokenLockABI, RpcProviders[chainId], account ? account : undefined)
@@ -103,7 +103,7 @@ export function useTierAndUnlockTime(lockContractAddress: string, blockchain: st
             setTier(result[0]?.toNumber() == 10 ? 0 : result[0]?.toNumber() + 1)
             let cur = moment(moment.now())
             let unlockTimestamp = moment(result[1]?.toNumber() * 1000)
-            setUnlockTimes(unlockTimestamp.diff(cur, 'seconds') < 0 ? 0 : unlockTimestamp.diff(cur, 'seconds') + 60)
+            setUnlockTimes(unlockTimestamp.diff(cur, 'seconds') < 0 ? 0 : unlockTimestamp.diff(cur, 'seconds'))            
         }).catch(error => { console.log(error) })
         fetchUserLockAmount().then(result => {
             setLockedAmount(result?.amount)
@@ -114,7 +114,7 @@ export function useTierAndUnlockTime(lockContractAddress: string, blockchain: st
         if (lockContractAddress) {
             updateTierAndUnlockTime()
         }
-    }, [lockContractAddress, slowRefresh, isOpen])
+    }, [lockContractAddress, slowRefresh, isOpen, account])
 
     return { userClaimedTier, unlockTimes, lockedAmount, updateTierAndUnlockTime }
 }

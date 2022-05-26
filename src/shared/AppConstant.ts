@@ -13,9 +13,9 @@ export const BITQUERY_GRAPHQL_URL =
 
 export const TestOrbtTokenAddress = "0x8401e6e7ba1a1ec011bdf34cd59fb11545fae523";
 export const TestBusdTokenAddress = "0xcbdeb985e2189e615eae14f5784733c0122c253c";
-export const TestOrbitFundContractAddress = "0xcE19Fa72d648CF379B501F00aC18A4927714a09E";
-export const TestOrbitPadContractAddress = "0x7e0dc332939f5b6F2C3132AC89157CcE50c5662B";
-export const TestOrbitStableTokenAddress = "0x35539ac9ef1dccfd74cc4c39a849af6b5fd2674b";
+export const TestOrbitFundContractAddress = "0x9A32844A89fc1FD29dd8a5a106BA7b90f82dBD6a";
+export const TestOrbitPadContractAddress = "0x2e682b12D3bEe3324903B54891909ce986715Cf8";
+export const TestOrbitStableTokenAddress = "0x99512e979982CFedE78759693eE832D4808CE354";
 //lock actions
 export const TierTokenLockContractAddress = "0xed8623c22c3bC8ADeBe9Fb8A6D17020C433f3055"
 

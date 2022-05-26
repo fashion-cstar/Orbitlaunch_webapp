@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react'
+import { FOURTEEN_DAYS, TWENTY_EIGHT_DAYS } from "@app/utils";
 
 interface LockDaysSelectorProps {    
     lockDays: number
@@ -27,7 +28,7 @@ export default function LockDaysSelector({ lockDays, setLockDays }: LockDaysSele
     return (
         <div className='w-full'>
             <div className='flex justify-between w-full items-stretch gap-4'>
-                <div className={`flex rounded-2xl bg-[#06111C] p-4 basis-1/2 w-full justify-between items-center ${lockDays != 14 ? 'cursor-pointer hover:border hover:border-[#c1c1c1]' : ''}`} onClick={() => setLockDays(14)}>
+                <div className={`flex rounded-2xl bg-[#06111C] p-4 basis-1/2 w-full justify-between items-center ${lockDays != 14 ? 'cursor-pointer hover:border hover:border-[#c1c1c1]' : ''}`} onClick={() => setLockDays(FOURTEEN_DAYS)}>
                     <div className='flex flex-col gap-2'>
                         <div className='text-white text-[16px]'>14 days</div>
                         <div className='text-[#BAB8CC]/[.64] text-[12px]'>
@@ -38,7 +39,7 @@ export default function LockDaysSelector({ lockDays, setLockDays }: LockDaysSele
                         {lockDays === 14 ? checkedSvg() : uncheckedSvg()}
                     </div>
                 </div>
-                <div className={`flex rounded-2xl bg-[#06111C] p-4 basis-1/2 w-full justify-between items-center ${lockDays === 14 ? 'cursor-pointer hover:border hover:border-[#c1c1c1]' : ''}`} onClick={() => setLockDays(28)}>
+                <div className={`flex rounded-2xl bg-[#06111C] p-4 basis-1/2 w-full justify-between items-center ${lockDays === 14 ? 'cursor-pointer hover:border hover:border-[#c1c1c1]' : ''}`} onClick={() => setLockDays(TWENTY_EIGHT_DAYS)}>
                     <div className='flex flex-col gap-2'>
                         <div className='text-white text-[16px]'>28 days</div>
                         <div className='text-[#BAB8CC]/[.64] text-[12px]'>

@@ -27,7 +27,7 @@ export default function Fund() {
     const depositModalId = "deposit-busd-modal";
     const { account, library } = useEthers();
     const [version, setVersion] = useState(2);
-    const { userClaimedTier, unlockTimes } = useTierAndUnlockTime(TierTokenLockContractAddress, 'bsc', false)
+    const { userClaimedTier, unlockTimes, updateTierAndUnlockTime } = useTierAndUnlockTime(TierTokenLockContractAddress, 'bsc', false)
     const {
         totalInvestedToDate_V1,
         userLastInvestment_V1,
@@ -60,6 +60,11 @@ export default function Fund() {
         currentInvestment: currentInvestmentV3
     } = useFundWithV3();
 
+    const {
+        disableDeposit: disableDepositV4,
+        currentInvestment: currentInvestmentV4
+    } = useFundWithV4();
+
     const [totalReferred, setTotalReferred] = useState(0);
     const [referredBy, setReferredBy] = useState('');
     const [commissionEarned, setCommissionEarned] = useState(0);
@@ -79,7 +84,11 @@ export default function Fund() {
         modal.style.display = "flex";
     }
 
-    const handleOpenDepositModalV4 = () => {
+    const setClaimTierSuccess = () => {
+        updateTierAndUnlockTime()
+    }
+
+    const handleOpenDepositModalV4 = () => {        
         if (Math.floor(unlockTimes / ONEDAY_SECS) < TWENTY_SIX_DAYS) {
             setIsOpenLockTier(true)
         } else {
@@ -157,7 +166,7 @@ export default function Fund() {
     return (
         <>
             <DepositPopup id={depositModalId} version={version} />
-            <FundLockTierModal isOpen={isOpenLockTier} handleClose={closeLockTierModal} />
+            <FundLockTierModal isOpen={isOpenLockTier} handleClose={closeLockTierModal} setClaimTierSuccess={setClaimTierSuccess} />
             <div className="desktop-content flex flex-col space-y-4 w-full">
 
                 <div className="flex flex-row items-center">
@@ -193,15 +202,6 @@ export default function Fund() {
                                 >
                                     {disableDeposit ? 'Deposit window closed (v3)' : 'Deposit BUSD (v3)'}
                                 </Button>
-                                {/* <Button
-                                    type="button"
-                                    disabled={disableDepositV3 || currentTierNoV3 === 0}
-                                    onClick={(disableDepositV3 || currentTierNoV3 === 0) ? null : handleOpenDepositModalV3}
-                                    variant="outlined"
-                                    sx={{ borderRadius: "12px" }}
-                                >
-                                    {disableDeposit ? 'Deposit window closed (TestV4)' : 'Deposit BUSD (v3)'}
-                                </Button> */}
                             </>)
                             : (
                                 <Button
@@ -216,7 +216,17 @@ export default function Fund() {
                         }
                     </div>
                 </div>
-
+                <div className="w-full flex justify-end">
+                    {!!account && <Button
+                        type="button"
+                        disabled={disableDepositV4 || userClaimedTier === 0}
+                        onClick={(disableDepositV4 || userClaimedTier === 0) ? null : handleOpenDepositModalV4}
+                        variant="outlined"
+                        sx={{ borderRadius: "12px" }}
+                    >
+                        {disableDepositV4 ? 'Deposit window closed (Test v4)' : 'Deposit BUSD (Test v4)'}
+                    </Button>}
+                </div>
                 <div className="flex flex-col space-y-4">
                     <div className="flex flex-row space-x-4">
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
@@ -243,8 +253,10 @@ export default function Fund() {
                                 <div className="grid grid-cols-1 md:grid-cols-12 items-center">
                                     {!!account
                                         ? <>
-                                            <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">Tier {currentTierNo}</div>
-                                            <div className="flex text-slate-400 md:col-span-8 lg:col-span-9 xl:col-span-9 text-sm">Up to {currentTierPercentage}% monthly ROI</div>
+                                            {/* <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">Tier {currentTierNo}</div>
+                                            <div className="flex text-slate-400 md:col-span-8 lg:col-span-9 xl:col-span-9 text-sm">Up to {currentTierPercentage}% monthly ROI</div> */}
+                                            <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">Tier {userClaimedTier}</div>
+                                            <div className="flex text-slate-400 md:col-span-8 lg:col-span-9 xl:col-span-9 text-sm">Up to {userClaimedTier > 0 ? tierInformation[userClaimedTier - 1].monthlyPercent : '0'}% monthly ROI</div>
                                         </>
                                         : <>
                                             <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">${profitUpToDate}</div>
@@ -407,6 +419,15 @@ export default function Fund() {
                                 >
                                     {disableDeposit ? 'Deposit window closed (v3)' : 'Deposit BUSD (v3)'}
                                 </Button>
+                                <Button
+                                    type="button"
+                                    disabled={disableDepositV4 || userClaimedTier === 0}
+                                    onClick={(disableDepositV4 || userClaimedTier === 0) ? null : handleOpenDepositModalV4}
+                                    variant="outlined"
+                                    sx={{ borderRadius: "12px" }}
+                                >
+                                    {disableDepositV4 ? 'Deposit window closed (Test v4)' : 'Deposit BUSD (Test v4)'}
+                                </Button>
                             </>
                         )
                         : (
@@ -445,8 +466,10 @@ export default function Fund() {
                         <div className="flex flex-row items-center space-x-2">
                             {!!account
                                 ? <>
-                                    <div className="text-xl items-center">Tier {currentTierNo}</div>
-                                    <div className="text-slate-400 text-sm">Up to {currentTierPercentage}% monthly ROI</div>
+                                    {/* <div className="text-xl items-center">Tier {currentTierNo}</div>
+                                    <div className="text-slate-400 text-sm">Up to {currentTierPercentage}% monthly ROI</div> */}
+                                    <div className="text-xl items-center">Tier {userClaimedTier}</div>
+                                    <div className="text-slate-400 text-sm">Up to {userClaimedTier > 0 ? tierInformation[userClaimedTier - 1].monthlyPercent : '0'}% monthly ROI</div>
                                 </>
                                 : <>
                                     <div className="text-xl items-center">${profitUpToDate}</div>

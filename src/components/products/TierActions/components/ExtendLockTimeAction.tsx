@@ -4,10 +4,12 @@ import { useLockContract } from 'src/state/LockActions'
 import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { TransactionResponse } from '@ethersproject/providers'
+import { FOURTEEN_DAYS } from "@app/utils";
 
 interface ExtendLockTimeActionProps {
     lockDays: number
     isLocking: boolean
+    remainDays: number
     setClaimTierSuccess: () => void
     setIsLocking: (value: boolean) => void
     setHash: (value: string) => void
@@ -16,6 +18,7 @@ interface ExtendLockTimeActionProps {
 export default function ExtendLockTimeAction({
     lockDays,
     isLocking,
+    remainDays,
     setClaimTierSuccess,
     setIsLocking,
     setHash }: ExtendLockTimeActionProps) {
@@ -28,12 +31,16 @@ export default function ExtendLockTimeAction({
     }
 
     async function onExtendLockTime() {
+        setIsLocking(true)
         try {
-            extendLockTimeCallback(lockDays).then((response: TransactionResponse) => {
+            let additionalDays = Math.max(lockDays-remainDays, FOURTEEN_DAYS)
+            extendLockTimeCallback(additionalDays).then((response: TransactionResponse) => {
+                console.log(response)
                 response.wait().then((_: any) => {
+                    console.log(response.hash)
                     setHash(response.hash)
                     setClaimTierSuccess()
-                    setIsLocking(false)
+                    setIsLocking(false)                    
                 })
             }).catch(error => {
                     setIsLocking(false)
@@ -58,6 +65,7 @@ export default function ExtendLockTimeAction({
                 sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
                 loading={isLocking}
                 loadingPosition="start"
+                disabled={isLocking}
                 onClick={handleExtendTier}
             >
                 {isLocking ? 'Extending your tier...' : "Extend your tier"}

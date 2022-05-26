@@ -1,6 +1,7 @@
 import Popup from "@app/components/common/Popup";
 import { CONSTANT, ConstantItem } from "@app/constants/constant"
 import useFundWithV3 from "@app/lib/hooks/useFundWithV3";
+import useFundWithV4 from "@app/lib/hooks/useFundWithV4";
 import useFund_V2 from "@app/lib/hooks/useFund_V2";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { Button } from "@mui/material";
@@ -22,6 +23,7 @@ export default function AgreeTermsPopup({
     const snackbar = useSnackbar();
     const { agreeToTerms } = useFund_V2();
     const { agreeToTerms: agreeToTermsV3 } = useFundWithV3();
+    const { agreeToTerms: agreeToTermsV4 } = useFundWithV4();
 
     const handleCloseAgreeTermsModal = () => {
         const modal = document.getElementById(agreeTermsModalId);
@@ -29,7 +31,7 @@ export default function AgreeTermsPopup({
     }
 
     const handleAgreeToTermsSubmit = async (e: any) => {
-        const agreeToTermsResult = version === 2 ? await agreeToTerms() : await agreeToTermsV3();
+        const agreeToTermsResult = version === 2 ? await agreeToTerms() : version === 4 ? await agreeToTermsV4() : await agreeToTermsV3();
         if (agreeToTermsResult.ok) {
             await onAgreeToTerms();
             handleCloseAgreeTermsModal();

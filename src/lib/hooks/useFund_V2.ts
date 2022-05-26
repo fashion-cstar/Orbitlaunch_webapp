@@ -19,6 +19,8 @@ import { getContract, getProviderOrSigner } from '@app/utils';
 export default function useFund_V2() {
     const { account, library } = useEthers();
     const connectedUserBalance = useTokenBalance(AppTokenAddress, account);
+    const [isWalletApproving, setIsWalletApproving] = useState(false)
+    const [isDepositing, setIsDepositing] = useState(false)
 
     const agreeToTerms = async () => {
         try {
@@ -80,17 +82,22 @@ export default function useFund_V2() {
             const provider = getProviderOrSigner(library, account) as any;
 
             const weiAmount = ethers.utils.parseEther(amount);
+            setIsWalletApproving(true)
             const approveTxHash = await busdContract
                 .connect(provider)
                 .approve(OrbitFundContractAddress_V2, weiAmount);
 
             return approveTxHash.wait().then(async (_: any) => {
+                setIsWalletApproving(false)
+                setIsDepositing(true)
                 return await orbitFundContract.deposit(weiAmount)
                     .then(() => {
+                        setIsDepositing(false)
                         return {
                             ok: true
                         };
                     }).catch((err: any) => {
+                        setIsDepositing(false)
                         console.error("ERROR: " + (err.data?.message || err));
                         return {
                             ok: false,
@@ -100,6 +107,7 @@ export default function useFund_V2() {
             });
         }
         catch (err) {
+            setIsWalletApproving(false)
             console.error("ERROR: " + (err.data?.message || err));
             return {
                 ok: false,
@@ -443,6 +451,8 @@ export default function useFund_V2() {
 
     const fundInfo = useMemo(
         () => ({
+            isWalletApproving,
+            isDepositing,
             startInvestmentPeriodDate,
             endInvestmentPeriodDate,
             currentInvestment,
@@ -461,7 +471,7 @@ export default function useFund_V2() {
             depositBusd,
             withdraw
         }),
-        [startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, totalInvestors,
+        [ isWalletApproving, isDepositing, startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, totalInvestors,
             roiToDate, currentTierNo, currentTierPercentage, disableDeposit, disableWithdraw,
             remainingTimeText, balance, profitUpToDate, totalInvestedToDate, agreeToTerms, userAgreed, depositBusd, withdraw]
     );

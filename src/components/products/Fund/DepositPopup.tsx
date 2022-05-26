@@ -1,10 +1,12 @@
 import DepositInput from "@app/components/common/DepositInput";
 import Popup from "@app/components/common/Popup";
 import useFundWithV3 from "@app/lib/hooks/useFundWithV3";
+import useFundWithV4 from "@app/lib/hooks/useFundWithV4";
 import useFund_V2 from "@app/lib/hooks/useFund_V2";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AgreeTermsPopup from "./AgreeTermsPopup";
+import LoadingButton from '@mui/lab/LoadingButton';
 
 interface DepositPopupProps {
     id: string,
@@ -20,12 +22,15 @@ export default function DepositPopup({
     onClose
 }: DepositPopupProps) {
     const snackbar = useSnackbar();
-    const { userAgreed, depositBusd } = useFund_V2();
-    const { userAgreed: userAgreedV3, depositBusd: depositBusdV3 } = useFundWithV3();
+    const { userAgreed, depositBusd, isWalletApproving: isApprovingV2, isDepositing: isDepositingV2 } = useFund_V2();
+    const { userAgreed: userAgreedV3, depositBusd: depositBusdV3, isWalletApproving: isApprovingV3, isDepositing: isDepositingV3 } = useFundWithV3();
+    const { userAgreed: userAgreedV4, depositBusd: depositBusdV4, isWalletApproving: isApprovingV4, isDepositing: isDepositingV4 } = useFundWithV4();
     const agreeTermsModalId = "agree-terms-modal";
     const [disableDepositButton, setDisableDepositButton] = useState(true);
     const [depositAmount, setDepositAmount] = useState('');
     const [selectedDepositCurrency, setSelectedDepositCurrency] = useState('BUSD');
+    const [isWalletApproving, setIsWalletApproving] = useState(false)
+    const [isDepositing, setIsDepositing] = useState(false)
 
     const handleInputChange = (amount: any) => {
         setDisableDepositButton(Number(amount) === 0)
@@ -36,11 +41,32 @@ export default function DepositPopup({
 
     }
 
+    useEffect(() => {
+        switch (version) {
+            case 2:
+                setIsWalletApproving(isApprovingV2)
+                setIsDepositing(isDepositingV2)
+                break;
+            case 4:
+                setIsWalletApproving(isApprovingV4)
+                setIsDepositing(isDepositingV4)
+                break;
+            default:
+                setIsWalletApproving(isApprovingV3)
+                setIsDepositing(isDepositingV3)
+                break;
+        }
+    }, [isApprovingV2, isApprovingV3, isApprovingV4, isDepositingV2, isDepositingV3, isDepositingV4])
+
     const deposit = async () => {
-        const depositResult = version === 2 ? await depositBusd(depositAmount) : await depositBusdV3(depositAmount);
+        const depositResult = version === 2 ? await depositBusd(depositAmount) : version === 4 ? await depositBusdV4(depositAmount) : await depositBusdV3(depositAmount);
         if (!depositResult.ok) {
+            setDepositAmount('');
             console.error(depositResult.message);
             return;
+        } else {
+            snackbar.snackbar.show(`${depositAmount} ${selectedDepositCurrency} has been deposited successfully!`, "success");
+            setDepositAmount('');
         }
     }
 
@@ -50,7 +76,7 @@ export default function DepositPopup({
     }
 
     const handleDepositSubmit = async (e: any, amount: any) => {
-        const userAgreedResult = version === 2 ? await userAgreed() : await userAgreedV3();
+        const userAgreedResult = version === 2 ? await userAgreed() : version === 4 ? await userAgreedV4() : await userAgreedV3();
         if (userAgreedResult.ok) {
             //If user agreement has not been done, open the agreement modal
             if (!userAgreedResult.returnedModel) {
@@ -84,13 +110,16 @@ export default function DepositPopup({
                             onSelectedCurrencyChange={(changedCurrency) => handleSelectedCurrencyChange(changedCurrency)}
                         />
                     </div>
-                    <button
-                        className={`w-full bg-[#867EE8] hover:opacity-0.75 font-medium rounded-lg text-sm py-2.5 text-center ${disableDepositButton ? 'opacity-25' : ''}`}
+                    <LoadingButton
+                        variant="contained"
+                        sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
+                        loading={isWalletApproving || isDepositing}
+                        loadingPosition="start"
                         disabled={disableDepositButton}
                         onClick={async (e) => await handleDepositSubmit(e, depositAmount)}
                     >
-                        {`Deposit ${disableDepositButton ? '' : `${depositAmount} ${selectedDepositCurrency}`}`}
-                    </button>
+                        {`${isWalletApproving ? 'Approving ' : isDepositing ? 'Depositing ' : 'Deposit '}${disableDepositButton ? '' : `${depositAmount} ${selectedDepositCurrency}`}`}
+                    </LoadingButton>
                 </div>
             </Popup>
             <AgreeTermsPopup

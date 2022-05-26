@@ -15,19 +15,22 @@ import { getTierValues } from '@app/shared/TierLevels'
 import { formatEther, parseEther } from '@app/utils'
 import TierSelectBox from "./components/TierSelectBox"
 import ClaimTierAction from './components/ClaimTierAction';
-import IncreaseTierAction from './components/IncreateTierAction';
 import ExtendLockTimeAction from './components/ExtendLockTimeAction';
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
+import { ONEDAY_SECS, TWENTY_EIGHT_DAYS } from "@app/utils";
+import useRefresh from 'src/state/useRefresh'
 
 interface TierModalProps {
     isOpen: boolean
     handleClose: () => void
+    setClaimTierSuccess: () => void
 }
 
 export default function TierActionsModal({ isOpen, handleClose }: TierModalProps) {
     // const ORBIT_TOKEN = OrbtTokenAddress
     const ORBIT_TOKEN = "0x8401e6e7ba1a1ec011bdf34cd59fb11545fae523"
     const { library, account, chainId } = useEthers()
+    const { triggerRefresh } = useRefresh()
     const [hash, setHash] = useState<string | undefined>()
     const [selectedTier, setSelectTier] = useState('')
     const userOrbitToken = useToken(ORBIT_TOKEN, 'bsc')
@@ -40,18 +43,18 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
     const [userTotalOrbitAmount, setUserTotalOrbit] = useState<BigNumber>(BigNumber.from(0))
     const [maxAvailableTier, setMaxAvailableTier] = useState(0)
     const [newLockingAmount, setLockingAmount] = useState(BigNumber.from(0))
-    const [lockDays, setLockDays] = useState(14)
+    const [lockDays, setLockDays] = useState(TWENTY_EIGHT_DAYS)
     const [isLocking, setIsLocking] = useState(false)
     const snackbar = useSnackbar()
 
     const init = () => {
         if (userClaimedTier > 0) {
             setSelectTier(userClaimedTier.toString())
-        }else{
+        } else {
             setSelectTier('')
         }
         setHash(undefined)
-        setLockDays(14)
+        setLockDays(TWENTY_EIGHT_DAYS)
     }
 
     useEffect(() => {
@@ -122,8 +125,8 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
         snackbar.snackbar.show("Your tier has been upgraded!", "success");
         setSelectTier('')
         callUserOrbitCallback()
-        updateTierAndUnlockTime()
-        handleClose()
+        triggerRefresh()
+        handleClose()        
     }
 
     const onSelectTier = (event: SelectChangeEvent) => {
@@ -149,7 +152,7 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
                     <div className='flex flex-col w-full lg:w-[450px] max-w-[480px] gap-6'>
                         <div className='text-white text-[16px] font-light whitespace-normal'>
                             {userClaimedTier > 0 ? <>
-                                {`Your tier is currently locked for ${Math.floor(unlockTimes / 86400)} days. To use Orbit Fund you require to extend your lock to 28 days.`}
+                                {`Your tier is currently locked for ${Math.floor(unlockTimes / ONEDAY_SECS)} days. To use Orbit Fund you require to extend your lock to 28 days.`}
                             </> : <>
                                 You have not yet claimed your tier. In order to deposit into OrbitFund you must select a tier and lock your tokens for 28 days.
                             </>
@@ -161,29 +164,17 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
                             userClaimedTier={userClaimedTier}
                             maxAvailableTier={maxAvailableTier}
                             balanceTier={balanceTier} />
-                        {userClaimedTier > 0 ?
+
+                        {userClaimedTier > 0 && userClaimedTier === Number(selectedTier) ?
                             <>
-                                {userClaimedTier !== Number(selectedTier) ? <>
-                                    <IncreaseTierAction
-                                        newLockingAmount={newLockingAmount}
-                                        orbitDecimals={orbitDecimals}
-                                        isLocking={isLocking}
-                                        selectedTier={selectedTier}
-                                        userClaimedTier={userClaimedTier}
-                                        ORBIT_TOKEN={ORBIT_TOKEN}
-                                        setClaimTierSuccess={setClaimTierSuccess}
-                                        setIsLocking={(value: boolean) => setIsLocking(value)}
-                                        setHash={(value: string) => setHash(value)}
-                                    />
-                                </> : <>
-                                    <ExtendLockTimeAction
-                                        lockDays={lockDays}
-                                        isLocking={isLocking}                                        
-                                        setClaimTierSuccess={setClaimTierSuccess}
-                                        setIsLocking={(value: boolean) => setIsLocking(value)}
-                                        setHash={(value: string) => setHash(value)}
-                                    />
-                                </>}
+                                <ExtendLockTimeAction
+                                    lockDays={lockDays}
+                                    isLocking={isLocking}
+                                    remainDays={Math.floor(unlockTimes / ONEDAY_SECS)}
+                                    setClaimTierSuccess={setClaimTierSuccess}
+                                    setIsLocking={(value: boolean) => setIsLocking(value)}
+                                    setHash={(value: string) => setHash(value)}
+                                />
                             </> : <>
                                 <ClaimTierAction
                                     buttonText={'Lock your tier'}
