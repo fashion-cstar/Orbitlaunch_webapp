@@ -155,7 +155,7 @@ export default function PadLockTierModal({ isOpen, handleClose }: TierModalProps
                             {userClaimedTier > 0 ? <>
                                 {`Your tier is currently locked for ${Math.floor(Math.max(unlockTimes, 0) / ONEDAY_SECS)} days. To use Orbit Pad you require to extend your lock to 14 days.`}
                             </> : <>
-                                You have not yet claimed your tier. In order to deposit into Orbit Pad you must select a tier and lock your tokens for 14 days.
+                                You have not yet claimed your tier. In order to deposit into OrbitPad you must select a tier and lock your tokens for 14 days.
                             </>
                             }
                         </div>

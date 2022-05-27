@@ -14,7 +14,6 @@ import {
     useMaxAllocationNonM31
 } from 'src/state/Pad/hooks'
 import { useToken, useNativeTokenBalance, useTokenAllowance, useTokenBalance, useTokenBalanceCallback, useApproveCallback } from 'src/state/hooks'
-import { AddressZero } from '@ethersproject/constants'
 import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -139,7 +138,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                 setIsWalletApproving(false)
                 console.log(error)
                 let err: any = error
-                snackbar.snackbar.show(err.data?.message || err, "error")
+                snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
             })
         } catch (error) {
             setIsWalletApproving(false)
@@ -167,7 +166,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                         setAttempting(false)
                         console.log(error)
                         let err: any = error
-                        snackbar.snackbar.show(err.data?.message || err, "error")
+                        snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
                     })
                 } catch (error) {
                     setAttempting(false)

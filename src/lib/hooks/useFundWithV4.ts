@@ -97,10 +97,11 @@ export default function useFundWithV4() {
                 setIsWalletApproving(false)
                 setIsDepositing(true)
                 return await orbitFundContract.deposit(weiAmount)
-                    .then(() => {
+                    .then((response: any) => {
                         setIsDepositing(false)
                         return {
-                            ok: true
+                            ok: true,
+                            hash: response.hash
                         };
                     }).catch((err: any) => {
                         setIsDepositing(false)
@@ -113,7 +114,7 @@ export default function useFundWithV4() {
             });
         }
         catch (err) {
-            setIsWalletApproving(false)
+            setIsWalletApproving(false)                  
             console.error("ERROR: " + (err.data?.message || err));
             return {
                 ok: false,

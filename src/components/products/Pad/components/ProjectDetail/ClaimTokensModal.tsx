@@ -93,7 +93,7 @@ export default function ClaimTokensModal({ isOpen, launchTokenPrice, handleClose
                 setAttempting(false)
                 console.log(error)
                 let err: any = error
-                snackbar.snackbar.show(err.data?.message || err, "error") 
+                snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
             })
         } catch (error) {
             setAttempting(false)

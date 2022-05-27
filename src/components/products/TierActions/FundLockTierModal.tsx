@@ -155,7 +155,7 @@ export default function FundLockTierModal({ isOpen, handleClose }: TierModalProp
                             {userClaimedTier > 0 ? <>
                                 {`Your tier is currently locked for ${Math.floor(Math.max(unlockTimes, 0) / ONEDAY_SECS)} days. To use Orbit Fund you require to extend your lock to 28 days.`}
                             </> : <>
-                                You have not yet claimed your tier. In order to deposit into Orbit Fund you must select a tier and lock your tokens for 28 days.
+                                You have not yet claimed your tier. In order to deposit into OrbitFund you must select a tier and lock your tokens for 28 days.
                             </>
                             }
                         </div>

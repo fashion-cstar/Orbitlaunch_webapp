@@ -38,7 +38,7 @@ export default function UnlockTierAction({
                 setIsUnlocking(false)
                 console.log(error)
                 let err: any = error
-                snackbar.snackbar.show(err.data?.message || err, "error") 
+                snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
             })
         } catch (error) {
             setIsUnlocking(false)

@@ -63,7 +63,7 @@ export default function IncreaseTierAction({
                     console.log(error)
                     setIsWalletApproving(false)
                     let err: any = error
-                    snackbar.snackbar.show(err.data?.message || err, "error") 
+                    snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
                 })
             } catch (error) {
                 console.log(error)
@@ -88,7 +88,7 @@ export default function IncreaseTierAction({
                 setIsLocking(false)
                 console.log(error)
                 let err: any = error
-                snackbar.snackbar.show(err.data?.message || err, "error") 
+                snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
             })
         } catch (error) {
             setIsLocking(false)

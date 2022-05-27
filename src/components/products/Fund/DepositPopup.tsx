@@ -8,6 +8,9 @@ import { useEffect, useState } from "react";
 import AgreeTermsPopup from "./AgreeTermsPopup";
 import LoadingButton from '@mui/lab/LoadingButton';
 import Modal from 'src/components/common/Modal';
+import TaskAltIcon from '@mui/icons-material/TaskAlt'
+import { getEtherscanLink, CHAIN_LABELS } from 'src/utils'
+import { useEthers, ChainId } from "@usedapp/core";
 
 interface DepositPopupProps {
     version: number,
@@ -21,6 +24,7 @@ export default function DepositPopup({
     handleClose,
 }: DepositPopupProps) {
     const snackbar = useSnackbar();
+    const { library, account, chainId } = useEthers()
     const { userAgreed, depositBusd, isWalletApproving: isApprovingV2, isDepositing: isDepositingV2 } = useFund_V2();
     const { userAgreed: userAgreedV3, depositBusd: depositBusdV3, isWalletApproving: isApprovingV3, isDepositing: isDepositingV3 } = useFundWithV3();
     const { userAgreed: userAgreedV4, depositBusd: depositBusdV4, isWalletApproving: isApprovingV4, isDepositing: isDepositingV4 } = useFundWithV4();
@@ -30,6 +34,7 @@ export default function DepositPopup({
     const [selectedDepositCurrency, setSelectedDepositCurrency] = useState('BUSD');
     const [isWalletApproving, setIsWalletApproving] = useState(false)
     const [isDepositing, setIsDepositing] = useState(false)
+    const [hash, setHash] = useState<string | undefined>()
 
     const handleInputChange = (amount: any) => {
         setDisableDepositButton(Number(amount) === 0)
@@ -42,6 +47,7 @@ export default function DepositPopup({
 
     useEffect(() => {        
         setDepositAmount('')
+        setHash(undefined)
     }, [isOpen])
 
     useEffect(() => {
@@ -68,8 +74,9 @@ export default function DepositPopup({
             console.error(depositResult.message);
             return;
         } else {
-            snackbar.snackbar.show(`${depositAmount} ${selectedDepositCurrency} has been deposited successfully!`, "success");
-            handleClose()
+            // snackbar.snackbar.show(`${depositAmount} ${selectedDepositCurrency} has been deposited successfully!`, "success");
+            setHash(depositResult.hash)
+            // handleClose()
         }
     }
 
@@ -113,7 +120,7 @@ export default function DepositPopup({
                 handleClose={closeModal}
             >
                 <div className='m-4 md:m-6 min-w-[300px]'>
-                    <div className='flex flex-col w-full lg:w-[430px] max-w-[460px] gap-4'>
+                    {!hash && <div className='flex flex-col w-full lg:w-[430px] max-w-[460px] gap-4'>
                         <div>
                             <DepositInput
                                 value={depositAmount}
@@ -131,7 +138,23 @@ export default function DepositPopup({
                         >
                             {`${isWalletApproving ? 'Approving ' : isDepositing ? 'Depositing ' : 'Deposit '}${disableDepositButton ? '' : `${depositAmount} ${selectedDepositCurrency}`}`}
                         </LoadingButton>
-                    </div>
+                    </div>}
+                    {hash && (
+                        <div className='w-full'>
+                            <div className='w-full flex justify-center py-4'>
+                                <TaskAltIcon sx={{ fontSize: 120, color: '#00aa00' }} />
+                            </div>
+                            <div className='flex flex-col gap-2'>
+                                <div className='text-[16px] text-[#aaaaaa] text-center'>Transaction submitted</div>
+                                <div className='text-[16px] text-[#aaaaaa] text-center'>{'Hash: ' + hash.slice(0, 10) + '...' + hash.slice(56, 65)}</div>
+                                {chainId && (
+                                    <a className='text-[16px] mt-4 text-[#aaaaee] underline text-center' target="_blank" href={getEtherscanLink(chainId, hash, 'transaction')}>
+                                        {chainId && `View on ${CHAIN_LABELS[chainId]}`}
+                                    </a>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </Modal>
             <AgreeTermsPopup
