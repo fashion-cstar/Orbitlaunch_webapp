@@ -34,10 +34,8 @@ export default function ExtendLockTimeAction({
         setIsLocking(true)
         try {
             let additionalDays = Math.max(lockDays-remainDays, FOURTEEN_DAYS)
-            extendLockTimeCallback(additionalDays).then((response: TransactionResponse) => {
-                console.log(response)
-                response.wait().then((_: any) => {
-                    console.log(response.hash)
+            extendLockTimeCallback(additionalDays).then((response: TransactionResponse) => {                
+                response.wait().then((_: any) => {                    
                     setHash(response.hash)
                     setClaimTierSuccess()
                     setIsLocking(false)                    
@@ -46,10 +44,7 @@ export default function ExtendLockTimeAction({
                     setIsLocking(false)
                     console.log(error)
                     let err: any = error
-                    if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                    if (err?.error) {
-                        if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                    }
+                    snackbar.snackbar.show(err.data?.message || err, "error") 
                 })
         } catch (error) {
             setIsLocking(false)

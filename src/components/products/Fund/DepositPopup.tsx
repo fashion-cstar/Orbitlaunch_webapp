@@ -7,19 +7,18 @@ import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { useEffect, useState } from "react";
 import AgreeTermsPopup from "./AgreeTermsPopup";
 import LoadingButton from '@mui/lab/LoadingButton';
+import Modal from 'src/components/common/Modal';
 
 interface DepositPopupProps {
-    id: string,
     version: number,
-    onDepositSubmit?(event: any, amount: any): void,
-    onClose?(): void
+    isOpen: boolean,
+    handleClose: () => void,
 }
 
 export default function DepositPopup({
-    id,
     version,
-    onDepositSubmit,
-    onClose
+    isOpen,
+    handleClose,
 }: DepositPopupProps) {
     const snackbar = useSnackbar();
     const { userAgreed, depositBusd, isWalletApproving: isApprovingV2, isDepositing: isDepositingV2 } = useFund_V2();
@@ -41,6 +40,10 @@ export default function DepositPopup({
 
     }
 
+    useEffect(() => {        
+        setDepositAmount('')
+    }, [isOpen])
+
     useEffect(() => {
         switch (version) {
             case 2:
@@ -61,13 +64,18 @@ export default function DepositPopup({
     const deposit = async () => {
         const depositResult = version === 2 ? await depositBusd(depositAmount) : version === 4 ? await depositBusdV4(depositAmount) : await depositBusdV3(depositAmount);
         if (!depositResult.ok) {
-            setDepositAmount('');
+            snackbar.snackbar.show(depositResult.message, "error");
             console.error(depositResult.message);
             return;
         } else {
             snackbar.snackbar.show(`${depositAmount} ${selectedDepositCurrency} has been deposited successfully!`, "success");
-            setDepositAmount('');
+            handleClose()
         }
+    }
+
+    const handleCloseAgreeTermsModal = () => {
+        const modal = document.getElementById(agreeTermsModalId);
+        modal.style.display = "none";
     }
 
     const handleOpenAgreeTermsModal = () => {
@@ -89,43 +97,48 @@ export default function DepositPopup({
         else {
             snackbar.snackbar.show(userAgreedResult.message, "error");
         }
+    }
 
-        if (onDepositSubmit) {
-            onDepositSubmit(e, amount);
+    const closeModal = () => {
+        if (!(isDepositing || isWalletApproving)) {
+            handleClose()
         }
     }
 
     return (
         <>
-            <Popup
-                id={id}
-                onPopupClose={onClose}
-                title="Deposit BUSD"
+            <Modal
+                isOpen={isOpen}
+                header="Deposit BUSD"
+                handleClose={closeModal}
             >
-                <div className="space-y-3 p-2">
-                    <div>
-                        <DepositInput
-                            value={depositAmount}
-                            onChange={(val) => handleInputChange(val)}
-                            onSelectedCurrencyChange={(changedCurrency) => handleSelectedCurrencyChange(changedCurrency)}
-                        />
+                <div className='m-4 md:m-6 min-w-[300px]'>
+                    <div className='flex flex-col w-full lg:w-[430px] max-w-[460px] gap-4'>
+                        <div>
+                            <DepositInput
+                                value={depositAmount}
+                                onChange={(val) => handleInputChange(val)}
+                                onSelectedCurrencyChange={(changedCurrency) => handleSelectedCurrencyChange(changedCurrency)}
+                            />
+                        </div>
+                        <LoadingButton
+                            variant="contained"
+                            sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
+                            loading={isWalletApproving || isDepositing}
+                            loadingPosition="start"
+                            disabled={disableDepositButton}
+                            onClick={async (e) => await handleDepositSubmit(e, depositAmount)}
+                        >
+                            {`${isWalletApproving ? 'Approving ' : isDepositing ? 'Depositing ' : 'Deposit '}${disableDepositButton ? '' : `${depositAmount} ${selectedDepositCurrency}`}`}
+                        </LoadingButton>
                     </div>
-                    <LoadingButton
-                        variant="contained"
-                        sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
-                        loading={isWalletApproving || isDepositing}
-                        loadingPosition="start"
-                        disabled={disableDepositButton}
-                        onClick={async (e) => await handleDepositSubmit(e, depositAmount)}
-                    >
-                        {`${isWalletApproving ? 'Approving ' : isDepositing ? 'Depositing ' : 'Deposit '}${disableDepositButton ? '' : `${depositAmount} ${selectedDepositCurrency}`}`}
-                    </LoadingButton>
                 </div>
-            </Popup>
+            </Modal>
             <AgreeTermsPopup
                 id={agreeTermsModalId}
                 version={version}
                 onAgreeToTerms={async () => await deposit()}
+                handleCloseAgreeTermsModal={handleCloseAgreeTermsModal}
             />
         </>
     );

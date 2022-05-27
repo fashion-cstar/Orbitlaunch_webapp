@@ -28,7 +28,7 @@ export default function useFund() {
             const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
 
             return orbitFundContract.agreeToTerms()
-                .then(() => {
+                .then((tx:any) => {
                     return {
                         ok: true
                     };

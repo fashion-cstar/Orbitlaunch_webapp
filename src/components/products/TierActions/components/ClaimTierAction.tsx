@@ -69,10 +69,7 @@ export default function ClaimTierAction({
                     console.log(error)
                     setIsWalletApproving(false)
                     let err: any = error
-                    if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                    if (err?.error) {
-                        if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                    }
+                    snackbar.snackbar.show(err.data?.message || err, "error") 
                 })
             } catch (error) {
                 console.log(error)
@@ -99,10 +96,7 @@ export default function ClaimTierAction({
                     setIsLocking(false)
                     console.log(error)
                     let err: any = error
-                    if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                    if (err?.error) {
-                        if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                    }
+                    snackbar.snackbar.show(err.data?.message || err, "error") 
                 })
             } catch (error) {
                 setIsLocking(false)
@@ -118,13 +112,9 @@ export default function ClaimTierAction({
                     })
                 }).catch(error => {
                     setIsLocking(false)
-                    console.log(error)
-                    console.debug("lockAndClaimTier Error: ", error)
+                    console.log(error)                    
                     let err: any = error
-                    if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                    if (err?.error) {
-                        if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                    }
+                    snackbar.snackbar.show(err.data?.message || err, "error") 
                 })
             } catch (error) {
                 setIsLocking(false)

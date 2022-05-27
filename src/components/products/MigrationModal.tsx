@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import MigrateInput from '@app/components/common/MigrateInput'
 import MigrateOutput from '@app/components/common/MigrateOutput'
+import LoadingButton from '@mui/lab/LoadingButton';
 import { Button } from "@mui/material"
 import SwapIcon from './Exchange/svgs/SwapIcon'
 import QuestionMark from './Pad/components/svgs/QuestionMark'
@@ -119,14 +120,12 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
             approveCallback(MigrationOrbitAddress, M31TokenAddress, Math.round(inputAmount + 1), 'bsc').then((hash: string) => {
                 setIsApproved(true)
                 setIsWalletApproving(false)
+                snackbar.snackbar.show("Approved!", "success");
             }).catch((error: any) => {
                 setIsWalletApproving(false)
                 console.log(error)
                 let err: any = error
-                if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                if (err?.error) {
-                    if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                }
+                snackbar.snackbar.show(err.data?.message || err, "error")
             })
         } catch (error) {
             setIsWalletApproving(false)
@@ -175,10 +174,7 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
                         setAttempting(false)
                         console.log(error)
                         let err: any = error
-                        if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                        if (err?.error) {
-                            if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                        }
+                        snackbar.snackbar.show(err.data?.message || err, "error")
                     })
                 } catch (error) {
                     setAttempting(false)
@@ -249,9 +245,6 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
         setInputAmount(formatEther(userM31Balance, m31Decimals, 2));
     }, [userM31Balance]);
 
-    // console.log(inputAmount);
-    // console.log(!account , isOverMax , ethBalance <= 0 , inputAmount === 0 , isApproved , isWalletApproving);
-
     const closeModal = () => {
         if (!(isWalletApproving || attempting)) handleClose()
     }
@@ -289,14 +282,17 @@ export default function MigrationModal({ isOpen, handleClose }: MigrationModalPr
                                 </div>
                                 <div className='flex gap-4 mt-2'>
                                     {!isApproved ?
-                                        <Button
+                                        <LoadingButton
                                             variant="contained"
                                             sx={{ width: "100%", borderRadius: "12px" }}
+                                            loading={isWalletApproving}
+                                            loadingPosition="start"
                                             onClick={onApprove}
                                             disabled={!account || isOverMax || ethBalance <= 0 || inputAmount === 0 || isApproved || isWalletApproving}
                                         >
-                                            Approve
-                                        </Button> :
+                                            {isWalletApproving ? 'Approving...' : "Approve"}
+                                        </LoadingButton>
+                                        :
                                         <Button
                                             variant="contained"
                                             sx={{ width: "100%", borderRadius: "12px" }}

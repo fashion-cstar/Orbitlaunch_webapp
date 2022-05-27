@@ -8,6 +8,7 @@ import { useTierAndUnlockTime } from 'src/state/LockActions'
 import { useRouter } from 'next/router'
 import {
     OrbtTokenAddress,
+    TestOrbtTokenAddress,
     TierTokenLockContractAddress
 } from "@app/shared/AppConstant"
 import { BigNumber } from '@ethersproject/bignumber';
@@ -28,7 +29,7 @@ interface TierModalProps {
 
 export default function TierActionsModal({ isOpen, handleClose }: TierModalProps) {
     // const ORBIT_TOKEN = OrbtTokenAddress
-    const ORBIT_TOKEN = "0x8401e6e7ba1a1ec011bdf34cd59fb11545fae523"
+    const ORBIT_TOKEN = TestOrbtTokenAddress
     const { library, account, chainId } = useEthers()
     const { triggerRefresh } = useRefresh()
     const router = useRouter()
@@ -40,7 +41,7 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
     const [orbitDecimals, setOrbitDecimals] = useState(18)
     const tierlist = tierInformation.map(item => ({ 'label': 'Tier ' + item.tierNo, value: item.tierNo, requiredTokens: item.requiredTokens, shownRequiredTokens: item.shownRequiredTokens }))
     const [balanceTier, setBalanceTier] = useState(0)
-    const { userClaimedTier, unlockTimes, lockedAmount, updateTierAndUnlockTime } = useTierAndUnlockTime(TierTokenLockContractAddress, 'bsc', isOpen)
+    const { userClaimedTier, unlockTimes, lockedAmount } = useTierAndUnlockTime(TierTokenLockContractAddress, 'bsc', isOpen)
     const [userTotalOrbitAmount, setUserTotalOrbit] = useState<BigNumber>(BigNumber.from(0))
     const [maxAvailableTier, setMaxAvailableTier] = useState(0)
     const [lockStep, setLockStep] = useState(0)

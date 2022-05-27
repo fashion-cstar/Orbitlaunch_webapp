@@ -18,7 +18,7 @@ import TierSelectBox from "./components/TierSelectBox"
 import ClaimTierAction from './components/ClaimTierAction';
 import ExtendLockTimeAction from './components/ExtendLockTimeAction';
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
-import { ONEDAY_SECS, TWENTY_EIGHT_DAYS } from "@app/utils";
+import { ONEDAY_SECS, THIRTEEN_DAYS } from "@app/utils";
 import useRefresh from 'src/state/useRefresh'
 
 interface TierModalProps {
@@ -27,7 +27,7 @@ interface TierModalProps {
     setClaimTierSuccess: () => void
 }
 
-export default function FundLockTierModal({ isOpen, handleClose }: TierModalProps) {
+export default function PadLockTierModal({ isOpen, handleClose }: TierModalProps) {
     // const ORBIT_TOKEN = OrbtTokenAddress
     const ORBIT_TOKEN = TestOrbtTokenAddress
     const { library, account, chainId } = useEthers()
@@ -44,7 +44,7 @@ export default function FundLockTierModal({ isOpen, handleClose }: TierModalProp
     const [userTotalOrbitAmount, setUserTotalOrbit] = useState<BigNumber>(BigNumber.from(0))
     const [maxAvailableTier, setMaxAvailableTier] = useState(0)
     const [newLockingAmount, setLockingAmount] = useState(BigNumber.from(0))
-    const [lockDays, setLockDays] = useState(TWENTY_EIGHT_DAYS)
+    const [lockDays, setLockDays] = useState(THIRTEEN_DAYS)
     const [isLocking, setIsLocking] = useState(false)
     const snackbar = useSnackbar()
 
@@ -55,7 +55,7 @@ export default function FundLockTierModal({ isOpen, handleClose }: TierModalProp
             setSelectTier('')
         }
         setHash(undefined)
-        setLockDays(TWENTY_EIGHT_DAYS)
+        setLockDays(THIRTEEN_DAYS)
     }
 
     useEffect(() => {
@@ -153,9 +153,9 @@ export default function FundLockTierModal({ isOpen, handleClose }: TierModalProp
                     <div className='flex flex-col w-full lg:w-[450px] max-w-[480px] gap-6'>
                         <div className='text-white text-[16px] font-light whitespace-normal'>
                             {userClaimedTier > 0 ? <>
-                                {`Your tier is currently locked for ${Math.floor(Math.max(unlockTimes, 0) / ONEDAY_SECS)} days. To use Orbit Fund you require to extend your lock to 28 days.`}
+                                {`Your tier is currently locked for ${Math.floor(Math.max(unlockTimes, 0) / ONEDAY_SECS)} days. To use Orbit Pad you require to extend your lock to 14 days.`}
                             </> : <>
-                                You have not yet claimed your tier. In order to deposit into Orbit Fund you must select a tier and lock your tokens for 28 days.
+                                You have not yet claimed your tier. In order to deposit into Orbit Pad you must select a tier and lock your tokens for 14 days.
                             </>
                             }
                         </div>

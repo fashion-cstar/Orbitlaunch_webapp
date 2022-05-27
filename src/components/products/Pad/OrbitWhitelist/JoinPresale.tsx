@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import Button from '@mui/material/Button'
+import LoadingButton from '@mui/lab/LoadingButton';
 import FundTokenInput from '../components/Common/FundTokenInput'
 import ProjectTokenInput from '../components/Common/ProjectTokenInput'
 import { useEthers, ChainId } from "@usedapp/core"
@@ -123,14 +124,12 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
             approveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount + 1), project.blockchain).then((hash: string) => {
                 setIsApproved(true)
                 setIsWalletApproving(false)
+                snackbar.snackbar.show("Approved!", "success");
             }).catch((error: any) => {
                 setIsWalletApproving(false)
                 console.log(error)
                 let err: any = error
-                if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                if (err?.error) {
-                    if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                }
+                snackbar.snackbar.show(err.data?.message || err, "error") 
             })
         } catch (error) {
             setIsWalletApproving(false)
@@ -157,10 +156,7 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
                         setAttempting(false)
                         console.log(error)
                         let err: any = error
-                        if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                        if (err?.error) {
-                            if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                        }
+                        snackbar.snackbar.show(err.data?.message || err, "error") 
                     })
                 } catch (error) {
                     setAttempting(false)
@@ -264,11 +260,7 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
                             <FundTokenInput onChange={(val: any) => onFundTokenChange(val)}
                                 value={fundTokenAmount} name="BUSD" icon="./images/launchpad/TokenIcons/busd.svg" />
                             <ProjectTokenInput onChange={(val: any) => onProjectTokenChange(val)} onMax={onMax}
-                                value={projectTokenAmount} name={project.projectSymbol} icon={project.projectIcon} />
-                            {/* <div className='text-white text-[14px] flex justify-between'>
-                                <div>Max Allocation Allowed</div>
-                                <div className='text-right'>{`$${userMaxAllocation} / ${getAllowedLaunchTokens()}`}</div>
-                            </div> */}
+                                value={projectTokenAmount} name={project.projectSymbol} icon={project.projectIcon} />                            
                             <div className='text-white text-[14px] flex justify-between'>
                                 <div>Tokens Purchased</div>
                                 <div className='text-right'>{`$${formatEther(depositedAmount, fundDecimals, 2)} / ${getUserPurchasedLaunchTokens()}`}</div>
@@ -286,14 +278,16 @@ export default function OrbitJoinPresale({ launchTokenPrice, currentTierNo, proj
                                 <div className='text-right'>{`${ethBalance} ${getNativeSymbol(project.blockchain)}`}</div>
                             </div>
                             <div className='flex gap-4'>
-                                <Button
+                                <LoadingButton
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
+                                    loading={isWalletApproving}
+                                    loadingPosition="start"
                                     onClick={onApprove}
                                     disabled={!account || !launchTokenPrice || isOverMax || ethBalance <= 0 || fundTokenAmount === 0 || isApproved || isWalletApproving || !(projectStatus === PROJECT_STATUS.PresaleOpen || projectStatus === PROJECT_STATUS.PublicPresaleOpen)}
                                 >
-                                    Approve
-                                </Button>
+                                    {isWalletApproving ? 'Approving...' : "Approve"}
+                                </LoadingButton>
                                 <Button
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}

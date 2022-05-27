@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import Button from '@mui/material/Button';
 import Modal from 'src/components/common/Modal';
-import InputBox from '../Common/InputBox';
+import LoadingButton from '@mui/lab/LoadingButton';
 import FundTokenInput from '../Common/FundTokenInput'
 import ProjectTokenInput from '../Common/ProjectTokenInput'
 import { useEthers, ChainId } from "@usedapp/core";
@@ -134,14 +134,12 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
             approveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount + 1), project.blockchain).then((hash: string) => {
                 setIsApproved(true)
                 setIsWalletApproving(false)
+                snackbar.snackbar.show("Approved!", "success");
             }).catch((error: any) => {
                 setIsWalletApproving(false)
                 console.log(error)
                 let err: any = error
-                if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                if (err?.error) {
-                    if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                }
+                snackbar.snackbar.show(err.data?.message || err, "error")
             })
         } catch (error) {
             setIsWalletApproving(false)
@@ -169,10 +167,7 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                         setAttempting(false)
                         console.log(error)
                         let err: any = error
-                        if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                        if (err?.error) {
-                            if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                        }
+                        snackbar.snackbar.show(err.data?.message || err, "error")
                     })
                 } catch (error) {
                     setAttempting(false)
@@ -308,15 +303,17 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 <div>Native Coin Balance</div>
                                 <div className='text-right'>{`${ethBalance} ${getNativeSymbol(project.blockchain)}`}</div>
                             </div>
-                            <div className='flex gap-4'>
-                                <Button
+                            <div className='flex gap-4'>          
+                                <LoadingButton
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
-                                    onClick={onApprove}
+                                    loading={isWalletApproving}
+                                    loadingPosition="start"
                                     disabled={!account || !launchTokenPrice || isOverMax || ethBalance <= 0 || fundTokenAmount === 0 || isApproved || isWalletApproving || !(projectStatus === PROJECT_STATUS.PresaleOpen || projectStatus === PROJECT_STATUS.PublicPresaleOpen)}
+                                    onClick={onApprove}
                                 >
-                                    Approve
-                                </Button>
+                                    {isWalletApproving ? 'Approving...' : "Approve"}
+                                </LoadingButton>
                                 <Button
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}

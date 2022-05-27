@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useMemo, useState, useEffect } from 'react'
 
 interface DepositInputProps {
     value: any
@@ -22,6 +22,10 @@ export default function DepositInput({
     const options = depositCurrencyOptions ?? [{ key: 0, value: 'BUSD', icon: 'BUSD' }];
     const classInput = inputClass ?? 'bg-[#001926] text-gray-400 text-sm';
 
+    useEffect(() => {
+        setDepositAmount(isNaN(value) ? 0.0 : value)
+    }, [value])
+    
     const handleChangeAmount = (e: any) => {
         const amount = e.target.value;
         if (isNaN(amount)) {

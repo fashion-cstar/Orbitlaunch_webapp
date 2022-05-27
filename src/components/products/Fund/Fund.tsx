@@ -27,6 +27,7 @@ export default function Fund() {
     const depositModalId = "deposit-busd-modal";
     const { account, library } = useEthers();
     const [version, setVersion] = useState(2);
+    const [isOpenDeposit, setIsOpenDeposit] = useState(false)
     const { userClaimedTier, unlockTimes, updateTierAndUnlockTime } = useTierAndUnlockTime(TierTokenLockContractAddress, 'bsc', false)
     const {
         totalInvestedToDate_V1,
@@ -93,8 +94,7 @@ export default function Fund() {
             setIsOpenLockTier(true)
         } else {
             setVersion(4);
-            const modal = document.getElementById(depositModalId);
-            modal.style.display = "flex";
+            setIsOpenDeposit(true)
         }
     }
 
@@ -163,9 +163,10 @@ export default function Fund() {
     const closeLockTierModal = () => {
         setIsOpenLockTier(false)
     }
+    
     return (
         <>
-            <DepositPopup id={depositModalId} version={version} />
+            <DepositPopup isOpen={isOpenDeposit} version={version} handleClose={() => setIsOpenDeposit(false)} />
             <FundLockTierModal isOpen={isOpenLockTier} handleClose={closeLockTierModal} setClaimTierSuccess={setClaimTierSuccess} />
             <div className="desktop-content flex flex-col space-y-4 w-full">
 

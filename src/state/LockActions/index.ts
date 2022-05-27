@@ -19,7 +19,7 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
     unlockTokenCallback: () => Promise<TransactionResponse>
 } {
     // get claim data for this account
-    const { account, library } = useEthers()    
+    const { account, library } = useEthers()
     const chainId = getChainIdFromName(blockchain);
     const lockContract: Contract = getContract(lockContractAddress, TierTokenLockABI, library, account ? account : undefined)
     const lockAndClaimTierCallback = async function (amount: BigNumber, lockDays: number) {
@@ -103,7 +103,8 @@ export function useTierAndUnlockTime(lockContractAddress: string, blockchain: st
             setTier(result[0]?.toNumber() == 10 ? 0 : result[0]?.toNumber() + 1)
             let cur = moment(moment.now())
             let unlockTimestamp = moment(result[1]?.toNumber() * 1000)
-            setUnlockTimes(unlockTimestamp.diff(cur, 'seconds') < 0 ? 0 : unlockTimestamp.diff(cur, 'seconds'))            
+            // setUnlockTimes(unlockTimestamp.diff(cur, 'seconds') < 0 ? 0 : unlockTimestamp.diff(cur, 'seconds'))            
+            setUnlockTimes(unlockTimestamp.diff(cur, 'seconds'))
         }).catch(error => { console.log(error) })
         fetchUserLockAmount().then(result => {
             setLockedAmount(result?.amount)
