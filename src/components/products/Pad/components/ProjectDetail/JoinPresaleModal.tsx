@@ -321,16 +321,6 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 >
                                     Deposit
                                 </Button>
-
-                                {/* <Button
-                                    variant="contained"
-                                    sx={{ width: "100%", borderRadius: "12px" }}
-                                    onClick={onApprove}
-                                    disabled={true}
-                                >
-                                    Reserve Your Tokens Now
-                                </Button> */}
-
                             </div>
                         </div>
                     )}

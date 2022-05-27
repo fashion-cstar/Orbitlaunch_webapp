@@ -37,7 +37,7 @@ export default function useFundWithV4() {
                             ok: false,
                             message: "Cannot agree to terms now. Please try again."
                         };
-                    })                    
+                    })
                 }).catch((err: any) => {
                     console.error("ERROR: " + (err.data?.message || err));
                     return {
@@ -82,39 +82,57 @@ export default function useFundWithV4() {
         }
     }
 
+    const approve = async (amount: string) => {
+        try {            
+            const busdContract = getContract(BusdContractAddress, busdAbi, library, account ? account : undefined);
+            const provider = getProviderOrSigner(library, account) as any;
+
+            const weiAmount = ethers.utils.parseEther(amount);
+            return await busdContract.connect(provider).approve(OrbitFundContractAddressWithV4Token, weiAmount)
+                .then((response: any) => {
+                    return response.wait().then(async (_: any) => {
+                        return {
+                            ok: true,
+                            hash: response.hash
+                        };
+                    });
+                }).catch((err: any) => {
+                    console.error("ERROR: " + (err.data?.message || err));
+                    return {
+                        ok: false,
+                        message: (err.data?.message || err?.message || err).toString()
+                    };
+                });
+        }
+        catch (err) {            
+            console.error("ERROR: " + (err.data?.message || err));
+            return {
+                ok: false,
+                message: "Approve transaction rejected. Please try again."
+            };
+        }
+    }
+
     const depositBusd = async (amount: string) => {
         try {
             const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, library, account ? account : undefined);
-            const busdContract = getContract(BusdContractAddress, busdAbi, library, account ? account : undefined);
-            const provider = getProviderOrSigner(library, account) as any;
-            
-            const weiAmount = ethers.utils.parseEther(amount);            
-            setIsWalletApproving(true)
-            const approveTxHash = await busdContract
-                .connect(provider)
-                .approve(OrbitFundContractAddressWithV4Token, weiAmount);
-            return approveTxHash.wait().then(async (_: any) => {
-                setIsWalletApproving(false)
-                setIsDepositing(true)
+
+            const weiAmount = ethers.utils.parseEther(amount);           
                 return await orbitFundContract.deposit(weiAmount)
                     .then((response: any) => {
-                        setIsDepositing(false)
                         return {
                             ok: true,
                             hash: response.hash
                         };
                     }).catch((err: any) => {
-                        setIsDepositing(false)
                         console.error("ERROR: " + (err.data?.message || err));
                         return {
                             ok: false,
-                            message: err.data?.message || err
+                            message: (err.data?.message || err?.message || err).toString()
                         };
                     });
-            });
         }
-        catch (err) {
-            setIsWalletApproving(false)                  
+        catch (err) {            
             console.error("ERROR: " + (err.data?.message || err));
             return {
                 ok: false,
@@ -475,12 +493,13 @@ export default function useFundWithV4() {
             profitUpToDate,
             agreeToTerms,
             userAgreed,
+            approve,
             depositBusd,
             withdraw
         }),
         [isWalletApproving, isDepositing, startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, totalInvestors,
             roiToDate, currentTierNo, currentTierPercentage, disableDeposit, disableWithdraw,
-            remainingTimeText, balance, profitUpToDate, totalInvestedToDate, agreeToTerms, userAgreed, depositBusd, withdraw]
+            remainingTimeText, balance, profitUpToDate, totalInvestedToDate, agreeToTerms, userAgreed, approve, depositBusd, withdraw]
     );
 
     return fundInfo;

@@ -1,5 +1,5 @@
 import DepositInput from "@app/components/common/DepositInput";
-import Popup from "@app/components/common/Popup";
+import Button from '@mui/material/Button';
 import useFundWithV3 from "@app/lib/hooks/useFundWithV3";
 import useFundWithV4 from "@app/lib/hooks/useFundWithV4";
 import useFund_V2 from "@app/lib/hooks/useFund_V2";
@@ -11,6 +11,8 @@ import Modal from 'src/components/common/Modal';
 import TaskAltIcon from '@mui/icons-material/TaskAlt'
 import { getEtherscanLink, CHAIN_LABELS } from 'src/utils'
 import { useEthers, ChainId } from "@usedapp/core";
+import CircularProgress from '@mui/material/CircularProgress';
+import Fade from '@mui/material/Fade';
 
 interface DepositPopupProps {
     version: number,
@@ -25,16 +27,17 @@ export default function DepositPopup({
 }: DepositPopupProps) {
     const snackbar = useSnackbar();
     const { library, account, chainId } = useEthers()
-    const { userAgreed, depositBusd, isWalletApproving: isApprovingV2, isDepositing: isDepositingV2 } = useFund_V2();
-    const { userAgreed: userAgreedV3, depositBusd: depositBusdV3, isWalletApproving: isApprovingV3, isDepositing: isDepositingV3 } = useFundWithV3();
-    const { userAgreed: userAgreedV4, depositBusd: depositBusdV4, isWalletApproving: isApprovingV4, isDepositing: isDepositingV4 } = useFundWithV4();
+    const { userAgreed, depositBusd, approve } = useFund_V2();
+    const { userAgreed: userAgreedV3, approve: approveV3, depositBusd: depositBusdV3 } = useFundWithV3();
+    const { userAgreed: userAgreedV4, approve: approveV4, depositBusd: depositBusdV4 } = useFundWithV4();
     const agreeTermsModalId = "agree-terms-modal";
     const [disableDepositButton, setDisableDepositButton] = useState(true);
     const [depositAmount, setDepositAmount] = useState('');
     const [selectedDepositCurrency, setSelectedDepositCurrency] = useState('BUSD');
-    const [isWalletApproving, setIsWalletApproving] = useState(false)
-    const [isDepositing, setIsDepositing] = useState(false)
     const [hash, setHash] = useState<string | undefined>()
+    const [attempting, setAttempting] = useState(false)
+    const [isApproved, setIsApproved] = useState(false)
+    const [isWalletApproving, setIsWalletApproving] = useState(false)
 
     const handleInputChange = (amount: any) => {
         setDisableDepositButton(Number(amount) === 0)
@@ -45,27 +48,12 @@ export default function DepositPopup({
 
     }
 
-    useEffect(() => {        
+    useEffect(() => {
         setDepositAmount('')
         setHash(undefined)
+        setAttempting(false)
+        setIsApproved(false)
     }, [isOpen])
-
-    useEffect(() => {
-        switch (version) {
-            case 2:
-                setIsWalletApproving(isApprovingV2)
-                setIsDepositing(isDepositingV2)
-                break;
-            case 4:
-                setIsWalletApproving(isApprovingV4)
-                setIsDepositing(isDepositingV4)
-                break;
-            default:
-                setIsWalletApproving(isApprovingV3)
-                setIsDepositing(isDepositingV3)
-                break;
-        }
-    }, [isApprovingV2, isApprovingV3, isApprovingV4, isDepositingV2, isDepositingV3, isDepositingV4])
 
     const deposit = async () => {
         const depositResult = version === 2 ? await depositBusd(depositAmount) : version === 4 ? await depositBusdV4(depositAmount) : await depositBusdV3(depositAmount);
@@ -90,7 +78,7 @@ export default function DepositPopup({
         modal.style.display = "flex";
     }
 
-    const handleDepositSubmit = async (e: any, amount: any) => {
+    async function onApprove() {
         const userAgreedResult = version === 2 ? await userAgreed() : version === 4 ? await userAgreedV4() : await userAgreedV3();
         if (userAgreedResult.ok) {
             //If user agreement has not been done, open the agreement modal
@@ -99,15 +87,43 @@ export default function DepositPopup({
                 return;
             }
 
-            await deposit();
+            setIsWalletApproving(true)
+            const approveResult = version === 2 ? await approve(depositAmount) : version === 4 ? await approveV4(depositAmount) : await approveV3(depositAmount);
+            setIsWalletApproving(false)
+            if (!approveResult.ok) {
+                snackbar.snackbar.show(approveResult.message, "error");
+                console.error(approveResult.message);
+                return;
+            } else {
+                snackbar.snackbar.show(`Approved!`, "success");
+                setIsApproved(true)
+            }
         }
         else {
             snackbar.snackbar.show(userAgreedResult.message, "error");
         }
     }
 
+    async function onDeposit() {
+        setAttempting(true)
+        const depositResult = version === 2 ? await depositBusd(depositAmount) : version === 4 ? await depositBusdV4(depositAmount) : await depositBusdV3(depositAmount);
+        setAttempting(false)
+        if (!depositResult.ok) {
+            snackbar.snackbar.show(depositResult.message, "error");
+            console.error(depositResult.message);
+            return;
+        } else {
+            // snackbar.snackbar.show(`${depositAmount} ${selectedDepositCurrency} has been deposited successfully!`, "success");
+            setHash(depositResult.hash)
+        }
+    }
+
+    const handleDepositSubmit = async (e: any, amount: any) => {
+
+    }
+
     const closeModal = () => {
-        if (!(isDepositing || isWalletApproving)) {
+        if (!(isWalletApproving || attempting)) {
             handleClose()
         }
     }
@@ -120,7 +136,7 @@ export default function DepositPopup({
                 handleClose={closeModal}
             >
                 <div className='m-4 md:m-6 min-w-[300px]'>
-                    {!hash && <div className='flex flex-col w-full lg:w-[430px] max-w-[460px] gap-4'>
+                    {!attempting && !hash && <div className='flex flex-col w-full lg:w-[430px] max-w-[460px] gap-4'>
                         <div>
                             <DepositInput
                                 value={depositAmount}
@@ -128,7 +144,7 @@ export default function DepositPopup({
                                 onSelectedCurrencyChange={(changedCurrency) => handleSelectedCurrencyChange(changedCurrency)}
                             />
                         </div>
-                        <LoadingButton
+                        {/* <LoadingButton
                             variant="contained"
                             sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
                             loading={isWalletApproving || isDepositing}
@@ -137,8 +153,38 @@ export default function DepositPopup({
                             onClick={async (e) => await handleDepositSubmit(e, depositAmount)}
                         >
                             {`${isWalletApproving ? 'Approving ' : isDepositing ? 'Depositing ' : 'Deposit '}${disableDepositButton ? '' : `${depositAmount} ${selectedDepositCurrency}`}`}
-                        </LoadingButton>
+                        </LoadingButton> */}
+                        <div className='flex gap-4'>
+                            <LoadingButton
+                                variant="contained"
+                                sx={{ width: "100%", borderRadius: "12px" }}
+                                loading={isWalletApproving}
+                                loadingPosition="start"
+                                disabled={disableDepositButton || isApproved}
+                                onClick={onApprove}
+                            >
+                                {isWalletApproving ? 'Approving...' : "Approve"}
+                            </LoadingButton>
+                            <Button
+                                variant="contained"
+                                sx={{ width: "100%", borderRadius: "12px" }}
+                                onClick={onDeposit}
+                                disabled={!isApproved || disableDepositButton}
+                            >
+                                Deposit
+                            </Button>
+                        </div>
                     </div>}
+                    {attempting && !hash && (
+                        <div className="flex justify-center items-center flex-col gap-12 h-[200px]">
+                            <Fade in={true} style={{ transitionDelay: '800ms' }} unmountOnExit>
+                                <CircularProgress />
+                            </Fade>
+                            <div>
+                                {`Depositing ${depositAmount} ${selectedDepositCurrency}`}
+                            </div>
+                        </div>
+                    )}
                     {hash && (
                         <div className='w-full'>
                             <div className='w-full flex justify-center py-4'>

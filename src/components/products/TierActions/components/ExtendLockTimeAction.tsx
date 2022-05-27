@@ -63,7 +63,7 @@ export default function ExtendLockTimeAction({
                 disabled={isLocking}
                 onClick={handleExtendTier}
             >
-                {isLocking ? 'Extending your tier...' : "Extend your tier"}
+                {isLocking ? 'Extending your lock...' : "Extend your lock"}
             </LoadingButton>
         </div>
     );

@@ -76,39 +76,57 @@ export default function useFund() {
         }
     }
 
-    const depositBusd_V1 = async (amount: string) => {
+    const approve_V1 = async (amount: string) => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
             const busdContract = getContract(BusdContractAddress, busdAbi, library, account ? account : undefined);
             const provider = getProviderOrSigner(library, account) as any;
 
             const weiAmount = ethers.utils.parseEther(amount);
-            setIsWalletApproving(true)
-            const approveTxHash = await busdContract
-                .connect(provider)
-                .approve(OrbitFundContractAddress, weiAmount);
-
-            return approveTxHash.wait().then(async (_: any) => {
-                setIsWalletApproving(false)
-                setIsDepositing(true)
-                return await orbitFundContract.deposit(weiAmount)
-                    .then(() => {
-                        setIsDepositing(false)
+            return await busdContract.connect(provider).approve(OrbitFundContractAddress, weiAmount)
+                .then((response: any) => {
+                    return response.wait().then(async (_: any) => {
                         return {
-                            ok: true
+                            ok: true,
+                            hash: response.hash
+                        };
+                    });
+                }).catch((err: any) => {
+                    console.error("ERROR: " + (err.data?.message || err));
+                    return {
+                        ok: false,
+                        message: (err.data?.message || err?.message || err).toString()
+                    };
+                });
+        }
+        catch (err) {            
+            console.error("ERROR: " + (err.data?.message || err));
+            return {
+                ok: false,
+                message: "Approve transaction rejected. Please try again."
+            };
+        }
+    }
+
+    const depositBusd_V1 = async (amount: string) => {
+        try {
+            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+
+            const weiAmount = ethers.utils.parseEther(amount);           
+                return await orbitFundContract.deposit(weiAmount)
+                    .then((response: any) => {
+                        return {
+                            ok: true,
+                            hash: response.hash
                         };
                     }).catch((err: any) => {
-                        setIsDepositing(false)
                         console.error("ERROR: " + (err.data?.message || err));
                         return {
                             ok: false,
-                            message: "Deposit transaction rejected. Please try again."
+                            message: (err.data?.message || err?.message || err).toString()
                         };
                     });
-            });
         }
-        catch (err) {
-            setIsWalletApproving(false)
+        catch (err) {            
             console.error("ERROR: " + (err.data?.message || err));
             return {
                 ok: false,
@@ -503,12 +521,13 @@ export default function useFund() {
             totalReturned_V1,
             agreeToTerms_V1,
             userAgreed_V1,
+            approve_V1,
             depositBusd_V1,
             withdraw_V1
         }),
         [ isWalletApproving, isDepositing, startInvestmentPeriodDate_V1, endInvestmentPeriodDate_V1, currentInvestment_V1, totalInvestors_V1,userLastInvestment_V1,
             roiToDate_V1, userReturned_V1, currentTierNo_V1, currentTierPercentage_V1, disableDeposit_V1, disableWithdraw_V1,
-            remainingTimeText_V1, balance_V1, totalProfit_V1, totalReturned_V1, totalInvestedToDate_V1, agreeToTerms_V1, userAgreed_V1, depositBusd_V1, withdraw_V1]
+            remainingTimeText_V1, balance_V1, totalProfit_V1, totalReturned_V1, totalInvestedToDate_V1, agreeToTerms_V1, userAgreed_V1, approve_V1, depositBusd_V1, withdraw_V1]
     );
 
     return fundInfo;
