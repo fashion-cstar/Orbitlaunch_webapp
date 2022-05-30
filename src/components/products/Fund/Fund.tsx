@@ -89,7 +89,7 @@ export default function Fund() {
         updateTierAndUnlockTime()
     }
 
-    const handleOpenDepositModalV4 = () => {        
+    const handleOpenDepositModalV4 = () => {
         if (Math.floor(unlockTimes / ONEDAY_SECS) < TWENTY_SIX_DAYS) {
             setIsOpenLockTier(true)
         } else {
@@ -163,7 +163,7 @@ export default function Fund() {
     const closeLockTierModal = () => {
         setIsOpenLockTier(false)
     }
-    
+
     return (
         <>
             <DepositPopup isOpen={isOpenDeposit} version={version} handleClose={() => setIsOpenDeposit(false)} />
@@ -420,15 +420,6 @@ export default function Fund() {
                                 >
                                     {disableDeposit ? 'Deposit window closed (v3)' : 'Deposit BUSD (v3)'}
                                 </Button>
-                                <Button
-                                    type="button"
-                                    disabled={disableDepositV4 || userClaimedTier === 0}
-                                    onClick={(disableDepositV4 || userClaimedTier === 0) ? null : handleOpenDepositModalV4}
-                                    variant="outlined"
-                                    sx={{ borderRadius: "12px" }}
-                                >
-                                    {disableDepositV4 ? 'Deposit window closed (Test v4)' : 'Deposit BUSD (Test v4)'}
-                                </Button>
                             </>
                         )
                         : (
@@ -443,6 +434,15 @@ export default function Fund() {
                         )
                     }
                 </div>
+                <Button
+                    type="button"
+                    disabled={disableDepositV4 || userClaimedTier === 0}
+                    onClick={(disableDepositV4 || userClaimedTier === 0) ? null : handleOpenDepositModalV4}
+                    variant="outlined"
+                    sx={{ borderRadius: "12px" }}
+                >
+                    {disableDepositV4 ? 'Deposit window closed (Test v4)' : 'Deposit BUSD (Test v4)'}
+                </Button>
                 <div className="flex flex-row items-center space-x-4">
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">

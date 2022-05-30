@@ -53,7 +53,7 @@ function BalanceAndDisconnect({ isMobile }: { isMobile: boolean }) {
     <>
       <TierActionsModal isOpen={isOpenTierActions} handleClose={handleCloseTierActions} />
       {isMobile ? (
-        <div className="flex flex-col gap-2 my-2">
+        <div className="flex flex-row gap-2 my-2">
           <Button
             variant="contained"
             onClick={handleTierActions}
