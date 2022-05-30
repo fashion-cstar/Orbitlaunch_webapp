@@ -7,6 +7,7 @@ import { parseUnits } from '@ethersproject/units'
 import { getAddress } from '@ethersproject/address'
 import { utils } from 'ethers'
 import { ChainId } from "@usedapp/core";
+import { tierInformation } from '@app/shared/TierLevels'
 
 export enum PROJECT_STATUS {
   Unknown,
@@ -222,3 +223,4 @@ export const TWENTY_SIX_DAYS = 26
 export const THIRTEEN_DAYS = 13
 // export const ONEDAY_SECS = 86400
 export const ONEDAY_SECS = 60
+export const maxUserLockAmount = tierInformation[0].requiredTokens.toNumber()

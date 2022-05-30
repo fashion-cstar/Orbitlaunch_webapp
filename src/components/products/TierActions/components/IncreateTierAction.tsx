@@ -4,7 +4,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { useTokenAllowance, useApproveCallback } from 'src/state/hooks'
 import { useLockContract } from 'src/state/LockActions'
 import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
-import { formatEther } from '@app/utils'
+import { formatEther, maxUserLockAmount, parseEther } from '@app/utils'
 import { useEthers } from "@usedapp/core"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { TransactionResponse } from '@ethersproject/providers'
@@ -39,24 +39,38 @@ export default function IncreaseTierAction({
     const [isWalletApproving, setIsWalletApproving] = useState(false)
     const snackbar = useSnackbar()
     const [isApproved, setIsApproved] = useState(false)
+    const [isCheckingAllowance, setIsCheckingAllowance] = useState(false)
 
     const checkUserApproved = async (): Promise<boolean> => {
         try {
+            setIsCheckingAllowance(true)
             let res = await tokenAllowanceCallback(account, TierTokenLockContractAddress, ORBIT_TOKEN, 'bsc')
+            setIsCheckingAllowance(false)
             if (res.gte(newLockingAmount)) {
                 return true
             } else {
                 return false
             }
-        } catch (error) { return false }
+        } catch (error) {
+            setIsCheckingAllowance(false)
+            return false 
+        }
     }
+
+    useEffect(() => {
+        const fetch = async () => {
+            let res = await checkUserApproved()
+            if (res) setIsApproved(true)
+        }
+        fetch()
+    }, [newLockingAmount])
 
     async function onApprove() {
         setIsWalletApproving(true)
         let res = await checkUserApproved()
         if (!res) {
             try {
-                approveCallback(TierTokenLockContractAddress, ORBIT_TOKEN, formatEther(newLockingAmount, orbitDecimals, 4), 'bsc').then((hash: string) => {
+                approveCallback(TierTokenLockContractAddress, ORBIT_TOKEN, maxUserLockAmount, 'bsc').then((hash: string) => {
                     setIsWalletApproving(false)
                     setIsApproved(true)
                 }).catch((error: any) => {
@@ -106,9 +120,9 @@ export default function IncreaseTierAction({
                     loading={isWalletApproving}
                     loadingPosition="start"
                     onClick={onApprove}
-                    disabled={Number(selectedTier) <= 0 || userClaimedTier === Number(selectedTier) || isApproved}
+                    disabled={Number(selectedTier) <= 0 || userClaimedTier === Number(selectedTier) || isApproved || isCheckingAllowance}
                 >
-                    {isWalletApproving ? 'Approving ...' : "Approve"}
+                    {isWalletApproving ? 'Approving ...' : isApproved ? "Approved" : "Approve"}
                 </LoadingButton> : <LoadingButton
                     variant="contained"
                     sx={{ width: "100%", borderRadius: "12px", height: '45px' }}

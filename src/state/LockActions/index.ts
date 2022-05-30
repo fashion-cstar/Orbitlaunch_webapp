@@ -54,7 +54,7 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
     }
 
     const increaseTierCallback = async function (amount: BigNumber) {
-        if (!account || !library || !lockContractAddress) return
+        if (!account || !library || !lockContractAddress) return        
         return lockContract.estimateGas.increaseTier(amount).then(estimatedGasLimit => {
             const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
             return lockContract.increaseTier(amount, {
