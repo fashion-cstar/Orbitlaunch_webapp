@@ -7,10 +7,11 @@ import { ethers } from "ethers"
 import { getContract, parseEther, calculateGasMargin } from 'src/utils'
 import ERC20_ABI from 'src/lib/contract/abis/erc20.json'
 // import PAD_ABI from 'src/lib/contract/abis/orbitpad.json'
-import PAD_ABI from 'src/lib/contract/abis/orbitpadv2.json'
+import PAD_ABI from 'src/lib/contract/abis/orbitpadLockTier.json'
 import { TransactionResponse } from '@ethersproject/providers'
 import { AddressZero } from '@ethersproject/constants'
 import { M31TokenAddress, RpcProviders } from "@app/shared/PadConstant"
+import { TestOrbitPadContractAddress } from "@app/shared/AppConstant"
 import { getTierValues } from '@app/shared/TierLevels'
 import { getChainIdFromName, PROJECT_STATUS } from 'src/utils'
 import { useTokenBalance } from '../hooks'
@@ -23,7 +24,7 @@ const testIdo =
       "_id": "620f97119aa58b7ea322888e",
       "projectName": "IDO Test For lock tier",
       "projectSymbol": "SMG",
-      "contractAddress": "0x2e682b12D3bEe3324903B54891909ce986715Cf8",
+      "contractAddress": TestOrbitPadContractAddress,
       "kycStatus": true,
       "projectIcon": "https://gateway.pinata.cloud/ipfs/QmdStBLwEUnjEyenPfTF9KrGCdeo6pXfdDXgREDriAb9vG",
       "projectBanner": "https://ik.imagekit.io/p3fhsqadana/Samurai_Legend/QmRnKzGhhFVaT964EFvo9jMiGxU19EM8Z4H33MPvoWDTkL_4NCHmPn52k.png?ik-sdk-version=javascript-1.4.3&updatedAt=1647000807206",

@@ -9,7 +9,6 @@ module.exports = {
       user_id: 'JmJk_zGxc2Dzyoq1a',
     },
     ReCAPTCHA_key: '6LdkZaoeAAAAAJvN6EnW_KtWvNXRxkTviZU0y92Z',
-    // network: 'mainnet'
-    network: 'testnet'
+    network: 'mainnet'    
   },
 };

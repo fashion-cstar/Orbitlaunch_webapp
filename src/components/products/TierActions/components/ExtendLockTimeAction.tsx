@@ -33,8 +33,8 @@ export default function ExtendLockTimeAction({
     async function onExtendLockTime() {
         setIsLocking(true)
         try {
-            let additionalDays = Math.max(lockDays - remainDays, FOURTEEN_DAYS)
-            extendLockTimeCallback(additionalDays).then((response: TransactionResponse) => {
+            // let additionalDays = Math.max(lockDays - remainDays, FOURTEEN_DAYS)
+            extendLockTimeCallback(lockDays).then((response: TransactionResponse) => {
                 response.wait().then((_: any) => {
                     setHash(response.hash)
                     setClaimTierSuccess()

@@ -13,7 +13,7 @@ import moment from 'moment';
 import { getRemainingTimeBetweenTwoDates } from '@app/shared/helpers/time';
 import busdAbi from "@app/lib/contract/abis/busdAbi.json";
 import orbitStableCoinAbi from "@app/lib/contract/abis/orbitStableCoinAbi.json";
-import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbi.json";
+import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbiLockTier.json";
 import { getContract, getProviderOrSigner } from '@app/utils';
 
 export default function useFundWithV4() {
