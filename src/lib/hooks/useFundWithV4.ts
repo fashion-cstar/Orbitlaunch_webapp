@@ -15,13 +15,15 @@ import busdAbi from "@app/lib/contract/abis/busdAbi.json";
 import orbitStableCoinAbi from "@app/lib/contract/abis/orbitStableCoinAbi.json";
 import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbiLockTier.json";
 import { getContract, getProviderOrSigner } from '@app/utils';
+import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 
 export default function useFundWithV4() {
     const { account, library } = useEthers();
-    const connectedUserBalance = useTokenBalance(OrbtTokenAddress, account);
-    const [isWalletApproving, setIsWalletApproving] = useState(false)
-    const [isDepositing, setIsDepositing] = useState(false)
-
+    const connectedUserBalance = useTokenBalance(OrbitStableTokenAddressWithV4, account);    
+    const [isWithdrawApproving, setIsWithdrawApproving] = useState(false)
+    const [isWithdrawing, setIsWithdrawing] = useState(false)
+    const snackbar = useSnackbar()
+    
     const agreeToTerms = async () => {
         try {
             const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, library, account ? account : undefined);
@@ -39,7 +41,7 @@ export default function useFundWithV4() {
                         };
                     })
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return {
                         ok: false,
                         message: "Cannot agree to terms now. Please try again."
@@ -47,7 +49,7 @@ export default function useFundWithV4() {
                 });
         }
         catch (err: any) {
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return {
                 ok: false,
                 message: "Cannot agree to terms now. Please try again."
@@ -67,14 +69,14 @@ export default function useFundWithV4() {
                     }
                 })
                 .catch((err: any) => {
-                    console.error("ERROR: " + err.data?.message);
+                    console.error("ERROR: " + err.data?.message || err?.message || err);
                     return {
                         ok: false,
                         message: "User Agreement cannot be checked. Please try again.",
                     };
                 });
         } catch (err: any) {
-            console.error("ERROR: " + err.data?.message);
+            console.error("ERROR: " + err.data?.message || err?.message || err);
             return {
                 ok: false,
                 message: "User Agreement cannot be checked. Please try again.",
@@ -97,7 +99,7 @@ export default function useFundWithV4() {
                         };
                     });
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return {
                         ok: false,
                         message: (err.data?.message || err?.message || err).toString()
@@ -105,7 +107,7 @@ export default function useFundWithV4() {
                 });
         }
         catch (err) {            
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return {
                 ok: false,
                 message: "Approve transaction rejected. Please try again."
@@ -125,7 +127,7 @@ export default function useFundWithV4() {
                             hash: response.hash
                         };
                     }).catch((err: any) => {
-                        console.error("ERROR: " + (err.data?.message || err));
+                        console.error("ERROR: " + (err.data?.message || err?.message || err));
                         return {
                             ok: false,
                             message: (err.data?.message || err?.message || err).toString()
@@ -133,7 +135,7 @@ export default function useFundWithV4() {
                     });
         }
         catch (err) {            
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return {
                 ok: false,
                 message: "Deposit transaction rejected. Please try again."
@@ -178,12 +180,12 @@ export default function useFundWithV4() {
                 .then((response: any) => {
                     return response
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return ethers.utils.parseEther('0');
                 });
         }
         catch (err) {
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return ethers.utils.parseEther('0');
         }
     }
@@ -196,12 +198,12 @@ export default function useFundWithV4() {
                 .then((response: any) => {
                     return response;
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return '0';
                 });
         }
         catch (err) {
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return '0';
         }
     }
@@ -217,7 +219,7 @@ export default function useFundWithV4() {
                         returnedModel: response
                     };
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return {
                         ok: false,
                         message: "Start time is not received. Please try again."
@@ -225,7 +227,7 @@ export default function useFundWithV4() {
                 });
         }
         catch (err) {
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return {
                 ok: false,
                 message: "Start time is not received. Please try again."
@@ -244,7 +246,7 @@ export default function useFundWithV4() {
                         returnedModel: response
                     };
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return {
                         ok: false,
                         message: "End time is not received. Please try again."
@@ -252,7 +254,7 @@ export default function useFundWithV4() {
                 });
         }
         catch (err) {
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return {
                 ok: false,
                 message: "End time is not received. Please try again."
@@ -297,7 +299,7 @@ export default function useFundWithV4() {
         returnedModel.disabledWithdraw = endTime.ok
             ? nowTime <= returnedModel.endDate.getTime()
             : returnedModel.disabledWithdraw;
-
+        
         const comparedDate = returnedModel.disabledDeposit ? returnedModel.startDate : returnedModel.endDate;
         const remainingTimeResult = returnedModel.disabledDeposit
             ? getRemainingTimeBetweenTwoDates(nowTime, comparedDate.getTime())
@@ -320,12 +322,12 @@ export default function useFundWithV4() {
                 .then((response: any) => {
                     return formatEther(response.amount);
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return formatEther(ethers.utils.parseEther('0.000'));
                 });
         }
         catch (err) {
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return formatEther(ethers.utils.parseEther('0.000'));
         }
     }
@@ -338,12 +340,12 @@ export default function useFundWithV4() {
                 .then(async (result: any) => {
                     return result;
                 }).catch((err: any) => {
-                    console.error("ERROR: " + err.data?.message);
+                    console.error("ERROR: " + err.data?.message || err?.message || err);
                     return true;
                 })
         }
         catch (err) {
-            console.error("ERROR: " + err.data?.message);
+            console.error("ERROR: " + err.data?.message || err?.message || err);
             return true;
         }
     }
@@ -354,18 +356,25 @@ export default function useFundWithV4() {
             const orbitStableContract = getContract(OrbitStableTokenAddressWithV4, orbitStableCoinAbi, library, account ? account : undefined);
             const provider = getProviderOrSigner(library, account) as any;
 
+            console.log(weiAmount, formatEther(weiAmount))
+            setIsWithdrawApproving(true)
             const approveTxHash = await orbitStableContract
                 .connect(provider)
                 .approve(OrbitFundContractAddressWithV4Token, weiAmount);
-
+            
             return approveTxHash.wait().then(async (_: any) => {
+                snackbar.snackbar.show("Approved!", "success");
+                setIsWithdrawApproving(false)
+                setIsWithdrawing(true)
                 return await orbitFundContract.withdraw()
                     .then(() => {
+                        setIsWithdrawing(false)
                         return {
                             ok: true
                         };
                     }).catch((err: any) => {
-                        console.error("ERROR: " + err.data?.message);
+                        setIsWithdrawing(false)
+                        console.error("ERROR: " + err.data?.message || err?.message || err);
                         return {
                             ok: false,
                             message: "Withdrawal cannot be made. Please try again."
@@ -374,7 +383,8 @@ export default function useFundWithV4() {
             })
         }
         catch (err) {
-            console.error("ERROR: " + err.data?.message);
+            setIsWithdrawApproving(false)
+            console.error("ERROR: " + err.data?.message || err?.message || err);
             return {
                 ok: false,
                 message: "Withdrawal cannot be made. Please try again."
@@ -476,8 +486,8 @@ export default function useFundWithV4() {
 
     const fundInfo = useMemo(
         () => ({
-            isWalletApproving,
-            isDepositing,
+            isWithdrawApproving,
+            isWithdrawing,
             startInvestmentPeriodDate,
             endInvestmentPeriodDate,
             currentInvestment,
@@ -497,7 +507,7 @@ export default function useFundWithV4() {
             depositBusd,
             withdraw
         }),
-        [isWalletApproving, isDepositing, startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, totalInvestors,
+        [isWithdrawApproving, isWithdrawing, startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, totalInvestors,
             roiToDate, currentTierNo, currentTierPercentage, disableDeposit, disableWithdraw,
             remainingTimeText, balance, profitUpToDate, totalInvestedToDate, agreeToTerms, userAgreed, approve, depositBusd, withdraw]
     );

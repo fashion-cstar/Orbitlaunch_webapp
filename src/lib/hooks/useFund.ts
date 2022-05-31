@@ -16,13 +16,15 @@ import busdAbi from "@app/lib/contract/abis/busdAbi.json";
 import orbitStableCoinAbi from "@app/lib/contract/abis/orbitStableCoinAbi.json";
 import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbi.json";
 import { getContract, getProviderOrSigner } from '@app/utils';
+import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 
 export default function useFund() {
     const { account, library } = useEthers();
     const connectedUserBalance = useTokenBalance(AppTokenAddress, account);    
-    const [isWalletApproving, setIsWalletApproving] = useState(false)
-    const [isDepositing, setIsDepositing] = useState(false)
-
+    const [isWithdrawApproving, setIsWithdrawApproving] = useState(false)
+    const [isWithdrawing, setIsWithdrawing] = useState(false)
+    const snackbar = useSnackbar()
+    
     const agreeToTerms_V1 = async () => {
         try {
             const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
@@ -33,7 +35,7 @@ export default function useFund() {
                         ok: true
                     };
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return {
                         ok: false,
                         message: "Cannot agree to terms now. Please try again."
@@ -41,7 +43,7 @@ export default function useFund() {
                 });
         }
         catch (err: any) {
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return {
                 ok: false,
                 message: "Cannot agree to terms now. Please try again."
@@ -61,14 +63,14 @@ export default function useFund() {
                     }
                 })
                 .catch((err: any) => {
-                    console.error("ERROR: " + err.data?.message);
+                    console.error("ERROR: " + err.data?.message || err?.message || err);
                     return {
                         ok: false,
                         message: "User Agreement cannot be checked. Please try again.",
                     };
                 });
         } catch (err: any) {
-            console.error("ERROR: " + err.data?.message);
+            console.error("ERROR: " + err.data?.message || err?.message || err);
             return {
                 ok: false,
                 message: "User Agreement cannot be checked. Please try again.",
@@ -91,7 +93,7 @@ export default function useFund() {
                         };
                     });
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return {
                         ok: false,
                         message: (err.data?.message || err?.message || err).toString()
@@ -99,7 +101,7 @@ export default function useFund() {
                 });
         }
         catch (err) {            
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return {
                 ok: false,
                 message: "Approve transaction rejected. Please try again."
@@ -119,7 +121,7 @@ export default function useFund() {
                             hash: response.hash
                         };
                     }).catch((err: any) => {
-                        console.error("ERROR: " + (err.data?.message || err));
+                        console.error("ERROR: " + (err.data?.message || err?.message || err));
                         return {
                             ok: false,
                             message: (err.data?.message || err?.message || err).toString()
@@ -127,7 +129,7 @@ export default function useFund() {
                     });
         }
         catch (err) {            
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return {
                 ok: false,
                 message: "Deposit transaction rejected. Please try again."
@@ -179,12 +181,12 @@ export default function useFund() {
                 .then((response: any) => {
                     return response
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return ethers.utils.parseEther('0');
                 });
         }
         catch (err) {
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return ethers.utils.parseEther('0');
         }
     }
@@ -197,12 +199,12 @@ export default function useFund() {
                 .then((response: any) => {
                     return response;
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return '0';
                 });
         }
         catch (err) {
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return '0';
         }
     }
@@ -218,7 +220,7 @@ export default function useFund() {
                         returnedModel: response
                     };
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return {
                         ok: false,
                         message: "Start time is not received. Please try again."
@@ -226,7 +228,7 @@ export default function useFund() {
                 });
         }
         catch (err) {
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return {
                 ok: false,
                 message: "Start time is not received. Please try again."
@@ -245,7 +247,7 @@ export default function useFund() {
                         returnedModel: response
                     };
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return {
                         ok: false,
                         message: "End time is not received. Please try again."
@@ -253,7 +255,7 @@ export default function useFund() {
                 });
         }
         catch (err) {
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return {
                 ok: false,
                 message: "End time is not received. Please try again."
@@ -320,13 +322,13 @@ export default function useFund() {
                 .then((response: any) => {
                     return { tierValue: response.tierValue.toNumber(), amount: formatEther(response.amount) };
                 }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err));
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
                     // return formatEther(ethers.utils.parseEther('0.000'));
                     return { tierValue: -1, amount: formatEther(ethers.utils.parseEther('0.000')) };
                 });
         }
         catch (err) {
-            console.error("ERROR: " + (err.data?.message || err));
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
             return { tierValue: -1, amount: formatEther(ethers.utils.parseEther('0.000')) };
         }
     }
@@ -339,12 +341,12 @@ export default function useFund() {
                 .then(async (result: any) => {
                     return result;
                 }).catch((err: any) => {
-                    console.error("ERROR: " + err.data?.message);
+                    console.error("ERROR: " + err.data?.message || err?.message || err);
                     return true;
                 })
         }
         catch (err) {
-            console.error("ERROR: " + err.data?.message);
+            console.error("ERROR: " + err.data?.message || err?.message || err);
             return true;
         }
     }
@@ -355,18 +357,24 @@ export default function useFund() {
             const orbitStableContract = getContract(OrbitStableTokenAddress, orbitStableCoinAbi, library, account ? account : undefined);
             const provider = getProviderOrSigner(library, account) as any;
 
+            setIsWithdrawApproving(true)
             const approveTxHash = await orbitStableContract
                 .connect(provider)
                 .approve(OrbitFundContractAddress, weiAmount);
 
             return approveTxHash.wait().then(async (_: any) => {
+                snackbar.snackbar.show("Approved!", "success");
+                setIsWithdrawApproving(false)
+                setIsWithdrawing(true)
                 return await orbitFundContract.withdraw()
                     .then(() => {
+                        setIsWithdrawing(false)
                         return {
                             ok: true
                         };
                     }).catch((err: any) => {
-                        console.error("ERROR: " + err.data?.message);
+                        setIsWithdrawing(false)
+                        console.error("ERROR: " + err.data?.message || err?.message || err);
                         return {
                             ok: false,
                             message: "Withdrawal cannot be made. Please try again."
@@ -375,7 +383,8 @@ export default function useFund() {
             })
         }
         catch (err) {
-            console.error("ERROR: " + err.data?.message);
+            setIsWithdrawApproving(false)
+            console.error("ERROR: " + err.data?.message || err?.message || err);
             return {
                 ok: false,
                 message: "Withdrawal cannot be made. Please try again."
@@ -501,8 +510,8 @@ export default function useFund() {
 
     const fundInfo = useMemo(
         () => ({
-            isWalletApproving,
-            isDepositing,
+            isWithdrawApproving,
+            isWithdrawing,
             startInvestmentPeriodDate_V1,
             endInvestmentPeriodDate_V1,
             currentInvestment_V1,
@@ -525,7 +534,7 @@ export default function useFund() {
             depositBusd_V1,
             withdraw_V1
         }),
-        [ isWalletApproving, isDepositing, startInvestmentPeriodDate_V1, endInvestmentPeriodDate_V1, currentInvestment_V1, totalInvestors_V1,userLastInvestment_V1,
+        [ isWithdrawApproving, isWithdrawing, startInvestmentPeriodDate_V1, endInvestmentPeriodDate_V1, currentInvestment_V1, totalInvestors_V1,userLastInvestment_V1,
             roiToDate_V1, userReturned_V1, currentTierNo_V1, currentTierPercentage_V1, disableDeposit_V1, disableWithdraw_V1,
             remainingTimeText_V1, balance_V1, totalProfit_V1, totalReturned_V1, totalInvestedToDate_V1, agreeToTerms_V1, userAgreed_V1, approve_V1, depositBusd_V1, withdraw_V1]
     );

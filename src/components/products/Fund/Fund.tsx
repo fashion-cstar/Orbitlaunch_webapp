@@ -19,6 +19,7 @@ import { useTierAndUnlockTime } from 'src/state/LockActions'
 import { TierTokenLockContractAddress } from "@app/shared/AppConstant";
 import FundLockTierModal from "../TierActions/FundLockTierModal";
 import { TWENTY_SIX_DAYS, ONEDAY_SECS } from "@app/utils";
+import LoadingButton from '@mui/lab/LoadingButton';
 
 export default function Fund() {
     const activateProvider = Web3ModalButton();
@@ -38,6 +39,8 @@ export default function Fund() {
         disableWithdraw_V1,
         totalProfit_V1,
         totalReturned_V1,
+        isWithdrawApproving: isWithdrawApprovingV1,
+        isWithdrawing: isWithdrawingV1,
         withdraw_V1
     } = useFund();
 
@@ -63,7 +66,12 @@ export default function Fund() {
 
     const {
         disableDeposit: disableDepositV4,
-        currentInvestment: currentInvestmentV4
+        currentInvestment: currentInvestmentV4,
+        disableWithdraw: disableWithdraw_V4,
+        balance: balanceV4,
+        isWithdrawApproving: isWithdrawApprovingV4,
+        isWithdrawing: isWithdrawingV4,
+        withdraw: withdraw_V4
     } = useFundWithV4();
 
     const [totalReferred, setTotalReferred] = useState(0);
@@ -106,7 +114,18 @@ export default function Fund() {
             return;
         }
 
-        snackbar.snackbar.show("Deposit is succesfull", "success");
+        snackbar.snackbar.show("Withdraw is succesfull", "success");
+    }
+
+    const handleWithdrawalSubmitV4 = async () => {
+        const weiAmount = ethers.utils.parseEther(balanceV4);
+        const withdrawalResult = await withdraw_V4(weiAmount);
+        if (!withdrawalResult.ok) {
+            snackbar.snackbar.show(withdrawalResult.message, "error");
+            return;
+        }
+
+        snackbar.snackbar.show("Withdraw is succesfull", "success");
     }
 
     useEffect(() => {
@@ -176,15 +195,16 @@ export default function Fund() {
                         <BuyButton></BuyButton>
                         {!!account
                             ? (<>
-                                <Button
-                                    type="button"
-                                    disabled={disableWithdraw_V1 || currentTierNo === 0}
+                                <LoadingButton
                                     variant="outlined"
-                                    onClick={disableWithdraw_V1 ? null : async () => await handleWithdrawalSubmit()}
+                                    loading={isWithdrawApprovingV1 || isWithdrawingV1}
+                                    loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
+                                    onClick={disableWithdraw_V1 ? null : async () => await handleWithdrawalSubmit()}
+                                    disabled={disableWithdraw_V1 || currentTierNo === 0}
                                 >
-                                    Withdrawal
-                                </Button>
+                                    {isWithdrawApprovingV1 ? 'Approving ...' : isWithdrawingV1 ? 'Withdrawing...' : 'Withdrawal'}
+                                </LoadingButton>
                                 <Button
                                     type="button"
                                     disabled={disableDeposit || currentTierNo === 0}
@@ -217,7 +237,17 @@ export default function Fund() {
                         }
                     </div>
                 </div>
-                <div className="w-full flex justify-end">
+                <div className="w-full flex justify-end gap-3">
+                    {!!account && <LoadingButton
+                        variant="outlined"
+                        loading={isWithdrawApprovingV4 || isWithdrawingV4}
+                        loadingPosition="start"
+                        sx={{ borderRadius: "12px" }}
+                        onClick={disableWithdraw_V4 ? null : async () => await handleWithdrawalSubmitV4()}
+                        disabled={disableWithdraw_V4 || userClaimedTier === 0}
+                    >
+                        {isWithdrawApprovingV4 ? 'Approving ...' : isWithdrawingV4 ? 'Withdrawing...' : 'Withdrawal (Test V4)'}
+                    </LoadingButton>}
                     {!!account && <Button
                         type="button"
                         disabled={disableDepositV4 || userClaimedTier === 0}
@@ -389,17 +419,18 @@ export default function Fund() {
                 <div className="flex flex-row items-center space-x-4">
                     {!!account
                         ? (
-                            <>
-                                <Button
-                                    type="button"
-                                    disabled={disableWithdraw_V1 || currentTierNo === 0}
+                            <>                                
+                                <LoadingButton
                                     className="w-full"
                                     variant="outlined"
-                                    onClick={disableWithdraw_V1 ? null : async () => await handleWithdrawalSubmit()}
+                                    loading={isWithdrawApprovingV1 || isWithdrawingV1}
+                                    loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
+                                    onClick={disableWithdraw_V1 ? null : async () => await handleWithdrawalSubmit()}
+                                    disabled={disableWithdraw_V1 || currentTierNo === 0}
                                 >
-                                    Withdrawal
-                                </Button>
+                                    {isWithdrawApprovingV1 ? 'Approving ...' : isWithdrawingV1 ? 'Withdrawing...' : 'Withdrawal'}
+                                </LoadingButton>
                                 <Button
                                     type="button"
                                     className="w-full"
@@ -434,15 +465,27 @@ export default function Fund() {
                         )
                     }
                 </div>
-                <Button
-                    type="button"
-                    disabled={disableDepositV4 || userClaimedTier === 0}
-                    onClick={(disableDepositV4 || userClaimedTier === 0) ? null : handleOpenDepositModalV4}
-                    variant="outlined"
-                    sx={{ borderRadius: "12px" }}
-                >
-                    {disableDepositV4 ? 'Deposit window closed (Test v4)' : 'Deposit BUSD (Test v4)'}
-                </Button>
+                <div className="w-full flex justify-end gap-3">
+                    {!!account && <LoadingButton
+                        variant="outlined"
+                        loading={isWithdrawApprovingV4 || isWithdrawingV4}
+                        loadingPosition="start"
+                        sx={{ borderRadius: "12px" }}
+                        onClick={disableWithdraw_V4 ? null : async () => await handleWithdrawalSubmitV4()}
+                        disabled={disableWithdraw_V4 || userClaimedTier === 0}
+                    >
+                        {isWithdrawApprovingV4 ? 'Approving ...' : isWithdrawingV4 ? 'Withdrawing...' : 'Withdrawal (Test V4)'}
+                    </LoadingButton>}
+                    {!!account && <Button
+                        type="button"
+                        disabled={disableDepositV4 || userClaimedTier === 0}
+                        onClick={(disableDepositV4 || userClaimedTier === 0) ? null : handleOpenDepositModalV4}
+                        variant="outlined"
+                        sx={{ borderRadius: "12px" }}
+                    >
+                        {disableDepositV4 ? 'Deposit window closed (Test v4)' : 'Deposit BUSD (Test v4)'}
+                    </Button>}
+                </div>
                 <div className="flex flex-row items-center space-x-4">
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
