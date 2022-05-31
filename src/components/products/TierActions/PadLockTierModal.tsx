@@ -13,7 +13,7 @@ import {
 import { BigNumber } from '@ethersproject/bignumber';
 import { tierInformation } from 'src/shared/TierLevels'
 import { getTierValues } from '@app/shared/TierLevels'
-import { formatEther, parseEther } from '@app/utils'
+import { formatEther, FOURTEEN_DAYS, parseEther } from '@app/utils'
 import TierSelectBox from "./components/TierSelectBox"
 import ClaimTierAction from './components/ClaimTierAction';
 import ExtendLockTimeAction from './components/ExtendLockTimeAction';
@@ -44,7 +44,7 @@ export default function PadLockTierModal({ isOpen, handleClose }: TierModalProps
     const [userTotalOrbitAmount, setUserTotalOrbit] = useState<BigNumber>(BigNumber.from(0))
     const [maxAvailableTier, setMaxAvailableTier] = useState(0)
     const [newLockingAmount, setLockingAmount] = useState(BigNumber.from(0))
-    const [lockDays, setLockDays] = useState(THIRTEEN_DAYS)
+    const [lockDays, setLockDays] = useState(FOURTEEN_DAYS)
     const [isLocking, setIsLocking] = useState(false)
     const snackbar = useSnackbar()
 
@@ -55,7 +55,7 @@ export default function PadLockTierModal({ isOpen, handleClose }: TierModalProps
             setSelectTier('')
         }
         setHash(undefined)
-        setLockDays(THIRTEEN_DAYS)
+        setLockDays(FOURTEEN_DAYS)
     }
 
     useEffect(() => {
