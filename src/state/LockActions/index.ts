@@ -98,13 +98,13 @@ export function useTierAndUnlockTime(lockContractAddress: string, blockchain: st
         return res
     }
 
-    const updateTierAndUnlockTime = async () => {
-        fetchTierAndUnlockTime().then(result => {
+    const updateTierAndUnlockTime = async () => {        
+        fetchTierAndUnlockTime().then(async (result:any) => {
             setTier(result[0]?.toNumber() == 10 ? 0 : result[0]?.toNumber() + 1)
-            let cur = moment(moment.now())
-            let unlockTimestamp = moment(result[1]?.toNumber() * 1000)
-            // setUnlockTimes(unlockTimestamp.diff(cur, 'seconds') < 0 ? 0 : unlockTimestamp.diff(cur, 'seconds'))            
-            setUnlockTimes(unlockTimestamp.diff(cur, 'seconds'))
+            let blocknumber = await library.getBlockNumber()
+            let block = await library.getBlock(blocknumber)
+            let blocktimestamp = block.timestamp            
+            setUnlockTimes(result[1]?.toNumber()-blocktimestamp)
         }).catch(error => { console.log(error) })
         fetchUserLockAmount().then(result => {
             setLockedAmount(result?.amount)
@@ -112,7 +112,7 @@ export function useTierAndUnlockTime(lockContractAddress: string, blockchain: st
     }
 
     useEffect(() => {
-        if (lockContractAddress) {
+        if (lockContractAddress && account && library) {
             updateTierAndUnlockTime()
         }
     }, [lockContractAddress, slowRefresh, isOpen, account])
