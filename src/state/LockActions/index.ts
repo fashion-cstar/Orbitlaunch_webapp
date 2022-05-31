@@ -42,7 +42,7 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
     }
 
     const extendLockTimeCallback = async function (additionalDays: number) {
-        if (!account || !library || !lockContractAddress) return
+        if (!account || !library || !lockContractAddress) return        
         return lockContract.estimateGas.extendLockTime(BigNumber.from(additionalDays)).then(estimatedGasLimit => {
             const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
             return lockContract.extendLockTime(BigNumber.from(additionalDays), {
