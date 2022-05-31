@@ -17,7 +17,7 @@ export const TestOrbitFundContractAddress = "0x485DA92029447314B5107bcef2fA93690
 export const TestOrbitPadContractAddress = "0xEb5849Cab57e2ea7619bDe3351A5ebefa391ECA6";
 export const TestOrbitStableTokenAddress = "0x0622E025606cc49E22d36B5418b5Cd7e6988bC1A";
 //lock actions
-export const TierTokenLockContractAddress = "0xfd85ecAbe4ddAb2171a34A7fFf8C5F794d940f2F"
+export const TierTokenLockContractAddress = "0xD0B15ba59C64AdC5D425DC6F05B8792Ef1b8F6bF"
 
 export const CORS = "cors";
 export const DEAD_ADDRESS = "0x000000000000000000000000000000000000dead";
