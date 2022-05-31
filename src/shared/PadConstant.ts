@@ -7,8 +7,14 @@ export const WBNBTokenAddress: { [chainId in ChainId]?: string } = {
     [ChainId.BSCTestnet]: "0xae13d989dac2f0debff460ac112a837c89baa7cd"
 }
 
+// export const BUSDTokenAddress: { [chainId in ChainId]?: string } = {
+//     [ChainId.BSC]: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+//     [ChainId.BSCTestnet]: "0xcbdeb985e2189e615eae14f5784733c0122c253c" // testnet MOCK BUSD
+// }
+
+//this is just for lock actions testing
 export const BUSDTokenAddress: { [chainId in ChainId]?: string } = {
-    [ChainId.BSC]: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    [ChainId.BSC]: "0xd020376592cf84766B55E5dF76babe5E19961B2b", //mainnet MOCK BUSD
     [ChainId.BSCTestnet]: "0xcbdeb985e2189e615eae14f5784733c0122c253c" // testnet MOCK BUSD
 }
 
