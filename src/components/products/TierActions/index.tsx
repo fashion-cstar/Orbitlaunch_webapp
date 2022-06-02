@@ -277,7 +277,7 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
                                             Awesome!
                                         </div>
                                         <div className='text-white text-[15px] font-light whitespace-normal text-center'>
-                                            You successufully locked your tier 3 for<br />
+                                            {`You successufully locked your Tier ${userClaimedTier} for`}<br />
                                             {`${formatEther(newLockingAmount, orbitDecimals, 0).toLocaleString()} ORBIT tokens`}
                                         </div>
                                         <Button
