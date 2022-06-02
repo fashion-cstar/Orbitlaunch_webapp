@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import LoadingButton from '@mui/lab/LoadingButton';
-import { useLockContract } from 'src/state/LockActions'
+import { useLockActions } from "@app/contexts"
 import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { TransactionResponse } from '@ethersproject/providers'
@@ -23,7 +23,7 @@ export default function ExtendLockTimeAction({
     setIsLocking,
     setHash }: ExtendLockTimeActionProps) {
 
-    const { extendLockTimeCallback } = useLockContract(TierTokenLockContractAddress, 'bsc')
+    const { extendLockTimeCallback } = useLockActions()
     const snackbar = useSnackbar()
 
     const handleExtendTier = async () => {

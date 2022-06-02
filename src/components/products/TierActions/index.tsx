@@ -4,7 +4,7 @@ import { useEthers } from "@usedapp/core"
 import Modal from './components/Modal'
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useToken, useTokenBalanceCallback } from 'src/state/hooks'
-import { useTierAndUnlockTime } from 'src/state/LockActions'
+import { useLockActions } from "@app/contexts"
 import { useRouter } from 'next/router'
 import {
     OrbtTokenAddress,
@@ -41,7 +41,7 @@ export default function TierActionsModal({ isOpen, handleClose }: TierModalProps
     const [orbitDecimals, setOrbitDecimals] = useState(18)
     const tierlist = tierInformation.map(item => ({ 'label': 'Tier ' + item.tierNo, value: item.tierNo, requiredTokens: item.requiredTokens, shownRequiredTokens: item.shownRequiredTokens }))
     const [balanceTier, setBalanceTier] = useState(0)
-    const { userClaimedTier, unlockTimes, lockedAmount } = useTierAndUnlockTime(TierTokenLockContractAddress, 'bsc', isOpen)
+    const { userClaimedTier, unlockTimes, lockedAmount } = useLockActions()
     const [userTotalOrbitAmount, setUserTotalOrbit] = useState<BigNumber>(BigNumber.from(0))
     const [maxAvailableTier, setMaxAvailableTier] = useState(0)
     const [lockStep, setLockStep] = useState(0)

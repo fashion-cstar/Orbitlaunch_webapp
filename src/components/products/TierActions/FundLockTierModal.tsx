@@ -3,7 +3,7 @@ import { useEthers } from "@usedapp/core"
 import Modal from 'src/components/common/Modal';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useToken, useTokenBalanceCallback } from 'src/state/hooks'
-import { useTierAndUnlockTime } from 'src/state/LockActions'
+import { useLockActions } from "@app/contexts"
 import { useRouter } from 'next/router'
 import {
     OrbtTokenAddress,
@@ -24,14 +24,12 @@ import useRefresh from 'src/state/useRefresh'
 interface TierModalProps {
     isOpen: boolean
     handleClose: () => void
-    setClaimTierSuccess: () => void
 }
 
 export default function FundLockTierModal({ isOpen, handleClose }: TierModalProps) {
     // const ORBIT_TOKEN = OrbtTokenAddress
     const ORBIT_TOKEN = TestOrbtTokenAddress
-    const { library, account, chainId } = useEthers()
-    const { triggerRefresh } = useRefresh()
+    const { library, account, chainId } = useEthers()    
     const [hash, setHash] = useState<string | undefined>()
     const [selectedTier, setSelectTier] = useState('')
     const userOrbitToken = useToken(ORBIT_TOKEN, 'bsc')
@@ -40,7 +38,7 @@ export default function FundLockTierModal({ isOpen, handleClose }: TierModalProp
     const [orbitDecimals, setOrbitDecimals] = useState(18)
     const tierlist = tierInformation.map(item => ({ 'label': 'Tier ' + item.tierNo, value: item.tierNo, requiredTokens: item.requiredTokens, shownRequiredTokens: item.shownRequiredTokens }))
     const [balanceTier, setBalanceTier] = useState(0)
-    const { userClaimedTier, unlockTimes, lockedAmount, updateTierAndUnlockTime } = useTierAndUnlockTime(TierTokenLockContractAddress, 'bsc', isOpen)
+    const { userClaimedTier, unlockTimes, lockedAmount, updateTierAndUnlockTime } = useLockActions()
     const [userTotalOrbitAmount, setUserTotalOrbit] = useState<BigNumber>(BigNumber.from(0))
     const [maxAvailableTier, setMaxAvailableTier] = useState(0)
     const [newLockingAmount, setLockingAmount] = useState(BigNumber.from(0))
@@ -126,7 +124,7 @@ export default function FundLockTierModal({ isOpen, handleClose }: TierModalProp
         snackbar.snackbar.show("Your tier has been upgraded!", "success");
         setSelectTier('')
         callUserOrbitCallback()
-        triggerRefresh()
+        updateTierAndUnlockTime()
         handleClose()        
     }
 

@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react'
 import LoadingButton from '@mui/lab/LoadingButton';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useTokenAllowance, useApproveCallback } from 'src/state/hooks'
-import { useLockContract } from 'src/state/LockActions'
+import { useLockActions } from "@app/contexts"
 import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
 import { formatEther, maxUserLockAmount, parseEther } from '@app/utils'
 import { useEthers } from "@usedapp/core"
@@ -35,7 +35,7 @@ export default function IncreaseTierAction({
     const { library, account, chainId } = useEthers()
     const { tokenAllowanceCallback } = useTokenAllowance()
     const { approveCallback } = useApproveCallback()
-    const { increaseTierCallback } = useLockContract(TierTokenLockContractAddress, 'bsc')
+    const { increaseTierCallback } = useLockActions()
     const [isWalletApproving, setIsWalletApproving] = useState(false)
     const snackbar = useSnackbar()
     const [isApproved, setIsApproved] = useState(false)

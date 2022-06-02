@@ -1,16 +1,14 @@
 import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
 import { Button } from "@mui/material";
 import { useEthers } from "@usedapp/core";
-import { useFundTier } from "src/state/Pad/hooks";
-import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
-import { useTierAndUnlockTime } from 'src/state/LockActions'
+import { useLockActions } from "@app/contexts"
 
 export default function ConnectTier() {
 
     const activateProvider = Web3ModalButton();
     const { account } = useEthers();
     // const currentTierNo = useFundTier();
-    const { userClaimedTier:currentTierNo } = useTierAndUnlockTime(TierTokenLockContractAddress, 'bsc', false)
+    const { userClaimedTier:currentTierNo } = useLockActions()
 
     return (
         <div className="flex items-center space-x-5 text-[14px] font-bold uppercase text-app-primary">

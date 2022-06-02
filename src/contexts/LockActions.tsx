@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useContext, useState, useRef } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther } from "@ethersproject/units"
 import { Contract } from '@ethersproject/contracts'
@@ -8,21 +9,36 @@ import TierTokenLockABI from 'src/lib/contract/abis/TierTokenLockAbi.json'
 import { TransactionResponse } from '@ethersproject/providers'
 import { getChainIdFromName, PROJECT_STATUS } from 'src/utils'
 import { RpcProviders } from "@app/shared/PadConstant"
-import useRefresh from '../useRefresh'
+import useRefresh from '../state/useRefresh'
+import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
 
-export function useLockContract(lockContractAddress: string, blockchain: string): {
-    lockAndClaimTierCallback: (amount: BigNumber, lockDays: number,) => Promise<TransactionResponse>,
-    userTierAndUnlockTimeCallback: (address: string) => Promise<string>,
-    extendLockTimeCallback: (additionalDays: number) => Promise<TransactionResponse>,
-    increaseTierCallback: (amount: BigNumber) => Promise<TransactionResponse>,
+declare type Maybe<T> = T | null | undefined
+
+export interface ILockActionsContext {
+    userClaimedTier: number
+    unlockTimes: number
+    lockedAmount: BigNumber
+    lockAndClaimTierCallback: (amount: BigNumber, lockDays: number,) => Promise<TransactionResponse>
+    userTierAndUnlockTimeCallback: (address: string) => Promise<string>
+    extendLockTimeCallback: (additionalDays: number) => Promise<TransactionResponse>
+    increaseTierCallback: (amount: BigNumber) => Promise<TransactionResponse>
     unlockTokenCallback: () => Promise<TransactionResponse>
-} {
-    // get claim data for this account
+    updateTierAndUnlockTime: () => Promise<void>
+}
+
+const LockActionsContext = React.createContext<Maybe<ILockActionsContext>>(null)
+
+export const LockActionsProvider = ({ children = null as any }) => {
     const { account, library } = useEthers()
-    const chainId = getChainIdFromName(blockchain);
-    const lockContract: Contract = getContract(lockContractAddress, TierTokenLockABI, library, account ? account : undefined)
+    const chainId = getChainIdFromName('bsc');
+    const lockContract: Contract = getContract(TierTokenLockContractAddress, TierTokenLockABI, library, account ? account : undefined)
+    const [userClaimedTier, setTier] = useState(0)
+    const [unlockTimes, setUnlockTimes] = useState(0)
+    const [lockedAmount, setLockedAmount] = useState(BigNumber.from(0))
+    const { slowRefresh } = useRefresh()
+
     const lockAndClaimTierCallback = async function (amount: BigNumber, lockDays: number) {
-        if (!account || !library || !lockContractAddress) return
+        if (!account || !library || !TierTokenLockContractAddress) return
         return lockContract.estimateGas.lockAndClaimTier(amount, BigNumber.from(lockDays)).then(estimatedGasLimit => {
             const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
             return lockContract.lockAndClaimTier(amount, BigNumber.from(lockDays), {
@@ -34,14 +50,14 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
     }
 
     const userTierAndUnlockTimeCallback = async function (address: string) {
-        if (!account || !library || !lockContractAddress) return
+        if (!account || !library || !TierTokenLockContractAddress) return
         return lockContract.getUserTierAndUnlockTime(address).then((res: any) => {
             return res
         })
     }
 
     const extendLockTimeCallback = async function (additionalDays: number) {
-        if (!account || !library || !lockContractAddress) return        
+        if (!account || !library || !TierTokenLockContractAddress) return
         return lockContract.estimateGas.extendLockTime(BigNumber.from(additionalDays)).then(estimatedGasLimit => {
             const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
             return lockContract.extendLockTime(BigNumber.from(additionalDays), {
@@ -53,7 +69,7 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
     }
 
     const increaseTierCallback = async function (amount: BigNumber) {
-        if (!account || !library || !lockContractAddress) return        
+        if (!account || !library || !TierTokenLockContractAddress) return
         return lockContract.estimateGas.increaseTier(amount).then(estimatedGasLimit => {
             const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
             return lockContract.increaseTier(amount, {
@@ -65,7 +81,7 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
     }
 
     const unlockTokenCallback = async function () {
-        if (!account || !library || !lockContractAddress) return
+        if (!account || !library || !TierTokenLockContractAddress) return
         return lockContract.estimateGas.unlockToken().then(estimatedGasLimit => {
             const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
             return lockContract.unlockToken({
@@ -75,35 +91,24 @@ export function useLockContract(lockContractAddress: string, blockchain: string)
             })
         })
     }
-    return { lockAndClaimTierCallback, userTierAndUnlockTimeCallback, extendLockTimeCallback, increaseTierCallback, unlockTokenCallback }
-}
-
-export function useTierAndUnlockTime(lockContractAddress: string, blockchain: string, isOpen: boolean): { userClaimedTier: number, unlockTimes: number, lockedAmount: BigNumber, updateTierAndUnlockTime: () => void } {
-    const { account, library } = useEthers()
-    const [userClaimedTier, setTier] = useState(0)
-    const [unlockTimes, setUnlockTimes] = useState(0)
-    const [lockedAmount, setLockedAmount] = useState(BigNumber.from(0))
-    const chainId = getChainIdFromName(blockchain);
-    const { slowRefresh } = useRefresh()
 
     const fetchTierAndUnlockTime = async () => {
-        const lockContract: Contract = getContract(lockContractAddress, TierTokenLockABI, RpcProviders[chainId], account ? account : undefined)
         const res = await lockContract.getUserTierAndUnlockTime(account)
         return res
     }
+
     const fetchUserLockAmount = async () => {
-        const lockContract: Contract = getContract(lockContractAddress, TierTokenLockABI, RpcProviders[chainId], account ? account : undefined)
         const res = await lockContract.userLockInfo(account)
         return res
     }
 
-    const updateTierAndUnlockTime = async () => {        
-        fetchTierAndUnlockTime().then(async (result:any) => {
+    const updateTierAndUnlockTime = async () => {
+        fetchTierAndUnlockTime().then(async (result: any) => {
             setTier(result[0]?.toNumber() == 10 ? 0 : result[0]?.toNumber() + 1)
             let blocknumber = await library.getBlockNumber()
             let block = await library.getBlock(blocknumber)
-            let blocktimestamp = block.timestamp            
-            setUnlockTimes(result[1]?.toNumber()-blocktimestamp)
+            let blocktimestamp = block.timestamp
+            setUnlockTimes(result[1]?.toNumber() - blocktimestamp)
         }).catch(error => { console.log(error) })
         fetchUserLockAmount().then(result => {
             setLockedAmount(result?.amount)
@@ -111,10 +116,36 @@ export function useTierAndUnlockTime(lockContractAddress: string, blockchain: st
     }
 
     useEffect(() => {
-        if (lockContractAddress && account && library) {
+        if (TierTokenLockContractAddress && account && library) {
             updateTierAndUnlockTime()
         }
-    }, [lockContractAddress, slowRefresh, isOpen, account])
+    }, [slowRefresh, account])
 
-    return { userClaimedTier, unlockTimes, lockedAmount, updateTierAndUnlockTime }
+    return (
+        <LockActionsContext.Provider
+            value={{
+                userClaimedTier,
+                unlockTimes,
+                lockedAmount,
+                lockAndClaimTierCallback,
+                userTierAndUnlockTimeCallback,
+                extendLockTimeCallback,
+                increaseTierCallback,
+                unlockTokenCallback,
+                updateTierAndUnlockTime
+            }}
+        >
+            {children}
+        </LockActionsContext.Provider>
+    )
+}
+
+export const useLockActions = () => {
+    const context = useContext(LockActionsContext)
+
+    if (!context) {
+        throw new Error('Component rendered outside the provider tree')
+    }
+
+    return context
 }

@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import LoadingButton from '@mui/lab/LoadingButton';
 import { BigNumber } from '@ethersproject/bignumber';
-import { useLockContract } from 'src/state/LockActions'
+import { useLockActions } from "@app/contexts"
 import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { TransactionResponse } from '@ethersproject/providers'
@@ -22,7 +22,7 @@ export default function UnlockTierAction({
     setUnlockSuccess
 }: ClaimTierActionProps) {
 
-    const { unlockTokenCallback } = useLockContract(TierTokenLockContractAddress, 'bsc')
+    const { unlockTokenCallback } = useLockActions()
     const snackbar = useSnackbar()
 
     const handleUnlock = () => {

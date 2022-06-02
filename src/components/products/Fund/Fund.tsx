@@ -15,7 +15,7 @@ import SliderCards from "../../common/SliderCards";
 import DepositPopup from "./DepositPopup";
 import useFundWithV3 from "@app/lib/hooks/useFundWithV3";
 import useFundWithV4 from "@app/lib/hooks/useFundWithV4";
-import { useTierAndUnlockTime } from 'src/state/LockActions'
+import { useLockActions } from "@app/contexts"
 import { TierTokenLockContractAddress } from "@app/shared/AppConstant";
 import FundLockTierModal from "../TierActions/FundLockTierModal";
 import { TWENTY_SIX_DAYS, ONEDAY_SECS } from "@app/utils";
@@ -29,7 +29,7 @@ export default function Fund() {
     const { account, library } = useEthers();
     const [version, setVersion] = useState(2);
     const [isOpenDeposit, setIsOpenDeposit] = useState(false)
-    const { userClaimedTier, unlockTimes, updateTierAndUnlockTime } = useTierAndUnlockTime(TierTokenLockContractAddress, 'bsc', false)
+    const { userClaimedTier, unlockTimes, updateTierAndUnlockTime } = useLockActions()
     const {
         totalInvestedToDate_V1,
         userLastInvestment_V1,
@@ -93,10 +93,6 @@ export default function Fund() {
         modal.style.display = "flex";
     }
 
-    const setClaimTierSuccess = () => {
-        updateTierAndUnlockTime()
-    }
-
     const handleOpenDepositModalV4 = () => {
         if (Math.floor(unlockTimes / ONEDAY_SECS) < TWENTY_SIX_DAYS) {
             setIsOpenLockTier(true)
@@ -117,7 +113,7 @@ export default function Fund() {
         snackbar.snackbar.show("Withdraw is succesfull", "success");
     }
 
-    const handleWithdrawalSubmitV4 = async () => {
+    const handleWithdrawalSubmitV4 = async () => {        
         const weiAmount = ethers.utils.parseEther(balanceV4);
         const withdrawalResult = await withdraw_V4(weiAmount);
         if (!withdrawalResult.ok) {
@@ -186,7 +182,7 @@ export default function Fund() {
     return (
         <>
             <DepositPopup isOpen={isOpenDeposit} version={version} handleClose={() => setIsOpenDeposit(false)} />
-            <FundLockTierModal isOpen={isOpenLockTier} handleClose={closeLockTierModal} setClaimTierSuccess={setClaimTierSuccess} />
+            <FundLockTierModal isOpen={isOpenLockTier} handleClose={closeLockTierModal} />
             <div className="desktop-content flex flex-col space-y-4 w-full">
 
                 <div className="flex flex-row items-center">

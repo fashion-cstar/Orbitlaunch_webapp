@@ -16,7 +16,7 @@ import { formatEther } from 'src/utils'
 import { useEthers } from "@usedapp/core"
 import { getProjectStatusText } from 'src/utils'
 import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
-import { useTierAndUnlockTime } from 'src/state/LockActions'
+import { useLockActions } from "@app/contexts"
 import PadLockTierModal from "../../../TierActions/PadLockTierModal";
 import { THIRTEEN_DAYS, ONEDAY_SECS } from "@app/utils";
 
@@ -32,7 +32,7 @@ export default function ProjectDetail({ project }: { project: any }) {
     const hideTierCard = useRef(null)
     const router = useRouter()
     // const currentTierNo = useFundTier();
-    const { userClaimedTier:currentTierNo, unlockTimes, updateTierAndUnlockTime } = useTierAndUnlockTime(TierTokenLockContractAddress, 'bsc', false)
+    const { userClaimedTier:currentTierNo, unlockTimes, updateTierAndUnlockTime } = useLockActions()
     const [isOpenLockTier, setIsOpenLockTier] = useState(false)
 
     useEffect(() => {        
@@ -92,10 +92,6 @@ export default function ProjectDetail({ project }: { project: any }) {
         setIsOpenLockTier(false)
     }
 
-    const setClaimTierSuccess = () => {
-        updateTierAndUnlockTime()
-    }
-
     return (
         <>
             {IdoProject && (<JoinPresaleModal project={IdoProject}
@@ -104,7 +100,7 @@ export default function ProjectDetail({ project }: { project: any }) {
             {IdoProject && (<ClaimTokensModal project={IdoProject}
                 isOpen={isOpenClaimTokens} launchTokenPrice={launchTokenPrice}
                 handleClose={handleCloseClaimTokens} />)}
-            <PadLockTierModal isOpen={isOpenLockTier} handleClose={closeLockTierModal} setClaimTierSuccess={setClaimTierSuccess} />
+            <PadLockTierModal isOpen={isOpenLockTier} handleClose={closeLockTierModal} />
             <div className="w-full" onClick={(e) => handleHideTierCard(e)} >
                 <div className="flex flex-row items-center justify-between">
                     <h1 className="text-[32px] font-medium">OrbitPad</h1>
