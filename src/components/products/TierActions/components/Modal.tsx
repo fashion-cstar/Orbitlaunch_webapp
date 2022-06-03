@@ -6,8 +6,10 @@ interface PopupProps {
     handleClose: () => void
 }
 
-const gradientColor = {
-    backgroundImage: 'linear-gradient(165deg, #161f35 -10%, #06111c 30%)'
+const contentModalStyle = {
+    backgroundImage: 'linear-gradient(165deg, #161f35 -10%, #06111c 30%)',
+    overflow:'auto', 
+    maxHeight:'calc(100vh - 125px)'
 }
 
 export default function Modal({
@@ -31,8 +33,8 @@ export default function Modal({
             className="pad-modal-fadeIn overflow-y-auto overflow-x-hidden fixed right-0 left-0 z-50 justify-center items-center h-modal h-full inset-0"
             onClick={(e) => handleWindowClick(e)}
         >
-            <div className="px-4 w-full w-auto h-auto mt-8" style={{overflow:'auto', maxHeight:'calc(100vh - 125px)'}}>
-                <div className={`p-3 rounded-2xl shadow dark:bg-gray-700`} style={gradientColor}>  
+            <div className="px-4 w-full w-auto h-auto mt-8">
+                <div className={`p-3 rounded-2xl shadow dark:bg-gray-700`} style={contentModalStyle}>  
                     {children}
                 </div>
             </div>

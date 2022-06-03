@@ -79,7 +79,7 @@ export default function TierSelectBox({ selectedTier, userClaimedTier, maxAvaila
                         tierlist.map((item, index) => {
                             if (userClaimedTier > 0) {
                                 if (userClaimedTier < item.value) {
-                                    return (<MenuItem value={item.value} disabled style={MenuItemStyle(false)}>
+                                    return (<MenuItem value={item.value} disabled style={MenuItemStyle(false)} key={index}>
                                         <div className='w-full flex justify-between items-center'>
                                             <div className='text-[16px] text-[#BAB8CC]/[.48]'>{item.label}</div>
                                             <div className='flex flex-col items-end'>
@@ -90,7 +90,7 @@ export default function TierSelectBox({ selectedTier, userClaimedTier, maxAvaila
                                     </MenuItem>)
                                 } else {
                                     if (maxAvailableTier <= item.value) {
-                                        return (<MenuItem value={item.value} style={MenuItemStyle(false)}>
+                                        return (<MenuItem value={item.value} style={MenuItemStyle(false)} key={index}>
                                             <div className='w-full flex justify-between items-center'>
                                                 <div className='text-[16px] text-white'>{item.label}</div>
                                                 <div className='text-[14px]'>
@@ -100,7 +100,7 @@ export default function TierSelectBox({ selectedTier, userClaimedTier, maxAvaila
                                             </div>
                                         </MenuItem>)
                                     } else {
-                                        return (<MenuItem value={item.value} disabled style={MenuItemStyle(false)}>
+                                        return (<MenuItem value={item.value} disabled style={MenuItemStyle(false)} key={index}>
                                             <div className='w-full flex justify-between items-center'>
                                                 <div className='text-[16px] text-[#BAB8CC]/[.48]'>{item.label}</div>
                                                 <div className='flex flex-col items-end'>
@@ -112,7 +112,7 @@ export default function TierSelectBox({ selectedTier, userClaimedTier, maxAvaila
                                     }
                                 }
                             } else {
-                                return (<MenuItem value={item.value} disabled={balanceTier > (index + 1) || balanceTier===0} style={MenuItemStyle(false)}>
+                                return (<MenuItem value={item.value} disabled={balanceTier > (index + 1) || balanceTier===0} style={MenuItemStyle(false)} key={index}>
                                     <div className='w-full flex justify-between items-center'>
                                         <div className='text-[16px] text-white'>{item.label}</div>
                                         <div className='text-[14px]'>

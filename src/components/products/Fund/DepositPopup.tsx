@@ -29,8 +29,7 @@ export default function DepositPopup({
     const { library, account, chainId } = useEthers()
     const { userAgreed, depositBusd, approve } = useFund_V2();
     const { userAgreed: userAgreedV3, approve: approveV3, depositBusd: depositBusdV3 } = useFundWithV3();
-    const { userAgreed: userAgreedV4, approve: approveV4, depositBusd: depositBusdV4 } = useFundWithV4();
-    const agreeTermsModalId = "agree-terms-modal";
+    const { userAgreed: userAgreedV4, approve: approveV4, depositBusd: depositBusdV4 } = useFundWithV4();    
     const [disableDepositButton, setDisableDepositButton] = useState(true);
     const [depositAmount, setDepositAmount] = useState('');
     const [selectedDepositCurrency, setSelectedDepositCurrency] = useState('BUSD');
@@ -38,6 +37,7 @@ export default function DepositPopup({
     const [attempting, setAttempting] = useState(false)
     const [isApproved, setIsApproved] = useState(false)
     const [isWalletApproving, setIsWalletApproving] = useState(false)
+    const [isOpenAgreeTerms, setIsOpenAgreeTerms] = useState(false)
 
     const handleInputChange = (amount: any) => {
         setDisableDepositButton(Number(amount) === 0)
@@ -50,32 +50,18 @@ export default function DepositPopup({
 
     useEffect(() => {
         setDepositAmount('')
+        setDisableDepositButton(true)
         setHash(undefined)
         setAttempting(false)
         setIsApproved(false)
     }, [isOpen])
 
-    const deposit = async () => {
-        const depositResult = version === 2 ? await depositBusd(depositAmount) : version === 4 ? await depositBusdV4(depositAmount) : await depositBusdV3(depositAmount);
-        if (!depositResult.ok) {
-            snackbar.snackbar.show(depositResult.message, "error");
-            console.error(depositResult.message);
-            return;
-        } else {
-            // snackbar.snackbar.show(`${depositAmount} ${selectedDepositCurrency} has been deposited successfully!`, "success");
-            setHash(depositResult.hash)
-            // handleClose()
-        }
-    }
-
     const handleCloseAgreeTermsModal = () => {
-        const modal = document.getElementById(agreeTermsModalId);
-        modal.style.display = "none";
+        setIsOpenAgreeTerms(false)
     }
 
     const handleOpenAgreeTermsModal = () => {
-        const modal = document.getElementById(agreeTermsModalId);
-        modal.style.display = "flex";
+        setIsOpenAgreeTerms(true)
     }
 
     async function onApprove() {
@@ -144,16 +130,6 @@ export default function DepositPopup({
                                 onSelectedCurrencyChange={(changedCurrency) => handleSelectedCurrencyChange(changedCurrency)}
                             />
                         </div>
-                        {/* <LoadingButton
-                            variant="contained"
-                            sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
-                            loading={isWalletApproving || isDepositing}
-                            loadingPosition="start"
-                            disabled={disableDepositButton}
-                            onClick={async (e) => await handleDepositSubmit(e, depositAmount)}
-                        >
-                            {`${isWalletApproving ? 'Approving ' : isDepositing ? 'Depositing ' : 'Deposit '}${disableDepositButton ? '' : `${depositAmount} ${selectedDepositCurrency}`}`}
-                        </LoadingButton> */}
                         <div className='flex gap-4'>
                             <LoadingButton
                                 variant="contained"
@@ -204,10 +180,9 @@ export default function DepositPopup({
                 </div>
             </Modal>
             <AgreeTermsPopup
-                id={agreeTermsModalId}
+                isOpen={isOpenAgreeTerms}
                 version={version}
-                onAgreeToTerms={async () => await deposit()}
-                handleCloseAgreeTermsModal={handleCloseAgreeTermsModal}
+                handleClose={handleCloseAgreeTermsModal}
             />
         </>
     );
