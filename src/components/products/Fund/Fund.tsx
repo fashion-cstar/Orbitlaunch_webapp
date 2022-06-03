@@ -56,18 +56,27 @@ export default function Fund() {
         endInvestmentPeriodDate,
         currentInvestment,
         totalInvestedToDate,
-        currentTierNo,
+        currentTierNo: currentTierNoV2,
         roiToDate,
         totalInvestors,
         disableDeposit,
-        balance,
         profitUpToDate,
+        disableWithdraw: disableWithdraw_V2,
+        isWithdrawApproving: isWithdrawApprovingV2,
+        isWithdrawing: isWithdrawingV2,
+        balance: balanceV2,
+        withdraw: withdraw_V2
     } = useFund_V2();
 
     const {
         disableDeposit: disableDepositV3,
         currentTierNo: currentTierNoV3,
-        currentInvestment: currentInvestmentV3
+        currentInvestment: currentInvestmentV3,
+        disableWithdraw: disableWithdraw_V3,
+        isWithdrawApproving: isWithdrawApprovingV3,
+        isWithdrawing: isWithdrawingV3,
+        balance: balanceV3,
+        withdraw: withdraw_V3,
     } = useFundWithV3();
 
     const {
@@ -87,18 +96,6 @@ export default function Fund() {
     const { id } = router.query;
     const [isOpenLockTier, setIsOpenLockTier] = useState(false)
 
-    const handleOpenDepositModalV2 = () => {
-        setVersion(2);
-        const modal = document.getElementById(depositModalId);
-        modal.style.display = "flex";
-    }
-
-    const handleOpenDepositModalV3 = () => {
-        setVersion(3);
-        const modal = document.getElementById(depositModalId);
-        modal.style.display = "flex";
-    }
-
     const handleOpenDepositModalV4 = () => {
         if (Math.floor(unlockTimes / ONEDAY_SECS) < TWENTY_SIX_DAYS) {
             setIsOpenLockTier(true)
@@ -108,15 +105,26 @@ export default function Fund() {
         }
     }
 
-    const handleWithdrawalSubmit = async () => {
-        const weiAmount = ethers.utils.parseEther(balance);
-        const withdrawalResult = await withdraw_V1(weiAmount);
+    const handleWithdrawalSubmitV2 = async () => {
+        const weiAmount = ethers.utils.parseEther(balanceV2);
+        const withdrawalResult = await withdraw_V2(weiAmount);
         if (!withdrawalResult.ok) {
             snackbar.snackbar.show(withdrawalResult.message, "error");
             return;
         }
 
-        snackbar.snackbar.show("Withdraw is succesfull", "success");
+        snackbar.snackbar.show("Withdraw is succesfull (v2)", "success");
+    }
+
+    const handleWithdrawalSubmitV3 = async () => {
+        const weiAmount = ethers.utils.parseEther(balanceV3);
+        const withdrawalResult = await withdraw_V3(weiAmount);
+        if (!withdrawalResult.ok) {
+            snackbar.snackbar.show(withdrawalResult.message, "error");
+            return;
+        }
+
+        snackbar.snackbar.show("Withdraw is succesfull (v3)", "success");
     }
 
     const handleWithdrawalSubmitV4 = async () => {
@@ -209,31 +217,32 @@ export default function Fund() {
                             ? (<>
                                 <LoadingButton
                                     variant="outlined"
-                                    loading={isWithdrawApprovingV1 || isWithdrawingV1}
+                                    loading={isWithdrawApprovingV2 || isWithdrawingV2}
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
-                                    onClick={disableWithdraw_V1 ? null : async () => await handleWithdrawalSubmit()}
-                                    disabled={disableWithdraw_V1 || currentTierNo === 0}
+                                    onClick={disableWithdraw_V2 ? null : async () => await handleWithdrawalSubmitV2()}
+                                    disabled={disableWithdraw_V2 || currentTierNoV2 === 0}
                                 >
-                                    {isWithdrawApprovingV1 ? 'Approving ...' : isWithdrawingV1 ? 'Withdrawing...' : 'Withdrawal'}
+                                    {isWithdrawApprovingV2 ? 'Approving ...' : isWithdrawingV2 ? 'Withdrawing...' : 'Withdrawal (v2)'}
+                                </LoadingButton>
+                                <LoadingButton
+                                    variant="outlined"
+                                    loading={isWithdrawApprovingV3 || isWithdrawingV3}
+                                    loadingPosition="start"
+                                    sx={{ borderRadius: "12px" }}
+                                    onClick={disableWithdraw_V3 ? null : async () => await handleWithdrawalSubmitV3()}
+                                    disabled={disableWithdraw_V3 || currentTierNoV3 === 0}
+                                >
+                                    {isWithdrawApprovingV3 ? 'Approving ...' : isWithdrawingV3 ? 'Withdrawing...' : 'Withdrawal (v3)'}
                                 </LoadingButton>
                                 <Button
                                     type="button"
-                                    disabled={disableDeposit || currentTierNo === 0}
-                                    onClick={(disableDeposit || currentTierNo === 0) ? null : handleOpenDepositModalV2}
+                                    disabled={disableDepositV4}
+                                    onClick={(disableDepositV4) ? null : handleOpenDepositModalV4}
                                     variant="outlined"
                                     sx={{ borderRadius: "12px" }}
                                 >
-                                    {disableDeposit ? 'Deposit window closed (v2)' : 'Deposit BUSD (v2)'}
-                                </Button>
-                                <Button
-                                    type="button"
-                                    disabled={disableDepositV3 || currentTierNoV3 === 0}
-                                    onClick={(disableDepositV3 || currentTierNoV3 === 0) ? null : handleOpenDepositModalV3}
-                                    variant="outlined"
-                                    sx={{ borderRadius: "12px" }}
-                                >
-                                    {disableDeposit ? 'Deposit window closed (v3)' : 'Deposit BUSD (v3)'}
+                                    {disableDepositV4 ? 'Deposit window closed (v4)' : userClaimedTier ? 'Deposit BUSD (v4)' : 'Claim your tier'}
                                 </Button>
                             </>)
                             : (
@@ -248,27 +257,6 @@ export default function Fund() {
                             )
                         }
                     </div>
-                </div>
-                <div className="w-full flex justify-end gap-3">
-                    {!!account && <LoadingButton
-                        variant="outlined"
-                        loading={isWithdrawApprovingV4 || isWithdrawingV4}
-                        loadingPosition="start"
-                        sx={{ borderRadius: "12px" }}
-                        onClick={disableWithdraw_V4 ? null : async () => await handleWithdrawalSubmitV4()}
-                        disabled={disableWithdraw_V4 || userClaimedTier === 0}
-                    >
-                        {isWithdrawApprovingV4 ? 'Approving ...' : isWithdrawingV4 ? 'Withdrawing...' : 'Withdrawal (Test V4)'}
-                    </LoadingButton>}
-                    {!!account && <Button
-                        type="button"
-                        disabled={disableDepositV4}
-                        onClick={(disableDepositV4) ? null : handleOpenDepositModalV4}
-                        variant="outlined"
-                        sx={{ borderRadius: "12px" }}
-                    >
-                        {disableDepositV4 ? 'Deposit window closed (Test v4)' : userClaimedTier ? 'Deposit BUSD (Test v4)' : 'Claim your tier'}
-                    </Button>}
                 </div>
                 <div className="flex flex-col space-y-4">
                     <div className="flex flex-row space-x-4">
@@ -418,7 +406,7 @@ export default function Fund() {
                     </div>
                     <SliderCards
                         cardInformationList={tierInformation}
-                        selectedCardIndex={currentTierNo - 1}
+                        selectedCardIndex={userClaimedTier - 1}
                     />
                 </div>
             </div>
@@ -433,35 +421,36 @@ export default function Fund() {
                         ? (
                             <>
                                 <LoadingButton
-                                    className="w-full"
                                     variant="outlined"
-                                    loading={isWithdrawApprovingV1 || isWithdrawingV1}
+                                    className="w-full"
+                                    loading={isWithdrawApprovingV2 || isWithdrawingV2}
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
-                                    onClick={disableWithdraw_V1 ? null : async () => await handleWithdrawalSubmit()}
-                                    disabled={disableWithdraw_V1 || currentTierNo === 0}
+                                    onClick={disableWithdraw_V2 ? null : async () => await handleWithdrawalSubmitV2()}
+                                    disabled={disableWithdraw_V2 || currentTierNoV2 === 0}
                                 >
-                                    {isWithdrawApprovingV1 ? 'Approving ...' : isWithdrawingV1 ? 'Withdrawing...' : 'Withdrawal'}
+                                    {isWithdrawApprovingV2 ? 'Approving ...' : isWithdrawingV2 ? 'Withdrawing...' : 'Withdrawal (v2)'}
+                                </LoadingButton>
+                                <LoadingButton
+                                    variant="outlined"
+                                    className="w-full"
+                                    loading={isWithdrawApprovingV3 || isWithdrawingV3}
+                                    loadingPosition="start"
+                                    sx={{ borderRadius: "12px" }}
+                                    onClick={disableWithdraw_V3 ? null : async () => await handleWithdrawalSubmitV3()}
+                                    disabled={disableWithdraw_V3 || currentTierNoV3 === 0}
+                                >
+                                    {isWithdrawApprovingV3 ? 'Approving ...' : isWithdrawingV3 ? 'Withdrawing...' : 'Withdrawal (v3)'}
                                 </LoadingButton>
                                 <Button
                                     type="button"
                                     className="w-full"
-                                    disabled={disableDeposit || currentTierNo === 0}
-                                    onClick={(disableDeposit || currentTierNo === 0) ? null : handleOpenDepositModalV2}
+                                    disabled={disableDepositV4}
+                                    onClick={(disableDepositV4) ? null : handleOpenDepositModalV4}
                                     variant="outlined"
                                     sx={{ borderRadius: "12px" }}
                                 >
-                                    {disableDeposit ? 'Deposit window closed (v2)' : 'Deposit BUSD (v2)'}
-                                </Button>
-                                <Button
-                                    type="button"
-                                    className="w-full"
-                                    disabled={disableDepositV3 || currentTierNoV3 === 0}
-                                    onClick={(disableDepositV3 || currentTierNoV3 === 0) ? null : handleOpenDepositModalV3}
-                                    variant="outlined"
-                                    sx={{ borderRadius: "12px" }}
-                                >
-                                    {disableDeposit ? 'Deposit window closed (v3)' : 'Deposit BUSD (v3)'}
+                                    {disableDepositV4 ? 'Deposit window closed (v4)' : userClaimedTier ? 'Deposit BUSD (v4)' : 'Claim your tier'}
                                 </Button>
                             </>
                         )
@@ -476,27 +465,6 @@ export default function Fund() {
                             </Button>
                         )
                     }
-                </div>
-                <div className="w-full flex justify-end gap-3">
-                    {!!account && <LoadingButton
-                        variant="outlined"
-                        loading={isWithdrawApprovingV4 || isWithdrawingV4}
-                        loadingPosition="start"
-                        sx={{ borderRadius: "12px" }}
-                        onClick={disableWithdraw_V4 ? null : async () => await handleWithdrawalSubmitV4()}
-                        disabled={disableWithdraw_V4 || userClaimedTier === 0}
-                    >
-                        {isWithdrawApprovingV4 ? 'Approving ...' : isWithdrawingV4 ? 'Withdrawing...' : 'Withdrawal (Test V4)'}
-                    </LoadingButton>}
-                    {!!account && <Button
-                        type="button"
-                        disabled={disableDepositV4}
-                        onClick={(disableDepositV4) ? null : handleOpenDepositModalV4}
-                        variant="outlined"
-                        sx={{ borderRadius: "12px" }}
-                    >
-                        {disableDepositV4 ? 'Deposit window closed (Test v4)' : userClaimedTier ? 'Deposit BUSD (Test v4)' : 'Claim your tier'}
-                    </Button>}
                 </div>
                 <div className="flex flex-row items-center space-x-4">
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
@@ -642,7 +610,7 @@ export default function Fund() {
                         </div>
                         <SliderCards
                             cardInformationList={tierInformation}
-                            selectedCardIndex={currentTierNo - 1}
+                            selectedCardIndex={userClaimedTier - 1}
                         />
                     </div>
                 </div>

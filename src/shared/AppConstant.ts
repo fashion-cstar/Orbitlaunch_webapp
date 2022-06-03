@@ -12,22 +12,22 @@ export const BITQUERY_GRAPHQL_URL =
   process.env.NEXT_PUBLIC_BITQUERY_API_URL || "https://graphql.bitquery.io";
 
 //test on mainnet
-export const TestOrbtTokenAddress = "0x0f6741cF2141BCd037dc8a9562B50ce3C1Bc40B2";
-export const TestBusdTokenAddress = "0xd020376592cf84766B55E5dF76babe5E19961B2b";
-export const TestOrbitFundContractAddress = "0x485DA92029447314B5107bcef2fA93690c570e44";
-export const TestOrbitPadContractAddress = "0xEb5849Cab57e2ea7619bDe3351A5ebefa391ECA6";
-export const TestOrbitStableTokenAddress = "0x0622E025606cc49E22d36B5418b5Cd7e6988bC1A";
-//lock actions
-export const TierTokenLockContractAddress = "0x2d57dad4e61635B71b000Ea9528f78b80dED4cA7"
+// export const TestOrbtTokenAddress = "0x0f6741cF2141BCd037dc8a9562B50ce3C1Bc40B2";
+// export const TestBusdTokenAddress = "0xd020376592cf84766B55E5dF76babe5E19961B2b";
+// export const TestOrbitFundContractAddress = "0x485DA92029447314B5107bcef2fA93690c570e44";
+// export const TestOrbitPadContractAddress = "0xEb5849Cab57e2ea7619bDe3351A5ebefa391ECA6";
+// export const TestOrbitStableTokenAddress = "0x0622E025606cc49E22d36B5418b5Cd7e6988bC1A";
+// //lock actions
+// export const TierTokenLockContractAddress = "0x2d57dad4e61635B71b000Ea9528f78b80dED4cA7"
 
 // test on testnet
-// export const TestOrbtTokenAddress = "0x8401e6e7ba1a1ec011bdf34cd59fb11545fae523";
-// export const TestBusdTokenAddress = "0xcbdeb985e2189e615eae14f5784733c0122c253c";
-// export const TestOrbitFundContractAddress = "0x9A32844A89fc1FD29dd8a5a106BA7b90f82dBD6a";
-// export const TestOrbitPadContractAddress = "0x2e682b12D3bEe3324903B54891909ce986715Cf8";
-// export const TestOrbitStableTokenAddress = "0x99512e979982CFedE78759693eE832D4808CE354";
-// //lock actions
-// export const TierTokenLockContractAddress = "0xed8623c22c3bC8ADeBe9Fb8A6D17020C433f3055"
+export const TestOrbtTokenAddress = "0x8401e6e7ba1a1ec011bdf34cd59fb11545fae523";
+export const TestBusdTokenAddress = "0xcbdeb985e2189e615eae14f5784733c0122c253c";
+export const TestOrbitFundContractAddress = "0x9A32844A89fc1FD29dd8a5a106BA7b90f82dBD6a";
+export const TestOrbitPadContractAddress = "0x2e682b12D3bEe3324903B54891909ce986715Cf8";
+export const TestOrbitStableTokenAddress = "0x99512e979982CFedE78759693eE832D4808CE354";
+//lock actions
+export const TierTokenLockContractAddress = "0xed8623c22c3bC8ADeBe9Fb8A6D17020C433f3055"
 
 export const CORS = "cors";
 export const DEAD_ADDRESS = "0x000000000000000000000000000000000000dead";
