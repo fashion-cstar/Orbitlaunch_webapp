@@ -16,6 +16,8 @@ import orbitStableCoinAbi from "@app/lib/contract/abis/orbitStableCoinAbi.json";
 import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbi.json";
 import { getContract, getProviderOrSigner } from '@app/utils';
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
+import { RpcProviders } from "@app/shared/PadConstant"
+import { getChainIdFromName } from 'src/utils'
 
 export default function useFund_V2() {
     const { account, library } = useEthers();
@@ -167,7 +169,7 @@ export default function useFund_V2() {
 
     const totalInvestedAmount = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
 
             return await orbitFundContract.totalInvestedAmount()
                 .then((response: any) => {
@@ -185,7 +187,7 @@ export default function useFund_V2() {
 
     const getTotalInvestors = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
 
             return await orbitFundContract.getTotalInvestors()
                 .then((response: any) => {
@@ -203,7 +205,7 @@ export default function useFund_V2() {
 
     const startPeriodTime = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
 
             return await orbitFundContract.startTime()
                 .then((response: any) => {
@@ -230,7 +232,7 @@ export default function useFund_V2() {
 
     const endPeriodTime = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V2, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
 
             return await orbitFundContract.endTime()
                 .then((response: any) => {

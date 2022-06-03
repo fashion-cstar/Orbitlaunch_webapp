@@ -7,7 +7,7 @@ import {
     TestOrbitFundContractAddress as OrbitFundContractAddressWithV4Token,
     TestOrbitStableTokenAddress as OrbitStableTokenAddressWithV4
 } from "@app/shared/AppConstant";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { getTierValues } from '@app/shared/TierLevels';
 import moment from 'moment';
 import { getRemainingTimeBetweenTwoDates } from '@app/shared/helpers/time';
@@ -16,6 +16,8 @@ import orbitStableCoinAbi from "@app/lib/contract/abis/orbitStableCoinAbi.json";
 import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbiLockTier.json";
 import { getContract, getProviderOrSigner } from '@app/utils';
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
+import { RpcProviders } from "@app/shared/PadConstant"
+import { getChainIdFromName } from 'src/utils'
 
 export default function useFundWithV4() {
     const { account, library } = useEthers();
@@ -149,8 +151,7 @@ export default function useFundWithV4() {
         currentInvestment,
         totalInvestedToDate,
         totalInvestors,
-        roiToDate, currentTierNo,
-        currentTierPercentage,
+        roiToDate,
         disableDeposit,
         disableWithdraw,
         remainingTimeText,
@@ -162,9 +163,7 @@ export default function useFundWithV4() {
         currentInvestment: '0.00',
         totalInvestedToDate: '0.00',
         totalInvestors: 0,
-        roiToDate: '0.00',
-        currentTierNo: 0,
-        currentTierPercentage: "0",
+        roiToDate: '0.00',        
         disableDeposit: true,
         disableWithdraw: true,
         remainingTimeText: '0 days 0 hours 0 minutes',
@@ -173,11 +172,11 @@ export default function useFundWithV4() {
     });
 
     const totalInvestedAmount = async () => {
-        try {
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, library, account ? account : undefined);
-
+        try {            
+            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);            
+            
             return await orbitFundContract.totalInvestedAmount()
-                .then((response: any) => {
+                .then((response: any) => {                    
                     return response
                 }).catch((err: any) => {
                     console.error("ERROR: " + (err.data?.message || err?.message || err));
@@ -192,7 +191,7 @@ export default function useFundWithV4() {
 
     const getTotalInvestors = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
 
             return await orbitFundContract.getTotalInvestors()
                 .then((response: any) => {
@@ -210,7 +209,7 @@ export default function useFundWithV4() {
 
     const startPeriodTime = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
 
             return await orbitFundContract.startTime()
                 .then((response: any) => {
@@ -237,7 +236,7 @@ export default function useFundWithV4() {
 
     const endPeriodTime = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
 
             return await orbitFundContract.endTime()
                 .then((response: any) => {
@@ -398,21 +397,18 @@ export default function useFundWithV4() {
             let depositPeriodResult = await depositPeriodInfo();
             let userWithdrewResult = await userWithdrew();
 
-            let userInvestment = await depositInfos();
-            const investmentAmountInDollars = (parseFloat(userInvestment) * parseFloat("1")).toFixed(2);
-            const formattedConnectedBalance = formatEther(connectedUserBalance);
-            let totalInvestment = ethers.utils.formatEther(await totalInvestedAmount());
-            let tierResult = await getTierValues(ethers.BigNumber.from(Math.trunc(parseFloat(formattedConnectedBalance))));
-            let profitToDate = await getProfitUpToDate()
+            let userInvestment = await depositInfos();            
+            const investmentAmountInDollars = (parseFloat(userInvestment) * parseFloat("1")).toFixed(2);                        
+            const formattedConnectedBalance = formatEther(connectedUserBalance??BigNumber.from(0));            
+            let totalInvestment = ethers.utils.formatEther(await totalInvestedAmount());                        
+            let profitToDate = await getProfitUpToDate()            
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
                 endInvestmentPeriodDate: depositPeriodResult.endDate,
                 currentInvestment: userWithdrewResult ? '0.00' : investmentAmountInDollars,
                 totalInvestedToDate: totalInvestment,
                 totalInvestors: 0,
-                roiToDate: '0.00',
-                currentTierNo: tierResult.tierNo,
-                currentTierPercentage: tierResult.monthlyPercent,
+                roiToDate: '0.00',                
                 disableDeposit: depositPeriodResult.disabledDeposit,
                 disableWithdraw: depositPeriodResult.disabledWithdraw,
                 remainingTimeText: depositPeriodResult.remainingTimeText,
@@ -424,7 +420,7 @@ export default function useFundWithV4() {
         const fetchNotConnectedData = async () => {
             let depositPeriodResult = await depositPeriodInfo();
             let totalInvestment = ethers.utils.formatEther(await totalInvestedAmount());
-            let totalInvestorNumber = await getTotalInvestors();
+            let totalInvestorNumber = await getTotalInvestors();            
             let profitToDate = await getProfitUpToDate()
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
@@ -432,9 +428,7 @@ export default function useFundWithV4() {
                 currentInvestment: '0.00',
                 totalInvestedToDate: totalInvestment,
                 totalInvestors: totalInvestorNumber,
-                roiToDate: '0.00',
-                currentTierNo: 0,
-                currentTierPercentage: "0",
+                roiToDate: '0.00',                                
                 disableDeposit: depositPeriodResult.disabledDeposit,
                 disableWithdraw: depositPeriodResult.disabledWithdraw,
                 remainingTimeText: depositPeriodResult.remainingTimeText,
@@ -443,17 +437,15 @@ export default function useFundWithV4() {
             }
         }
 
-        if (!!account && !!library && !!connectedUserBalance) {
-            fetchConnectedData().then(result => {
+        if (!!account && !!library) {            
+            fetchConnectedData().then(result => {                
                 setInfo({
                     startInvestmentPeriodDate: result.startInvestmentPeriodDate,
                     endInvestmentPeriodDate: result.endInvestmentPeriodDate,
                     currentInvestment: result.currentInvestment,
                     totalInvestedToDate: result.totalInvestedToDate,
                     totalInvestors: result.totalInvestors,
-                    roiToDate: result.roiToDate,
-                    currentTierNo: result.currentTierNo,
-                    currentTierPercentage: result.currentTierPercentage,
+                    roiToDate: result.roiToDate,                    
                     disableDeposit: result.disableDeposit,
                     disableWithdraw: result.disableWithdraw,
                     remainingTimeText: result.remainingTimeText,
@@ -462,7 +454,7 @@ export default function useFundWithV4() {
                 });
             }).catch(console.error);;
         }
-        else {
+        else {            
             fetchNotConnectedData().then(result => {
                 setInfo({
                     startInvestmentPeriodDate: result.startInvestmentPeriodDate,
@@ -470,9 +462,7 @@ export default function useFundWithV4() {
                     currentInvestment: result.currentInvestment,
                     totalInvestedToDate: result.totalInvestedToDate,
                     totalInvestors: result.totalInvestors,
-                    roiToDate: result.roiToDate,
-                    currentTierNo: result.currentTierNo,
-                    currentTierPercentage: result.currentTierPercentage,
+                    roiToDate: result.roiToDate,                                        
                     disableDeposit: result.disableDeposit,
                     disableWithdraw: result.disableWithdraw,
                     remainingTimeText: result.remainingTimeText,
@@ -493,9 +483,7 @@ export default function useFundWithV4() {
             currentInvestment,
             totalInvestedToDate,
             totalInvestors,
-            roiToDate,
-            currentTierNo,
-            currentTierPercentage,
+            roiToDate,            
             disableDeposit,
             disableWithdraw,
             remainingTimeText,
@@ -508,7 +496,7 @@ export default function useFundWithV4() {
             withdraw
         }),
         [isWithdrawApproving, isWithdrawing, startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, totalInvestors,
-            roiToDate, currentTierNo, currentTierPercentage, disableDeposit, disableWithdraw,
+            roiToDate, disableDeposit, disableWithdraw,
             remainingTimeText, balance, profitUpToDate, totalInvestedToDate, agreeToTerms, userAgreed, approve, depositBusd, withdraw]
     );
 

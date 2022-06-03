@@ -37,7 +37,7 @@ const config: Config = {
   readOnlyUrls: {
     [BSC.chainId]: BSC_RPC_URL,
   },
-  networks: [BSC, Mainnet],
+  networks: [BSC, Mainnet, BSCTestnet],
   autoConnect: false
 };
 

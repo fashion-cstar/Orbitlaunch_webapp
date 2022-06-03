@@ -20,6 +20,12 @@ import { TierTokenLockContractAddress } from "@app/shared/AppConstant";
 import FundLockTierModal from "../TierActions/FundLockTierModal";
 import { TWENTY_SIX_DAYS, ONEDAY_SECS } from "@app/utils";
 import LoadingButton from '@mui/lab/LoadingButton';
+import { useTokenBalanceCallback } from 'src/state/hooks'
+import {
+    TestOrbitStableTokenAddress as OrbitStableTokenAddressWithV4
+} from "@app/shared/AppConstant";
+import { BigNumber } from "ethers";
+import { formatEther } from "@ethersproject/units";
 
 export default function Fund() {
     const activateProvider = Web3ModalButton();
@@ -29,6 +35,7 @@ export default function Fund() {
     const { account, library } = useEthers();
     const [version, setVersion] = useState(2);
     const [isOpenDeposit, setIsOpenDeposit] = useState(false)
+    const { tokenBalanceCallback } = useTokenBalanceCallback()
     const { userClaimedTier, unlockTimes, updateTierAndUnlockTime } = useLockActions()
     const {
         totalInvestedToDate_V1,
@@ -50,7 +57,6 @@ export default function Fund() {
         currentInvestment,
         totalInvestedToDate,
         currentTierNo,
-        currentTierPercentage,
         roiToDate,
         totalInvestors,
         disableDeposit,
@@ -113,8 +119,18 @@ export default function Fund() {
         snackbar.snackbar.show("Withdraw is succesfull", "success");
     }
 
-    const handleWithdrawalSubmitV4 = async () => {        
-        const weiAmount = ethers.utils.parseEther(balanceV4);
+    const handleWithdrawalSubmitV4 = async () => {
+        let bal = balanceV4
+        if (Number(bal) <= 0) {
+            try {
+                let oscbal: BigNumber = await tokenBalanceCallback(OrbitStableTokenAddressWithV4, 'bsc')
+                if (oscbal.gt(0)) bal = formatEther(oscbal)
+            } catch (error) {
+                console.debug('Failed to get OSC balance', error)
+            }
+        }
+        let approveAmount = Math.max(Math.floor(Number(bal)) + 1, Math.floor(Number(currentInvestmentV4)) + 1)
+        const weiAmount = ethers.utils.parseEther(approveAmount.toString());
         const withdrawalResult = await withdraw_V4(weiAmount);
         if (!withdrawalResult.ok) {
             snackbar.snackbar.show(withdrawalResult.message, "error");
@@ -246,12 +262,12 @@ export default function Fund() {
                     </LoadingButton>}
                     {!!account && <Button
                         type="button"
-                        disabled={disableDepositV4 || userClaimedTier === 0}
-                        onClick={(disableDepositV4 || userClaimedTier === 0) ? null : handleOpenDepositModalV4}
+                        disabled={disableDepositV4}
+                        onClick={(disableDepositV4) ? null : handleOpenDepositModalV4}
                         variant="outlined"
                         sx={{ borderRadius: "12px" }}
                     >
-                        {disableDepositV4 ? 'Deposit window closed (Test v4)' : 'Deposit BUSD (Test v4)'}
+                        {disableDepositV4 ? 'Deposit window closed (Test v4)' : userClaimedTier ? 'Deposit BUSD (Test v4)' : 'Claim your tier'}
                     </Button>}
                 </div>
                 <div className="flex flex-col space-y-4">
@@ -415,7 +431,7 @@ export default function Fund() {
                 <div className="flex flex-row items-center space-x-4">
                     {!!account
                         ? (
-                            <>                                
+                            <>
                                 <LoadingButton
                                     className="w-full"
                                     variant="outlined"
@@ -474,12 +490,12 @@ export default function Fund() {
                     </LoadingButton>}
                     {!!account && <Button
                         type="button"
-                        disabled={disableDepositV4 || userClaimedTier === 0}
-                        onClick={(disableDepositV4 || userClaimedTier === 0) ? null : handleOpenDepositModalV4}
+                        disabled={disableDepositV4}
+                        onClick={(disableDepositV4) ? null : handleOpenDepositModalV4}
                         variant="outlined"
                         sx={{ borderRadius: "12px" }}
                     >
-                        {disableDepositV4 ? 'Deposit window closed (Test v4)' : 'Deposit BUSD (Test v4)'}
+                        {disableDepositV4 ? 'Deposit window closed (Test v4)' : userClaimedTier ? 'Deposit BUSD (Test v4)' : 'Claim your tier'}
                     </Button>}
                 </div>
                 <div className="flex flex-row items-center space-x-4">
