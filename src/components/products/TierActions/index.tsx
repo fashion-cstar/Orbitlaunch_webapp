@@ -7,9 +7,7 @@ import { useToken, useTokenBalanceCallback } from 'src/state/hooks'
 import { useLockActions } from "@app/contexts"
 import { useRouter } from 'next/router'
 import {
-    OrbtTokenAddress,
-    TestOrbtTokenAddress,
-    TierTokenLockContractAddress
+    OrbtTokenAddress,        
 } from "@app/shared/AppConstant"
 import { BigNumber } from '@ethersproject/bignumber';
 import { tierInformation } from 'src/shared/TierLevels'
@@ -28,8 +26,7 @@ interface TierModalProps {
 }
 
 export default function TierActionsModal({ isOpen, handleClose }: TierModalProps) {
-    // const ORBIT_TOKEN = OrbtTokenAddress
-    const ORBIT_TOKEN = TestOrbtTokenAddress
+    const ORBIT_TOKEN = OrbtTokenAddress    
     const { library, account, chainId } = useEthers()
     const { triggerRefresh } = useRefresh()
     const router = useRouter()

@@ -1,10 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useLockActions } from "@app/contexts"
-import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { TransactionResponse } from '@ethersproject/providers'
-import { FOURTEEN_DAYS } from "@app/utils";
 
 interface ExtendLockTimeActionProps {
     lockDays: number

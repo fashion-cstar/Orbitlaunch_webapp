@@ -49,9 +49,9 @@ export default function ClaimTierAction({
     const checkUserApproved = async (): Promise<boolean> => {
         try {
             setIsCheckingAllowance(true)
-            console.log(newLockingAmount, formatEther(newLockingAmount, 18, 4))
+            console.log(newLockingAmount, formatEther(newLockingAmount, orbitDecimals, 4))
             let res = await tokenAllowanceCallback(account, TierTokenLockContractAddress, ORBIT_TOKEN, 'bsc')
-            console.log(res, formatEther(res, 18, 4))
+            console.log(res, formatEther(res, orbitDecimals, 4))
             setIsCheckingAllowance(false)
             console.log(res.gte(newLockingAmount))
             if (res.gte(newLockingAmount)) {

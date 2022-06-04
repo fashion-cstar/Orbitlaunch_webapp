@@ -4,7 +4,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { useTokenAllowance, useApproveCallback } from 'src/state/hooks'
 import { useLockActions } from "@app/contexts"
 import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
-import { formatEther, maxUserLockAmount, parseEther } from '@app/utils'
+import { maxUserLockAmount } from '@app/utils'
 import { useEthers } from "@usedapp/core"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { TransactionResponse } from '@ethersproject/providers'

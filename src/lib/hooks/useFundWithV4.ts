@@ -2,13 +2,11 @@ import { formatEther } from "@ethersproject/units";
 import { useEthers, useTokenBalance } from "@usedapp/core";
 import { useEffect, useMemo, useState } from "react";
 import {
-    TestOrbtTokenAddress as OrbtTokenAddress,
-    TestBusdTokenAddress as BusdContractAddress,
-    TestOrbitFundContractAddress as OrbitFundContractAddressWithV4Token,
-    TestOrbitStableTokenAddress as OrbitStableTokenAddressWithV4
+    BusdContractAddress,
+    OrbitFundContractAddress_V4 as OrbitFundContractAddress_V4_WithLockActions,
+    OrbitStableTokenAddressWithV3 as OrbitStableTokenAddressWithV4
 } from "@app/shared/AppConstant";
 import { BigNumber, ethers } from "ethers";
-import { getTierValues } from '@app/shared/TierLevels';
 import moment from 'moment';
 import { getRemainingTimeBetweenTwoDates } from '@app/shared/helpers/time';
 import busdAbi from "@app/lib/contract/abis/busdAbi.json";
@@ -28,7 +26,7 @@ export default function useFundWithV4() {
     
     const agreeToTerms = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V4_WithLockActions, orbitFundAbi, library, account ? account : undefined);
 
             return orbitFundContract.agreeToTerms()
                 .then((tx: any) => {
@@ -61,7 +59,7 @@ export default function useFundWithV4() {
 
     const userAgreed = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V4_WithLockActions, orbitFundAbi, library, account ? account : undefined);
 
             return await orbitFundContract.userAgreed(account)
                 .then((response: any) => {
@@ -92,7 +90,7 @@ export default function useFundWithV4() {
             const provider = getProviderOrSigner(library, account) as any;
 
             const weiAmount = ethers.utils.parseEther(amount);
-            return await busdContract.connect(provider).approve(OrbitFundContractAddressWithV4Token, weiAmount)
+            return await busdContract.connect(provider).approve(OrbitFundContractAddress_V4_WithLockActions, weiAmount)
                 .then((response: any) => {
                     return response.wait().then(async (_: any) => {
                         return {
@@ -119,7 +117,7 @@ export default function useFundWithV4() {
 
     const depositBusd = async (amount: string) => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V4_WithLockActions, orbitFundAbi, library, account ? account : undefined);
 
             const weiAmount = ethers.utils.parseEther(amount);           
                 return await orbitFundContract.deposit(weiAmount)
@@ -173,7 +171,7 @@ export default function useFundWithV4() {
 
     const totalInvestedAmount = async () => {
         try {            
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);            
+            const orbitFundContract = getContract(OrbitFundContractAddress_V4_WithLockActions, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);            
             
             return await orbitFundContract.totalInvestedAmount()
                 .then((response: any) => {                    
@@ -191,7 +189,7 @@ export default function useFundWithV4() {
 
     const getTotalInvestors = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V4_WithLockActions, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
 
             return await orbitFundContract.getTotalInvestors()
                 .then((response: any) => {
@@ -209,7 +207,7 @@ export default function useFundWithV4() {
 
     const startPeriodTime = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V4_WithLockActions, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
 
             return await orbitFundContract.startTime()
                 .then((response: any) => {
@@ -236,7 +234,7 @@ export default function useFundWithV4() {
 
     const endPeriodTime = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V4_WithLockActions, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
 
             return await orbitFundContract.endTime()
                 .then((response: any) => {
@@ -315,7 +313,7 @@ export default function useFundWithV4() {
 
     const depositInfos = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V4_WithLockActions, orbitFundAbi, library, account ? account : undefined);
 
             return await orbitFundContract.depositInfos(account)
                 .then((response: any) => {
@@ -333,7 +331,7 @@ export default function useFundWithV4() {
 
     const userWithdrew = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V4_WithLockActions, orbitFundAbi, library, account ? account : undefined);
 
             return await orbitFundContract.userWithdrew(account)
                 .then(async (result: any) => {
@@ -351,7 +349,7 @@ export default function useFundWithV4() {
 
     const withdraw = async (weiAmount: ethers.BigNumber) => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddressWithV4Token, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(OrbitFundContractAddress_V4_WithLockActions, orbitFundAbi, library, account ? account : undefined);
             const orbitStableContract = getContract(OrbitStableTokenAddressWithV4, orbitStableCoinAbi, library, account ? account : undefined);
             const provider = getProviderOrSigner(library, account) as any;
 
@@ -359,7 +357,7 @@ export default function useFundWithV4() {
             setIsWithdrawApproving(true)
             const approveTxHash = await orbitStableContract
                 .connect(provider)
-                .approve(OrbitFundContractAddressWithV4Token, weiAmount);
+                .approve(OrbitFundContractAddress_V4_WithLockActions, weiAmount);
             
             return approveTxHash.wait().then(async (_: any) => {
                 snackbar.snackbar.show("Approved!", "success");

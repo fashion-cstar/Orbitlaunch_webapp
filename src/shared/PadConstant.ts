@@ -7,14 +7,8 @@ export const WBNBTokenAddress: { [chainId in ChainId]?: string } = {
     [ChainId.BSCTestnet]: "0xae13d989dac2f0debff460ac112a837c89baa7cd"
 }
 
-// export const BUSDTokenAddress: { [chainId in ChainId]?: string } = {
-//     [ChainId.BSC]: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
-//     [ChainId.BSCTestnet]: "0xcbdeb985e2189e615eae14f5784733c0122c253c" // testnet MOCK BUSD
-// }
-
-//this is just for lock actions testing
 export const BUSDTokenAddress: { [chainId in ChainId]?: string } = {
-    [ChainId.BSC]: "0xd020376592cf84766B55E5dF76babe5E19961B2b", //mainnet MOCK BUSD
+    [ChainId.BSC]: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
     [ChainId.BSCTestnet]: "0xcbdeb985e2189e615eae14f5784733c0122c253c" // testnet MOCK BUSD
 }
 
@@ -35,6 +29,6 @@ export const RpcProviders: { [chainId in ChainId]?: JsonRpcProvider } = {
     [ChainId.Rinkeby]: new ethers.providers.JsonRpcProvider('https://rinkeby.infura.io/v3/b6a2f439eeb57f2c3c4334a6/eth/rinkeby'),
     [ChainId.BSC]: new ethers.providers.JsonRpcProvider('https://bsc-dataseed.binance.org'),
     // [ChainId.BSC]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/bsc/mainnet'),
-    // [ChainId.BSCTestnet]: new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545')
-    [ChainId.BSCTestnet]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/bsc/testnet')
+    [ChainId.BSCTestnet]: new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545')
+    // [ChainId.BSCTestnet]: new ethers.providers.JsonRpcProvider('https://speedy-nodes-nyc.moralis.io/b6a2f439eeb57f2c3c4334a6/bsc/testnet')
 }

@@ -11,24 +11,6 @@ export const BITQUERY_HEADERS = {
 export const BITQUERY_GRAPHQL_URL =
   process.env.NEXT_PUBLIC_BITQUERY_API_URL || "https://graphql.bitquery.io";
 
-//test on mainnet
-// export const TestOrbtTokenAddress = "0x0f6741cF2141BCd037dc8a9562B50ce3C1Bc40B2";
-// export const TestBusdTokenAddress = "0xd020376592cf84766B55E5dF76babe5E19961B2b";
-// export const TestOrbitFundContractAddress = "0x485DA92029447314B5107bcef2fA93690c570e44";
-// export const TestOrbitPadContractAddress = "0xEb5849Cab57e2ea7619bDe3351A5ebefa391ECA6";
-// export const TestOrbitStableTokenAddress = "0x0622E025606cc49E22d36B5418b5Cd7e6988bC1A";
-// //lock actions
-// export const TierTokenLockContractAddress = "0x2d57dad4e61635B71b000Ea9528f78b80dED4cA7"
-
-// test on testnet
-export const TestOrbtTokenAddress = "0x8401e6e7ba1a1ec011bdf34cd59fb11545fae523";
-export const TestBusdTokenAddress = "0xcbdeb985e2189e615eae14f5784733c0122c253c";
-export const TestOrbitFundContractAddress = "0x9A32844A89fc1FD29dd8a5a106BA7b90f82dBD6a";
-export const TestOrbitPadContractAddress = "0x2e682b12D3bEe3324903B54891909ce986715Cf8";
-export const TestOrbitStableTokenAddress = "0x99512e979982CFedE78759693eE832D4808CE354";
-//lock actions
-export const TierTokenLockContractAddress = "0xed8623c22c3bC8ADeBe9Fb8A6D17020C433f3055"
-
 export const CORS = "cors";
 export const DEAD_ADDRESS = "0x000000000000000000000000000000000000dead";
 export const NETWORK_BSC = "bsc";
@@ -57,6 +39,9 @@ export const PancakeSwapContractAddress =
 export const PancakeRouterContractAddress =
   "0x10ed43c718714eb63d5aa57b78b54704e256024e";
 
+// lock actions
+export const TierTokenLockContractAddress = "0xFAF78a5fF12da33982928A7E5C2cB828f721aB06"
+
 // migrate
 export const OrbtTokenAddress = "0x4bf5cd1AC6FfF12E88AEDD3c70EB4148F90F8894"
 export const MigrationOrbitAddress = "0x5B7Ce66AAeEF370019bfdE7F0566A3aD977C1306"
@@ -66,8 +51,11 @@ export const OrbitFundContractAddress = "0xabc3b533fbcc4380fe1db477417125c5e7118
 // Use v3 as v2 for now
 export const OrbitFundContractAddress_V2 = "0x73e59ca168161085eA8bdce48dD6CB4CeE49A096";
 
-// new orbit fund pool with newly launched token
+// fund pool with newly launched token
 export const OrbitFundContractAddressWithV3Token = "0xFE5D5EEAaC9dF7B028340adb49Dd85339EC14b8F";
+
+// new fund pool with lock actions
+export const OrbitFundContractAddress_V4 = "0x244b8071cd98393401F60380962755A45490D7fb";
 
 export const BusdContractAddress = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"; // testnet MOCK BUSD: 0xCbdEB985e2189e615eAe14F5784733C0122c253c
 export const OrbitStableTokenAddress = "0xB96A921FD923FF5C23d2A4f5d3d099b47d9D95F1" // testnet: 0x2a087e33c0C44A2B351B5329cBFf8A63d352C599

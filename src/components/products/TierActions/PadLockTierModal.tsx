@@ -4,11 +4,8 @@ import Modal from 'src/components/common/Modal';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useToken, useTokenBalanceCallback } from 'src/state/hooks'
 import { useLockActions } from "@app/contexts"
-import { useRouter } from 'next/router'
 import {
-    OrbtTokenAddress,
-    TestOrbtTokenAddress,
-    TierTokenLockContractAddress
+    OrbtTokenAddress,        
 } from "@app/shared/AppConstant"
 import { BigNumber } from '@ethersproject/bignumber';
 import { tierInformation } from 'src/shared/TierLevels'
@@ -19,7 +16,6 @@ import ClaimTierAction from './components/ClaimTierAction';
 import ExtendLockTimeAction from './components/ExtendLockTimeAction';
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { ONEDAY_SECS, THIRTEEN_DAYS } from "@app/utils";
-import useRefresh from 'src/state/useRefresh'
 
 interface TierModalProps {
     isOpen: boolean
@@ -27,8 +23,7 @@ interface TierModalProps {
 }
 
 export default function PadLockTierModal({ isOpen, handleClose }: TierModalProps) {
-    // const ORBIT_TOKEN = OrbtTokenAddress
-    const ORBIT_TOKEN = TestOrbtTokenAddress
+    const ORBIT_TOKEN = OrbtTokenAddress    
     const { library, account, chainId } = useEthers()    
     const [hash, setHash] = useState<string | undefined>()
     const [selectedTier, setSelectTier] = useState('')

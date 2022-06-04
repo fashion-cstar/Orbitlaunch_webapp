@@ -16,13 +16,12 @@ import DepositPopup from "./DepositPopup";
 import useFundWithV3 from "@app/lib/hooks/useFundWithV3";
 import useFundWithV4 from "@app/lib/hooks/useFundWithV4";
 import { useLockActions } from "@app/contexts"
-import { TierTokenLockContractAddress } from "@app/shared/AppConstant";
 import FundLockTierModal from "../TierActions/FundLockTierModal";
 import { TWENTY_SIX_DAYS, ONEDAY_SECS } from "@app/utils";
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useTokenBalanceCallback } from 'src/state/hooks'
 import {
-    TestOrbitStableTokenAddress as OrbitStableTokenAddressWithV4
+    OrbitStableTokenAddressWithV3 as OrbitStableTokenAddressWithV4
 } from "@app/shared/AppConstant";
 import { BigNumber } from "ethers";
 import { formatEther } from "@ethersproject/units";

@@ -11,69 +11,17 @@ import PAD_ABI from 'src/lib/contract/abis/orbitpadLockTier.json'
 import { TransactionResponse } from '@ethersproject/providers'
 import { AddressZero } from '@ethersproject/constants'
 import { M31TokenAddress, RpcProviders } from "@app/shared/PadConstant"
-import { TestOrbitPadContractAddress } from "@app/shared/AppConstant"
 import { getTierValues } from '@app/shared/TierLevels'
 import { getChainIdFromName, PROJECT_STATUS } from 'src/utils'
 import { useTokenBalance } from '../hooks'
 import useRefresh from '../useRefresh'
-
 import moment from 'moment'
 
-const testIdo = 
-  {
-      "_id": "620f97119aa58b7ea322888e",
-      "projectName": "IDO Test For lock tier",
-      "projectSymbol": "SMG",
-      "contractAddress": TestOrbitPadContractAddress,
-      "kycStatus": true,
-      "projectIcon": "https://gateway.pinata.cloud/ipfs/QmdStBLwEUnjEyenPfTF9KrGCdeo6pXfdDXgREDriAb9vG",
-      "projectBanner": "https://ik.imagekit.io/p3fhsqadana/Samurai_Legend/QmRnKzGhhFVaT964EFvo9jMiGxU19EM8Z4H33MPvoWDTkL_4NCHmPn52k.png?ik-sdk-version=javascript-1.4.3&updatedAt=1647000807206",
-      "maxBuyPerWallet": "600",
-      "totalRaiseHardCap": "50,000",
-      "totalRaiseSoftCap": "30,000",
-      "vestingRequired": true,
-      "vestingLength": 3,
-      "vestingAtLaunch": 25,
-      "vestingPerMonth": 25,
-      "telegram": "https://t.me/samurailegends",
-      "twitter": "https://twitter.com/samuraiverse",
-      "medium": "https://medium.com/samurailegends",
-      "website": "https://samurailegends.io/",
-      "blockchain": "BSC",
-      "github": "https://github.com/Samurai-Legends",
-      "whitepaper": "http://docs.samurailegends.io",
-      "auditUrl": "https://drive.google.com/file/d/1_HoJZpFUQxahxdTWFlU7s37wTvGVrCpg/view?usp=sharing",
-      "category": "Gaming",
-      "description": "Samurai Legends is a samurai-themed NFT open-world GameFi Metaverse. Players fight PvP battles, build, strategize and engage in politics in order to survive and thrive. In this sandbox of conflict, players aspire to become Shogun and gain ultimate control over the rules and economy of the game world.",
-      "featureImage1": "https://ik.imagekit.io/p3fhsqadana/Samurai_Legend/QmaPtngwXSGip2EBD5obdYhnqMrQfg9HrdqBoHubydhnZ2_BLT2wpgE9Iz.png?ik-sdk-version=javascript-1.4.3&updatedAt=1647000806564",
-      "featureImage2": "https://ik.imagekit.io/p3fhsqadana/Samurai_Legend/QmYkExyQpp6qBvLo5Ajj3uPMm3QrtjBAsJBUnhzpV34xSg_RydGqMjxG.png?ik-sdk-version=javascript-1.4.3&updatedAt=1647000808538",
-      "featureImage3": "https://ik.imagekit.io/p3fhsqadana/Samurai_Legend/QmcVH9eprHxX6WeGjj5Nv26JPQeD6pqaPMgo18oBBaDxvQ_wg4XAzD3P.png?ik-sdk-version=javascript-1.4.3&updatedAt=1647000808253",
-      "featureText1": "Create Your Own Player NFT",
-      "featureText2": "Tactical View",
-      "featureText3": "PvP Action Sequence",
-      "launchDate": "0",
-      "lengthOfPresale": "300",
-      "shortDescription": "Presale scheduled to begin on March 11th, 2022 to March 16th, 2022. Vesting schedule as follows: 25% released at launch and 25% released each month for 3 months. GameFi in feudal Japan. Enter the samuraiverse.",
-      "tierAllocation1": "600",
-      "tierAllocation2": "500",
-      "tierAllocation3": "450",
-      "tierAllocation4": "400",
-      "tierAllocation5": "350",
-      "tierAllocation6": "300",
-      "tierAllocation7": "200",
-      "launchEndDate": "0",
-      "allTimeHigh": "0.255",
-      "returnOnInvestment": "472",
-      "padOrder": 3
-  }
 export function fetchProjectList(): Promise<any | null> {
   return (fetch(`https://backend-api-pi.vercel.app/api/getProjects`)
     .then((res: any) => res.json())
     .then((data) => {
-      let res=data.data
-      res.push(testIdo)      
-      return {data: res}
-      // return data
+      return data
     })
     .catch(error => {
       console.error("Failed to get project list: " + error)
