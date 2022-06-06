@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
-  webpack5: false,  
+  webpack5: false,
   env: {
     email_service: {
       service_id: 'service_zbtrz86',

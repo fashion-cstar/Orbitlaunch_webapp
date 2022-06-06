@@ -6,7 +6,8 @@ import { useEthers, ChainId } from "@usedapp/core"
 import { ethers } from "ethers"
 import { getContract, parseEther, calculateGasMargin } from 'src/utils'
 import ERC20_ABI from 'src/lib/contract/abis/erc20.json'
-import PAD_ABI from 'src/lib/contract/abis/orbitpad.json'
+// import PAD_ABI from 'src/lib/contract/abis/orbitpad.json'
+import PAD_ABI from 'src/lib/contract/abis/orbitpadLockTier.json'
 import { TransactionResponse } from '@ethersproject/providers'
 import { AddressZero } from '@ethersproject/constants'
 import { M31TokenAddress, RpcProviders } from "@app/shared/PadConstant"
@@ -14,7 +15,6 @@ import { getTierValues } from '@app/shared/TierLevels'
 import { getChainIdFromName, PROJECT_STATUS } from 'src/utils'
 import { useTokenBalance } from '../hooks'
 import useRefresh from '../useRefresh'
-
 import moment from 'moment'
 
 export function fetchProjectList(): Promise<any | null> {
@@ -324,7 +324,7 @@ export function useStartTime(padContractAddress: string, blockchain: string): Bi
   const { slowRefresh, fastRefresh } = useRefresh()
 
   useEffect(() => {
-    const fetchStartTime = async () => {
+    const fetchStartTime = async () => {      
       const padContract: Contract = getContract(padContractAddress, PAD_ABI, RpcProviders[chainId], account ? account : undefined)
       const timeat = await padContract.startTime()
       return timeat
@@ -332,7 +332,7 @@ export function useStartTime(padContractAddress: string, blockchain: string): Bi
     if (padContractAddress) {
       fetchStartTime().then(result => {
         setStartTime(result)
-      }).catch(error => { })
+      }).catch(error => { console.log(error)})
     }
   }, [padContractAddress, slowRefresh])
 

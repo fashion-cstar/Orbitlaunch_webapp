@@ -33,7 +33,7 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
       <Header />
       <div className="flex flex-column items-start py-[64px] z-[1300]" style={gradientColor}>
         {!alreadyWarn && (
-          <div className="grow fixed top-50 w-full h-[35px] bg-[#b24f9e] border-b border-b-[#112b40] z-[1400]">
+          <div className="grow fixed top-14 w-full h-[35px] bg-[#b24f9e] border-b border-b-[#112b40] z-[1400]">
             <p className="flex justify-center p-2 text-xs md:text-sm cursor-pointer" onClick={goToMain}>
               Make sure you're visiting&nbsp;&nbsp;
               <p className="flex row items-center">

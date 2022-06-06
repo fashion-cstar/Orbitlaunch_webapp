@@ -47,7 +47,7 @@ export const SnackbarContextProvider: FC = ({ children }) => {
   return (
     <SnackbarContext.Provider value={provider}>
       {children}
-      <Snackbar open={snackbarOpen} autoHideDuration={500}>
+      <Snackbar open={snackbarOpen} autoHideDuration={500} anchorOrigin={{ vertical: 'top', horizontal:'right' }} >
         <Alert severity={severity}>{snackbarMessage}</Alert>
       </Snackbar>
     </SnackbarContext.Provider>

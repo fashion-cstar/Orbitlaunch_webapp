@@ -12,7 +12,7 @@ const gradientColor = {
 
 export default function Header() {
   return (
-    <Portal>
+    <Portal>      
       <div className="fixed top-0 left-0 flex min-h-[64px] w-full items-center border-b border-b-[#112b40]" style={gradientColor}>
         <div className="flex w-full items-center justify-between px-6">
           <div className="flex items-center space-x-2">
@@ -23,7 +23,7 @@ export default function Header() {
             <Wallet isMobile />
           </div>
 
-          <div className="flex flex-row items-center space-x-4">
+          <div className="hidden md:flex flex-row items-center space-x-4">
             <a className="w-[20px]" href={'https://www.orbitlaunch.io'} target="_blank"><EarthIcon /></a>
             <a className="w-[20px]" href={'https://instagram.com/orbitecosystem'} target="_blank"><InstagramIcon /></a>
             <a className="w-[20px]" href={'https://twitter.com/orbitecosystem'} target="_blank"><TwitterIcon /></a>

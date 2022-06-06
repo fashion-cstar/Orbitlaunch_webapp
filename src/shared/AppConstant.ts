@@ -29,6 +29,7 @@ export const RESOLUTION_TO_INTERVAL = {
   "1M": 43200,
 };
 
+export const LAST_MONTH_PROFIT_URL = "https://backend-api-pi.vercel.app/api/Fund/2"
 export const TV_CHART_CONTAINER_ID = "tv-chart-container";
 
 export const BNBTokenAddress = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
@@ -37,6 +38,9 @@ export const PancakeSwapContractAddress =
   "0x10ed43c718714eb63d5aa57b78b54704e256024e";
 export const PancakeRouterContractAddress =
   "0x10ed43c718714eb63d5aa57b78b54704e256024e";
+
+// lock actions
+export const TierTokenLockContractAddress = "0xFAF78a5fF12da33982928A7E5C2cB828f721aB06"
 
 // migrate
 export const OrbtTokenAddress = "0x4bf5cd1AC6FfF12E88AEDD3c70EB4148F90F8894"
@@ -47,8 +51,11 @@ export const OrbitFundContractAddress = "0xabc3b533fbcc4380fe1db477417125c5e7118
 // Use v3 as v2 for now
 export const OrbitFundContractAddress_V2 = "0x73e59ca168161085eA8bdce48dD6CB4CeE49A096";
 
-// new orbit fund pool with newly launched token
+// fund pool with newly launched token
 export const OrbitFundContractAddressWithV3Token = "0xFE5D5EEAaC9dF7B028340adb49Dd85339EC14b8F";
+
+// new fund pool with lock actions
+export const OrbitFundContractAddress_V4 = "0x244b8071cd98393401F60380962755A45490D7fb";
 
 export const BusdContractAddress = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"; // testnet MOCK BUSD: 0xCbdEB985e2189e615eAe14F5784733C0122c253c
 export const OrbitStableTokenAddress = "0xB96A921FD923FF5C23d2A4f5d3d099b47d9D95F1" // testnet: 0x2a087e33c0C44A2B351B5329cBFf8A63d352C599

@@ -1,12 +1,12 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import Button from '@mui/material/Button';
 import Modal from 'src/components/common/Modal';
-import InputBox from '../Common/InputBox';
+import LoadingButton from '@mui/lab/LoadingButton';
 import FundTokenInput from '../Common/FundTokenInput'
 import ProjectTokenInput from '../Common/ProjectTokenInput'
 import { useEthers, ChainId } from "@usedapp/core";
 import {
-    useJoinPresaleCallback,    
+    useJoinPresaleCallback,
     useTotalInvestedAmount,
     useInvestCap,
     useDepositInfo,
@@ -14,7 +14,6 @@ import {
     useMaxAllocationNonM31
 } from 'src/state/Pad/hooks'
 import { useToken, useNativeTokenBalance, useTokenAllowance, useTokenBalance, useTokenBalanceCallback, useApproveCallback } from 'src/state/hooks'
-import { AddressZero } from '@ethersproject/constants'
 import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -134,14 +133,12 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
             approveCallback(project.contractAddress, BUSDTokenAddress[chainId], Math.round(fundTokenAmount + 1), project.blockchain).then((hash: string) => {
                 setIsApproved(true)
                 setIsWalletApproving(false)
+                snackbar.snackbar.show("Approved!", "success");
             }).catch((error: any) => {
                 setIsWalletApproving(false)
                 console.log(error)
                 let err: any = error
-                if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                if (err?.error) {
-                    if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                }
+                snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
             })
         } catch (error) {
             setIsWalletApproving(false)
@@ -157,37 +154,31 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
 
     async function onDeposit() {
         setAttempting(true)
-        let res = await tokenAllowanceCallback(account, project.contractAddress, BUSDTokenAddress[chainId], project.blockchain)
-        if (res) {
-            try {
-                if (res.gte(parseEther(fundTokenAmount, fundDecimals))) {
-                    console.log(res)
-                    try {
-                        joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
-                            setHash(hash)
-                            successDeposited()
-                        }).catch(error => {
-                            setAttempting(false)
-                            console.log(error)
-                            let err: any = error
-                            if (err?.message) snackbar.snackbar.show(err?.message, "error")
-                            if (err?.error) {
-                                if (err?.error?.message) snackbar.snackbar.show(err?.error?.message, "error");
-                            }
-                        })
-                    } catch (error) {
+        try {
+            let res = await tokenAllowanceCallback(account, project.contractAddress, BUSDTokenAddress[chainId], project.blockchain)
+            if (res.gte(parseEther(fundTokenAmount, fundDecimals))) {
+                try {
+                    joinPresaleCallback(project.contractAddress, BUSDTokenAddress[chainId], fundTokenAmount, project.blockchain).then((hash: string) => {
+                        setHash(hash)
+                        setAttempting(false)
+                        successDeposited()
+                    }).catch(error => {
                         setAttempting(false)
                         console.log(error)
-                    }
-                    return true
-                } else {
-                    onDeposit()
+                        let err: any = error
+                        snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
+                    })
+                } catch (error) {
+                    setAttempting(false)
+                    console.log(error)
                 }
-            } catch (ex) {
+                return true
+            } else {
                 onDeposit()
             }
+        } catch (ex) {
+            console.log(ex)
         }
-
         return null;
     }
 
@@ -235,14 +226,16 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
     }
 
     const onclose = () => {
-        setHash(undefined)
-        setAttempting(false)
-        setIsApproved(false)
-        setIsWalletApproving(false)
-        setDeposited(false)
-        setFundTokenAmount(0)
-        setProjectTokenAmount(0)
-        handleClose()
+        if (!(isWalletApproving || attempting)) {
+            setHash(undefined)
+            setAttempting(false)
+            setIsApproved(false)
+            setIsWalletApproving(false)
+            setDeposited(false)
+            setFundTokenAmount(0)
+            setProjectTokenAmount(0)
+            handleClose()
+        }
     }
 
     const getAvailableSupply = () => {
@@ -309,15 +302,17 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 <div>Native Coin Balance</div>
                                 <div className='text-right'>{`${ethBalance} ${getNativeSymbol(project.blockchain)}`}</div>
                             </div>
-                            <div className='flex gap-4'>
-                                <Button
+                            <div className='flex gap-4'>          
+                                <LoadingButton
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
-                                    onClick={onApprove}
+                                    loading={isWalletApproving}
+                                    loadingPosition="start"
                                     disabled={!account || !launchTokenPrice || isOverMax || ethBalance <= 0 || fundTokenAmount === 0 || isApproved || isWalletApproving || !(projectStatus === PROJECT_STATUS.PresaleOpen || projectStatus === PROJECT_STATUS.PublicPresaleOpen)}
+                                    onClick={onApprove}
                                 >
-                                    Approve
-                                </Button>
+                                    {isWalletApproving ? 'Approving...' : "Approve"}
+                                </LoadingButton>
                                 <Button
                                     variant="contained"
                                     sx={{ width: "100%", borderRadius: "12px" }}
@@ -326,16 +321,6 @@ export default function JoinPresaleModal({ isOpen, launchTokenPrice, currentTier
                                 >
                                     Deposit
                                 </Button>
-
-                                {/* <Button
-                                    variant="contained"
-                                    sx={{ width: "100%", borderRadius: "12px" }}
-                                    onClick={onApprove}
-                                    disabled={true}
-                                >
-                                    Reserve Your Tokens Now
-                                </Button> */}
-
                             </div>
                         </div>
                     )}

@@ -68,13 +68,13 @@ export default function SliderCards({ cardInformationList, selectedCardIndex }: 
                                                         {info.tierNo}
                                                     </div>
                                                 </div>
-                                                <div className="items-center text-xs text-white mb-2">
+                                                <div className="items-center text-xs text-white mb-2 font-light">
                                                     Requires {info.shownRequiredTokens} ORBIT
                                                 </div>
-                                                <div className="items-center text-xs text-white mb-2">
+                                                <div className="items-center text-xs text-white mb-2 font-light">
                                                     Up to {info.monthlyPercent}% Monthly
                                                 </div>
-                                                <div className="items-center text-xs text-white mb-2">{/* text-slate-400 */}
+                                                <div className="items-center text-xs text-white mb-2 font-light">{/* text-slate-400 */}
                                                     Return on Investment
                                                 </div>
                                             </div>

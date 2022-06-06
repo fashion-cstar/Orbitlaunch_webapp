@@ -15,6 +15,10 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther } from 'src/utils'
 import { useEthers } from "@usedapp/core"
 import { getProjectStatusText } from 'src/utils'
+import { TierTokenLockContractAddress } from "@app/shared/AppConstant"
+import { useLockActions } from "@app/contexts"
+import PadLockTierModal from "../../../TierActions/PadLockTierModal";
+import { THIRTEEN_DAYS, ONEDAY_SECS } from "@app/utils";
 
 export default function ProjectDetail({ project }: { project: any }) {
     const [IdoList, setIdoList] = useState<any>()
@@ -27,9 +31,11 @@ export default function ProjectDetail({ project }: { project: any }) {
     const projectStatus = useProjectStatus(IdoProject)
     const hideTierCard = useRef(null)
     const router = useRouter()
-    const currentTierNo = useFundTier();
+    // const currentTierNo = useFundTier();
+    const { userClaimedTier:currentTierNo, unlockTimes, updateTierAndUnlockTime } = useLockActions()
+    const [isOpenLockTier, setIsOpenLockTier] = useState(false)
 
-    useEffect(() => {
+    useEffect(() => {        
         try {
             launchTokenPriceCallback(IdoProject.contractAddress, IdoProject.blockchain).then((res: BigNumber) => {
                 setLaunchTokenPrice(formatEther(res, 18, 5))
@@ -59,7 +65,11 @@ export default function ProjectDetail({ project }: { project: any }) {
     }, [IdoList, project])
 
     const handleClickJoinPresale = () => {
-        setIsOpenJoinPresale(true);
+        if (Math.floor(unlockTimes / ONEDAY_SECS) < THIRTEEN_DAYS) {
+            setIsOpenLockTier(true)
+        } else {
+            setIsOpenJoinPresale(true);
+        }        
     };
 
     const handleCloseJoinPresale = () => {
@@ -78,6 +88,10 @@ export default function ProjectDetail({ project }: { project: any }) {
 
     }
 
+    const closeLockTierModal = () => {
+        setIsOpenLockTier(false)
+    }
+
     return (
         <>
             {IdoProject && (<JoinPresaleModal project={IdoProject}
@@ -86,6 +100,7 @@ export default function ProjectDetail({ project }: { project: any }) {
             {IdoProject && (<ClaimTokensModal project={IdoProject}
                 isOpen={isOpenClaimTokens} launchTokenPrice={launchTokenPrice}
                 handleClose={handleCloseClaimTokens} />)}
+            <PadLockTierModal isOpen={isOpenLockTier} handleClose={closeLockTierModal} />
             <div className="w-full" onClick={(e) => handleHideTierCard(e)} >
                 <div className="flex flex-row items-center justify-between">
                     <h1 className="text-[32px] font-medium">OrbitPad</h1>

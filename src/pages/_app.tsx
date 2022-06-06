@@ -10,8 +10,8 @@ import { useRouter } from "next/router";
 import { BSC_RPC_URL } from "@app/shared/AppConstant";
 import compose from "@app/shared/helpers/compose";
 import "@app/styles/globals.css";
-import { RefreshContextProvider } from 'src/contexts/RefreshContext'
-
+import { SnackbarContextProvider } from "@app/lib/hooks/useSnackbar";
+import { LockActionsProvider, RefreshContextProvider } from "@app/contexts";
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
@@ -37,7 +37,7 @@ const config: Config = {
   readOnlyUrls: {
     [BSC.chainId]: BSC_RPC_URL,
   },
-  networks: [BSC, Mainnet],
+  networks: [BSC, Mainnet, BSCTestnet],
   autoConnect: false
 };
 
@@ -53,10 +53,14 @@ function OrbitApp({
       <DAppProvider config={config}>
         <ThemeProvider theme={theme}>
           <RefreshContextProvider>
-            <CssBaseline />
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
+            <LockActionsProvider>
+              <SnackbarContextProvider>
+                <CssBaseline />
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              </SnackbarContextProvider>
+            </LockActionsProvider>
           </RefreshContextProvider>
         </ThemeProvider>
       </DAppProvider>

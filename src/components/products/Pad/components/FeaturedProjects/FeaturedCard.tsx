@@ -17,7 +17,7 @@ export default function FeaturedCard({ ido, firstCardIndex, onDetail, options }:
     let titleFontSize = (!!options && !!options.titleFontSize) ? options.titleFontSize : '24px'
     let descFontSize = (!!options && !!options.descFontSize) ? options.descFontSize : '16px'
     let imgHeight = (!!options && !!options.imgHeight) ? options.imgHeight : (!!options && !!options.width) ? `${Number(options.width.substr(0, options.width.length - 2)) * 16 / 45}px` : '150px'
-    
+        
     const styling = {
         backgroundColor: bgColor,
         width
