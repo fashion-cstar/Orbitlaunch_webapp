@@ -58,7 +58,7 @@ export default function Fund() {
         userReturned: userReturned_V2,
         totalInvestedToDate: totalInvestedToDate_V2,
         currentTierNo: currentTierNoV2,
-        roiToDate:roiToDate_V2,
+        roiToDate: roiToDate_V2,
         totalInvestors: totalInvestors_V2,
         disableDeposit,
         profitUpToDate,
@@ -75,7 +75,7 @@ export default function Fund() {
         currentInvestment: currentInvestmentV3,
         userReturned: userReturned_V3,
         userLastInvestment: userLastInvestment_V3,
-        roiToDate:roiToDate_V3,
+        roiToDate: roiToDate_V3,
         totalInvestors: totalInvestors_V3,
         totalInvestedToDate: totalInvestedToDate_V3,
         disableWithdraw: disableWithdraw_V3,
@@ -89,7 +89,7 @@ export default function Fund() {
         disableDeposit: disableDepositV4,
         currentInvestment: currentInvestment_V4,
         userLastInvestment: userLastInvestment_V4,
-        roiToDate:roiToDate_V4,
+        roiToDate: roiToDate_V4,
         userReturned: userReturned_V4,
         totalInvestors: totalInvestors_V4,
         totalInvestedToDate: totalInvestedToDate_V4,
@@ -207,7 +207,8 @@ export default function Fund() {
     }, [id, account]);
 
     const getCurrentInvestors = () => {
-        return Number(totalInvestors_V1) + Number(totalInvestors_V2) + Number(totalInvestors_V3) + Number(totalInvestors_V4)
+        let res = Number(totalInvestors_V1) + Number(totalInvestors_V2) + Number(totalInvestors_V3) + Number(totalInvestors_V4)
+        return res.toLocaleString()
     }
 
     const getTotalInvestedToDate = () => {
@@ -220,7 +221,8 @@ export default function Fund() {
 
     const getLastMonthInvestment = () => {
         if (account) {
-            return Number(userLastInvestment_V2) + Number(userLastInvestment_V3)
+            let res = Number(userLastInvestment_V2) + Number(userLastInvestment_V3)
+            return res.toLocaleString()
         } else {
             let lastMonthInvestedToDate: BigNumber = ethers.utils.parseEther(totalInvestedToDate_V2)
             lastMonthInvestedToDate = lastMonthInvestedToDate.add(ethers.utils.parseEther(totalInvestedToDate_V3))
@@ -230,22 +232,25 @@ export default function Fund() {
 
     const getLastMonthRoiToDate = () => {
         if (account) {
-            return Number(roiToDate_V2) + Number(roiToDate_V3)
-        } else {            
+            let res = Number(roiToDate_V2) + Number(roiToDate_V3)
+            return res.toLocaleString()
+        } else {
             return totalProfit_V1
         }
     }
 
     const getLastMonthReturn = () => {
         if (account) {
-            return Number(userReturned_V2) + Number(userReturned_V3)
-        } else {            
+            let res = Number(userReturned_V2) + Number(userReturned_V3)
+            return res.toLocaleString()
+        } else {
             return totalReturned_V1
         }
     }
 
     const getRoiToDate = () => {
-        return Number(roiToDate_V1) + Number(roiToDate_V2)+ Number(roiToDate_V3) + Number(roiToDate_V4)
+        let res = Number(roiToDate_V1) + Number(roiToDate_V2) + Number(roiToDate_V3) + Number(roiToDate_V4)
+        return res.toLocaleString()
     }
 
     const closeLockTierModal = () => {
@@ -314,7 +319,7 @@ export default function Fund() {
                                 <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                             </div>
                             <div className="text-xl">
-                                {!!account ? `$${(parseFloat(currentInvestment_V4)).toFixed(2)}` : getCurrentInvestors().toString()}
+                                {!!account ? `$${(parseFloat(currentInvestment_V4)).toFixed(2)}` : getCurrentInvestors()}
                             </div>
                         </div>
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
@@ -519,7 +524,7 @@ export default function Fund() {
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                         </div>
-                        <div className="text-xl">{!!account ? `$${(parseFloat(currentInvestment_V4)).toFixed(2)}` : getCurrentInvestors().toString()}</div>
+                        <div className="text-xl">{!!account ? `$${(parseFloat(currentInvestment_V4)).toFixed(2)}` : getCurrentInvestors()}</div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
