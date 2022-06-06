@@ -11,6 +11,7 @@ export enum SidebarItem {
   ANALYTICS,
   FUND,
   EXCHANGE,
+  PLAY,
 }
 
 export const SIDEBAR_ROUTES = {
@@ -19,6 +20,7 @@ export const SIDEBAR_ROUTES = {
   [SidebarItem.ANALYTICS]: "/analytics",
   [SidebarItem.FUND]: "/fund",
   [SidebarItem.EXCHANGE]: "/exchange",
+  [SidebarItem.PLAY]: "/play",
 };
 
 export const SIDEBAR_ITEMS = {
@@ -27,6 +29,7 @@ export const SIDEBAR_ITEMS = {
   [SidebarItem.ANALYTICS]: "OrbitAnalytics",
   [SidebarItem.FUND]: "OrbitFund",
   [SidebarItem.EXCHANGE]: "OrbitExchange",
+  [SidebarItem.PLAY]: "OrbitPlay",
 };
 
 export const SIDEBAR_ICON_MAP = {
@@ -43,6 +46,9 @@ export const SIDEBAR_ICON_MAP = {
     <FundIcon fill={active ? colors.app.primary : "#BAB8CC"} />
   ),
   [SidebarItem.EXCHANGE]: ({ active }: { active?: boolean }) => (
+    <ExchangeIcon fill={active ? colors.app.primary : "#BAB8CC"} />
+  ),
+  [SidebarItem.PLAY]: ({ active }: { active?: boolean }) => (
     <ExchangeIcon fill={active ? colors.app.primary : "#BAB8CC"} />
   ),
 };
