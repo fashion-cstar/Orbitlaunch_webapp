@@ -53,11 +53,11 @@ export default function Fund() {
     const {
         startInvestmentPeriodDate,
         endInvestmentPeriodDate,
-        currentInvestment,
-        totalInvestedToDate,
+        currentInvestment: currentInvestment_V2,
+        totalInvestedToDate: totalInvestedToDate_V2,
         currentTierNo: currentTierNoV2,
         roiToDate,
-        totalInvestors,
+        totalInvestors: totalInvestors_V2,
         disableDeposit,
         profitUpToDate,
         disableWithdraw: disableWithdraw_V2,
@@ -71,6 +71,8 @@ export default function Fund() {
         disableDeposit: disableDepositV3,
         currentTierNo: currentTierNoV3,
         currentInvestment: currentInvestmentV3,
+        totalInvestors: totalInvestors_V3,
+        totalInvestedToDate: totalInvestedToDate_V3,
         disableWithdraw: disableWithdraw_V3,
         isWithdrawApproving: isWithdrawApprovingV3,
         isWithdrawing: isWithdrawingV3,
@@ -80,7 +82,9 @@ export default function Fund() {
 
     const {
         disableDeposit: disableDepositV4,
-        currentInvestment: currentInvestmentV4,
+        currentInvestment: currentInvestment_V4,
+        totalInvestors: totalInvestors_V4,
+        totalInvestedToDate: totalInvestedToDate_V4,
         disableWithdraw: disableWithdraw_V4,
         balance: balanceV4,
         isWithdrawApproving: isWithdrawApprovingV4,
@@ -136,7 +140,7 @@ export default function Fund() {
                 console.debug('Failed to get OSC balance', error)
             }
         }
-        let approveAmount = Math.max(Math.floor(Number(bal)) + 1, Math.floor(Number(currentInvestmentV4)) + 1)
+        let approveAmount = Math.max(Math.floor(Number(bal)) + 1, Math.floor(Number(currentInvestment_V4)) + 1)
         const weiAmount = ethers.utils.parseEther(approveAmount.toString());
         const withdrawalResult = await withdraw_V4(weiAmount);
         if (!withdrawalResult.ok) {
@@ -194,8 +198,16 @@ export default function Fund() {
         processUserReferral();
     }, [id, account]);
 
-    const getCurrentInvestors = (v1_investors: number, v2_investors: number) => {
-        return Number(v1_investors) + Number(v2_investors)
+    const getCurrentInvestors = () => {
+        return Number(totalInvestors_V1) + Number(totalInvestors_V2) + Number(totalInvestors_V3) + Number(totalInvestors_V4)
+    }
+
+    const getTotalInvestedToDate = () => {
+        let totalInvestedToDate: BigNumber = ethers.utils.parseEther(totalInvestedToDate_V1)
+        totalInvestedToDate = totalInvestedToDate.add(ethers.utils.parseEther(totalInvestedToDate_V2))
+        totalInvestedToDate = totalInvestedToDate.add(ethers.utils.parseEther(totalInvestedToDate_V3))
+        totalInvestedToDate = totalInvestedToDate.add(ethers.utils.parseEther(totalInvestedToDate_V4))
+        return ethers.FixedNumber.fromString(ethers.utils.formatEther(totalInvestedToDate)).round(2).toString()
     }
 
     const closeLockTierModal = () => {
@@ -241,7 +253,7 @@ export default function Fund() {
                                     variant="outlined"
                                     sx={{ borderRadius: "12px" }}
                                 >
-                                    {disableDepositV4 ? 'Deposit window closed (v4)' : userClaimedTier ? 'Deposit BUSD (v4)' : 'Claim your tier'}
+                                    {disableDepositV4 ? 'Deposit window closed' : userClaimedTier ? 'Deposit BUSD' : 'Claim your tier'}
                                 </Button>
                             </>)
                             : (
@@ -264,16 +276,15 @@ export default function Fund() {
                                 <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                             </div>
                             <div className="text-xl">
-                                {!!account ? `$${(parseFloat(currentInvestment) + parseFloat(currentInvestmentV3)).toFixed(2)}` : getCurrentInvestors(totalInvestors, totalInvestors_V1).toString()}
+                                {!!account ? `$${(parseFloat(currentInvestment_V4)).toFixed(2)}` : getCurrentInvestors().toString()}
                             </div>
                         </div>
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                             <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                 <span>{!!account ? 'ROI to Date' : 'Total Invested to Date'}</span>
                             </div>
-                            <div className="text-xl">${!!account ? roiToDate :
-                                ethers.FixedNumber.fromString(ethers.utils.formatEther(ethers.utils.parseEther(totalInvestedToDate).add(ethers.utils.parseEther(totalInvestedToDate_V1)))).round(2).toString()
-                            }</div>
+                            <div className="text-xl">${!!account ? roiToDate : getTotalInvestedToDate()}
+                            </div>
                         </div>
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                             <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
@@ -449,7 +460,7 @@ export default function Fund() {
                                     variant="outlined"
                                     sx={{ borderRadius: "12px" }}
                                 >
-                                    {disableDepositV4 ? 'Deposit window closed (v4)' : userClaimedTier ? 'Deposit BUSD (v4)' : 'Claim your tier'}
+                                    {disableDepositV4 ? 'Deposit window closed' : userClaimedTier ? 'Deposit BUSD' : 'Claim your tier'}
                                 </Button>
                             </>
                         )
@@ -470,15 +481,13 @@ export default function Fund() {
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                         </div>
-                        <div className="text-xl">{!!account ? `$${(parseFloat(currentInvestment) + parseFloat(currentInvestmentV3)).toFixed(2)}` : getCurrentInvestors(totalInvestors, totalInvestors_V1).toString()}</div>
+                        <div className="text-xl">{!!account ? `$${(parseFloat(currentInvestment_V4)).toFixed(2)}` : getCurrentInvestors().toString()}</div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>{!!account ? 'ROI to Date' : 'Total Invested to Date'}</span>
                         </div>
-                        <div className="text-xl">${!!account ? roiToDate_V1 :
-                            ethers.FixedNumber.fromString(ethers.utils.formatEther(ethers.utils.parseEther(totalInvestedToDate).add(ethers.utils.parseEther(totalInvestedToDate_V1)))).round(2).toString()
-                        }</div>
+                        <div className="text-xl">${!!account ? roiToDate_V1 : getTotalInvestedToDate()}</div>
                     </div>
                 </div>
                 <div className="flex flex-row items-center space-x-4">
