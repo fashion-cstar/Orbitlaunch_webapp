@@ -15,5 +15,3 @@ export const CurrentFundAddresses = [
 export const OpeningFundAddresses = [
     "0x244b8071cd98393401F60380962755A45490D7fb"
 ]
-
-export const isUsingOldTier = true

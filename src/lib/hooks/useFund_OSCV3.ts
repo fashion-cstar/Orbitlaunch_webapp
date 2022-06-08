@@ -1,8 +1,7 @@
 import { useEthers, useTokenBalance } from "@usedapp/core";
 import { useEffect, useMemo, useState } from "react";
 import {
-    AppTokenAddress,
-    BusdContractAddress, OrbitStableTokenAddress
+    BusdContractAddress, OrbitStableTokenAddressWithV3
 } from "@app/shared/AppConstant";
 import { BigNumber, ethers } from "ethers";
 import moment from 'moment';
@@ -17,9 +16,9 @@ import { getChainIdFromName } from 'src/utils'
 import { formatEther } from "@ethersproject/units";
 import { getTierValues } from "@app/shared/TierLevels";
 
-export default function useFund_OSCV2(fundContractAddress: string) {
-    const { account, library } = useEthers();    
-    const connectedUserBalance = useTokenBalance(AppTokenAddress, account);
+export default function useFund(fundContractAddress: string) {
+    const { account, library } = useEthers();
+    const connectedUserBalance = useTokenBalance(OrbitStableTokenAddressWithV3, account);
     const [isWithdrawApproving, setIsWithdrawApproving] = useState(false)
     const [isWithdrawing, setIsWithdrawing] = useState(false)
     const snackbar = useSnackbar()
@@ -146,6 +145,7 @@ export default function useFund_OSCV2(fundContractAddress: string) {
     const [{
         startInvestmentPeriodDate,
         endInvestmentPeriodDate,
+        currentInvestment,
         disableDeposit,
         disableWithdraw,
         remainingTimeText,
@@ -153,7 +153,8 @@ export default function useFund_OSCV2(fundContractAddress: string) {
         currentTierNo
     }, setInfo] = useState({
         startInvestmentPeriodDate: '-',
-        endInvestmentPeriodDate: '-',       
+        endInvestmentPeriodDate: '-',
+        currentInvestment: '0.00',
         disableDeposit: true,
         disableWithdraw: true,
         remainingTimeText: '0 days 0 hours 0 minutes',
@@ -251,12 +252,30 @@ export default function useFund_OSCV2(fundContractAddress: string) {
         }
     }
 
+    const depositInfos = async () => {
+        try {
+            const orbitFundContract = getContract(fundContractAddress, orbitFundAbi, library, account ? account : undefined);
+
+            return await orbitFundContract.depositInfos(account)
+                .then((response: any) => {
+                    return formatEther(response.amount);
+                }).catch((err: any) => {
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
+                    return formatEther(ethers.utils.parseEther('0.000'));
+                });
+        }
+        catch (err) {
+            console.error("ERROR: " + (err.data?.message || err?.message || err));
+            return formatEther(ethers.utils.parseEther('0.000'));
+        }
+    }
+
     const withdraw = async (weiAmount: ethers.BigNumber) => {
         try {
             const orbitFundContract = getContract(fundContractAddress, orbitFundAbi, library, account ? account : undefined);
-            const orbitStableContract = getContract(OrbitStableTokenAddress, orbitStableCoinAbi, library, account ? account : undefined);
+            const orbitStableContract = getContract(OrbitStableTokenAddressWithV3, orbitStableCoinAbi, library, account ? account : undefined);
             const provider = getProviderOrSigner(library, account) as any;
-            
+
             setIsWithdrawApproving(true)
             const approveTxHash = await orbitStableContract
                 .connect(provider)
@@ -295,12 +314,15 @@ export default function useFund_OSCV2(fundContractAddress: string) {
     useEffect(() => {
 
         const fetchConnectedData = async () => {
-            let depositPeriodResult = await depositPeriodInfo();        
+            let depositPeriodResult = await depositPeriodInfo();
+            let userInvestment = await depositInfos();
             const formattedConnectedBalance = formatEther(connectedUserBalance ?? BigNumber.from(0));
+            const investmentAmountInDollars = (parseFloat(userInvestment) * parseFloat("1")).toFixed(2);
             let tierResult = await getTierValues(ethers.BigNumber.from(Math.trunc(parseFloat(formattedConnectedBalance))));
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
-                endInvestmentPeriodDate: depositPeriodResult.endDate,                
+                endInvestmentPeriodDate: depositPeriodResult.endDate,
+                currentInvestment: investmentAmountInDollars,
                 disableDeposit: depositPeriodResult.disabledDeposit,
                 disableWithdraw: depositPeriodResult.disabledWithdraw,
                 remainingTimeText: depositPeriodResult.remainingTimeText,
@@ -310,10 +332,11 @@ export default function useFund_OSCV2(fundContractAddress: string) {
         }
 
         const fetchNotConnectedData = async () => {
-            let depositPeriodResult = await depositPeriodInfo();          
+            let depositPeriodResult = await depositPeriodInfo();
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
-                endInvestmentPeriodDate: depositPeriodResult.endDate,                
+                endInvestmentPeriodDate: depositPeriodResult.endDate,
+                currentInvestment: '0.00',
                 disableDeposit: depositPeriodResult.disabledDeposit,
                 disableWithdraw: depositPeriodResult.disabledWithdraw,
                 remainingTimeText: depositPeriodResult.remainingTimeText,
@@ -326,7 +349,8 @@ export default function useFund_OSCV2(fundContractAddress: string) {
             fetchConnectedData().then(result => {
                 setInfo({
                     startInvestmentPeriodDate: result.startInvestmentPeriodDate,
-                    endInvestmentPeriodDate: result.endInvestmentPeriodDate,                    
+                    endInvestmentPeriodDate: result.endInvestmentPeriodDate,
+                    currentInvestment: result.currentInvestment,
                     disableDeposit: result.disableDeposit,
                     disableWithdraw: result.disableWithdraw,
                     remainingTimeText: result.remainingTimeText,
@@ -339,7 +363,8 @@ export default function useFund_OSCV2(fundContractAddress: string) {
             fetchNotConnectedData().then(result => {
                 setInfo({
                     startInvestmentPeriodDate: result.startInvestmentPeriodDate,
-                    endInvestmentPeriodDate: result.endInvestmentPeriodDate,                    
+                    endInvestmentPeriodDate: result.endInvestmentPeriodDate,
+                    currentInvestment: result.currentInvestment,
                     disableDeposit: result.disableDeposit,
                     disableWithdraw: result.disableWithdraw,
                     remainingTimeText: result.remainingTimeText,
@@ -354,9 +379,10 @@ export default function useFund_OSCV2(fundContractAddress: string) {
     const fundInfo = useMemo(
         () => ({
             isWithdrawApproving,
-            isWithdrawing,
+            isWithdrawing,            
             startInvestmentPeriodDate,
-            endInvestmentPeriodDate,            
+            endInvestmentPeriodDate,
+            currentInvestment,
             disableDeposit,
             disableWithdraw,
             remainingTimeText,
@@ -368,7 +394,7 @@ export default function useFund_OSCV2(fundContractAddress: string) {
             depositBusd,
             withdraw
         }),
-        [isWithdrawApproving, isWithdrawing, startInvestmentPeriodDate, endInvestmentPeriodDate, disableDeposit, disableWithdraw,
+        [isWithdrawApproving, isWithdrawing, startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, disableDeposit, disableWithdraw,
             remainingTimeText, balance, currentTierNo, agreeToTerms, userAgreed, approve, depositBusd, withdraw]
     );
 

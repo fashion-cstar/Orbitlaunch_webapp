@@ -6,6 +6,7 @@ import { Button } from "@mui/material";
 import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
 import useFund from "@app/lib/hooks/useFund";
 import useFund_OSCV2 from "@app/lib/hooks/useFund_OSCV2";
+import useFund_OSCV3 from "@app/lib/hooks/useFund_OSCV3";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { tierInformation as tierInfo } from "@app/shared/TierLevels";
 import { checkUserAlreadyReferred, getUserReferralInfo, registerSoloUser, registerUserWithParent } from "@app/state/Referral";
@@ -43,7 +44,8 @@ export default function Fund() {
         isWithdrawApproving: isWithdrawApprovingV2,
         isWithdrawing: isWithdrawingV2,   
         withdraw: withdrawV2,
-        balance: balanceV2
+        balance: balanceV2,
+        currentTierNo: currentTierNoV2
     } = useFund_OSCV2(CurrentFundAddresses[0]);
 
     const {
@@ -52,8 +54,9 @@ export default function Fund() {
         isWithdrawApproving: isWithdrawApprovingV3,
         isWithdrawing: isWithdrawingV3,
         withdraw: withdrawV3,
-        balance: balanceV3
-    } = useFund(CurrentFundAddresses[1]);
+        balance: balanceV3,
+        currentTierNo: currentTierNoV3
+    } = useFund_OSCV3(CurrentFundAddresses[1]);
 
     const {
         startInvestmentPeriodDate,
@@ -206,7 +209,7 @@ export default function Fund() {
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
                                     onClick={disableWithdrawV2 ? null : async () => await handleWithdrawalSubmitV2()}
-                                    disabled={disableWithdrawV2 || currentTierNo === 0}
+                                    disabled={disableWithdrawV2 || currentTierNoV2 === 0}
                                 >
                                     {isWithdrawApprovingV2 ? 'Approving ...' : isWithdrawingV2 ? 'Withdrawing...' : 'Withdrawal (v2)'}
                                 </LoadingButton>
@@ -216,7 +219,7 @@ export default function Fund() {
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
                                     onClick={disableWithdrawV3 ? null : async () => await handleWithdrawalSubmitV3()}
-                                    disabled={disableWithdrawV3 || currentTierNo === 0}
+                                    disabled={disableWithdrawV3 || currentTierNoV3 === 0}
                                 >
                                     {isWithdrawApprovingV3 ? 'Approving ...' : isWithdrawingV3 ? 'Withdrawing...' : 'Withdrawal (v3)'}
                                 </LoadingButton>
@@ -411,7 +414,7 @@ export default function Fund() {
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
                                     onClick={disableWithdrawV2 ? null : async () => await handleWithdrawalSubmitV2()}
-                                    disabled={disableWithdrawV2 || currentTierNo === 0}
+                                    disabled={disableWithdrawV2 || currentTierNoV2 === 0}
                                 >
                                     {isWithdrawApprovingV2 ? 'Approving ...' : isWithdrawingV2 ? 'Withdrawing...' : 'Withdrawal (v2)'}
                                 </LoadingButton>
@@ -422,7 +425,7 @@ export default function Fund() {
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
                                     onClick={disableWithdrawV3 ? null : async () => await handleWithdrawalSubmitV3()}
-                                    disabled={disableWithdrawV3 || currentTierNo === 0}
+                                    disabled={disableWithdrawV3 || currentTierNoV3 === 0}
                                 >
                                     {isWithdrawApprovingV3 ? 'Approving ...' : isWithdrawingV3 ? 'Withdrawing...' : 'Withdrawal (v3)'}
                                 </LoadingButton>

@@ -7,7 +7,7 @@ import { getContract, parseEther, calculateGasMargin } from 'src/utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { RpcProviders } from "@app/shared/PadConstant"
 import useRefresh from '../state/useRefresh'
-import { CompletedFundAddresses, LastFundAddresses, CurrentFundAddresses, isUsingOldTier } from '@app/shared/FundConstant'
+import { CompletedFundAddresses, LastFundAddresses, CurrentFundAddresses } from '@app/shared/FundConstant'
 import { getChainIdFromName } from 'src/utils'
 import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbi.json";
 import { formatEther } from '@app/utils'
@@ -84,14 +84,14 @@ export const FundStatsProvider = ({ children = null as any }) => {
     }, [account, connectedUserBalanceM31, connectedUserBalanceOrbit])
 
     const updateUserCurrentTierNo = async () => {
-        if (isUsingOldTier) {
-            const formattedConnectedBalanceM31 = formatEtherCommon(connectedUserBalanceM31??BigNumber.from(0));
-            const formattedConnectedBalanceOrbit = formatEtherCommon(connectedUserBalanceOrbit??BigNumber.from(0));
-            let tierResult = await getTierValues(BigNumber.from(Math.trunc(Math.max(parseFloat(formattedConnectedBalanceM31), parseFloat(formattedConnectedBalanceOrbit)))))
-            setCurrentTierNo(tierResult.tierNo)
-        } else {
+        // if (isUsingOldTier) {
+        //     const formattedConnectedBalanceM31 = formatEtherCommon(connectedUserBalanceM31??BigNumber.from(0));
+        //     const formattedConnectedBalanceOrbit = formatEtherCommon(connectedUserBalanceOrbit??BigNumber.from(0));
+        //     let tierResult = await getTierValues(BigNumber.from(Math.trunc(Math.max(parseFloat(formattedConnectedBalanceM31), parseFloat(formattedConnectedBalanceOrbit)))))
+        //     setCurrentTierNo(tierResult.tierNo)
+        // } else {
             setCurrentTierNo(userClaimedTier)
-        }
+        // }
     }
 
     const updateTotalStats = async () => {
