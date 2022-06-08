@@ -8,7 +8,7 @@ import {
     OrbitStableTokenAddressWithV3
 } from "@app/shared/AppConstant";
 import { ethers } from "ethers";
-import { getTierValues } from '@app/shared/TierLevels';
+import { getTierValues, tierInformation } from '@app/shared/TierLevels';
 import moment from 'moment';
 import { getRemainingTimeBetweenTwoDates } from '@app/shared/helpers/time';
 import busdAbi from "@app/lib/contract/abis/busdAbi.json";
@@ -144,7 +144,10 @@ export default function useFundWithV3() {
         currentInvestment,
         totalInvestedToDate,
         totalInvestors,
-        roiToDate, currentTierNo,
+        userLastInvestment,
+        userReturned,
+        roiToDate,
+        currentTierNo,
         currentTierPercentage,
         disableDeposit,
         disableWithdraw,
@@ -157,6 +160,8 @@ export default function useFundWithV3() {
         currentInvestment: '0.00',
         totalInvestedToDate: '0.00',
         totalInvestors: 0,
+        userLastInvestment: '0.00',
+        userReturned: '0.00',
         roiToDate: '0.00',
         currentTierNo: 0,
         currentTierPercentage: "0",
@@ -393,18 +398,27 @@ export default function useFundWithV3() {
             let userWithdrewResult = await userWithdrew();
 
             let userInvestment = await depositInfos();
+            let depositinfo = await depositInfos();
+            let ROIToDate = 0
+            if (depositinfo.tierValue !== -1) {
+                let profitPercent = Number(tierInformation[depositinfo.tierValue].monthlyPercent)
+                ROIToDate = Math.round(profitPercent * Number(depositinfo.amount)) / 100
+            }
             const investmentAmountInDollars = (parseFloat(userInvestment) * parseFloat("1")).toFixed(2);
             const formattedConnectedBalance = formatEther(connectedUserBalance);
             let totalInvestment = ethers.utils.formatEther(await totalInvestedAmount());
             let tierResult = await getTierValues(ethers.BigNumber.from(Math.trunc(parseFloat(formattedConnectedBalance))));            
             let profitToDate = await getProfitUpToDate()
+            let userReturn = (Number(ROIToDate) + Number(investmentAmountInDollars)).toLocaleString()
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
                 endInvestmentPeriodDate: depositPeriodResult.endDate,
                 currentInvestment: userWithdrewResult ? '0.00' : investmentAmountInDollars,
                 totalInvestedToDate: totalInvestment,
                 totalInvestors: 0,
-                roiToDate: '0.00',
+                userLastInvestment: investmentAmountInDollars,
+                roiToDate: ROIToDate.toLocaleString(),
+                userReturned: userReturn,
                 currentTierNo: tierResult.tierNo,
                 currentTierPercentage: tierResult.monthlyPercent,
                 disableDeposit: depositPeriodResult.disabledDeposit,
@@ -426,7 +440,9 @@ export default function useFundWithV3() {
                 currentInvestment: '0.00',
                 totalInvestedToDate: totalInvestment,
                 totalInvestors: totalInvestorNumber,
+                userLastInvestment: '0.00',
                 roiToDate: '0.00',
+                userReturned: '0.00',
                 currentTierNo: 0,
                 currentTierPercentage: "0",
                 disableDeposit: depositPeriodResult.disabledDeposit,
@@ -445,7 +461,9 @@ export default function useFundWithV3() {
                     currentInvestment: result.currentInvestment,
                     totalInvestedToDate: result.totalInvestedToDate,
                     totalInvestors: result.totalInvestors,
+                    userLastInvestment: result.userLastInvestment,
                     roiToDate: result.roiToDate,
+                    userReturned: result.userReturned,
                     currentTierNo: result.currentTierNo,
                     currentTierPercentage: result.currentTierPercentage,
                     disableDeposit: result.disableDeposit,
@@ -464,7 +482,9 @@ export default function useFundWithV3() {
                     currentInvestment: result.currentInvestment,
                     totalInvestedToDate: result.totalInvestedToDate,
                     totalInvestors: result.totalInvestors,
+                    userLastInvestment: result.userLastInvestment,
                     roiToDate: result.roiToDate,
+                    userReturned: result.userReturned,
                     currentTierNo: result.currentTierNo,
                     currentTierPercentage: result.currentTierPercentage,
                     disableDeposit: result.disableDeposit,
@@ -487,7 +507,9 @@ export default function useFundWithV3() {
             currentInvestment,
             totalInvestedToDate,
             totalInvestors,
+            userLastInvestment,
             roiToDate,
+            userReturned,
             currentTierNo,
             currentTierPercentage,
             disableDeposit,
@@ -502,7 +524,7 @@ export default function useFundWithV3() {
             withdraw
         }),
         [ isWithdrawApproving, isWithdrawing, startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, totalInvestors,
-            roiToDate, currentTierNo, currentTierPercentage, disableDeposit, disableWithdraw,
+            userLastInvestment, roiToDate, userReturned, currentTierNo, currentTierPercentage, disableDeposit, disableWithdraw,
             remainingTimeText, balance, profitUpToDate, totalInvestedToDate, agreeToTerms, userAgreed, approve, depositBusd, withdraw]
     );
 
