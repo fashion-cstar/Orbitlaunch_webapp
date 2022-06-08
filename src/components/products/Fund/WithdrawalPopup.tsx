@@ -1,7 +1,6 @@
 import DepositInput from "@app/components/common/DepositInput";
 import Popup from "@app/components/common/Popup";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
-import { OrbitFundContractAddress } from "@app/shared/AppConstant";
 import { useEthers } from "@usedapp/core";
 import { useState } from "react";
 

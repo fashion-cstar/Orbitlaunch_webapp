@@ -5,7 +5,8 @@ import { ethers } from "ethers";
 import { Button } from "@mui/material";
 import { Web3ModalButton } from "@app/components/WalletConnect/Web3Modal";
 import useFund from "@app/lib/hooks/useFund";
-import useFund_V2 from "@app/lib/hooks/useFund_V2";
+import useFund_OSCV2 from "@app/lib/hooks/useFund_OSCV2";
+import useFund_OSCV3 from "@app/lib/hooks/useFund_OSCV3";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { tierInformation as tierInfo } from "@app/shared/TierLevels";
 import { checkUserAlreadyReferred, getUserReferralInfo, registerSoloUser, registerUserWithParent } from "@app/state/Referral";
@@ -13,18 +14,18 @@ import { ReferralStatus } from "@app/constants/constant";
 import BuyButton from "../../common/BuyButton";
 import SliderCards from "../../common/SliderCards";
 import DepositPopup from "./DepositPopup";
-import useFundWithV3 from "@app/lib/hooks/useFundWithV3";
-import useFundWithV4 from "@app/lib/hooks/useFundWithV4";
 import { useLockActions } from "@app/contexts"
 import FundLockTierModal from "../TierActions/FundLockTierModal";
 import { TWENTY_SIX_DAYS, ONEDAY_SECS } from "@app/utils";
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useTokenBalanceCallback } from 'src/state/hooks'
-import {
-    OrbitStableTokenAddressWithV3 as OrbitStableTokenAddressWithV4
-} from "@app/shared/AppConstant";
+import { CurrentFundAddresses, OpeningFundAddresses } from '@app/shared/FundConstant'
+import { useFundStates } from "@app/contexts";
 import { BigNumber } from "ethers";
 import { formatEther } from "@ethersproject/units";
+import {
+    OrbitStableTokenAddressWithV3
+} from "@app/shared/AppConstant";
 
 export default function Fund() {
     const activateProvider = Web3ModalButton();
@@ -35,70 +36,43 @@ export default function Fund() {
     const [version, setVersion] = useState(2);
     const [isOpenDeposit, setIsOpenDeposit] = useState(false)
     const { tokenBalanceCallback } = useTokenBalanceCallback()
+    const { totalStats, priorTotalStats, userCurrentStats, priorPersonalStats, currentTierNo} = useFundStates()
     const { userClaimedTier, unlockTimes, updateTierAndUnlockTime } = useLockActions()
+   
+    const {                
+        disableWithdraw: disableWithdrawV2,
+        isWithdrawApproving: isWithdrawApprovingV2,
+        isWithdrawing: isWithdrawingV2,   
+        withdraw: withdrawV2,
+        balance: balanceV2,
+        currentTierNo: currentTierNoV2
+    } = useFund_OSCV2(CurrentFundAddresses[0]);
+
     const {
-        totalInvestedToDate_V1,
-        userLastInvestment_V1,
-        roiToDate_V1,
-        userReturned_V1,
-        totalInvestors_V1,
-        disableWithdraw_V1,
-        totalProfit_V1,
-        totalReturned_V1,
-        isWithdrawApproving: isWithdrawApprovingV1,
-        isWithdrawing: isWithdrawingV1,
-        withdraw_V1
-    } = useFund();
+        disableDeposit: disableDepositV3,
+        disableWithdraw: disableWithdrawV3,
+        isWithdrawApproving: isWithdrawApprovingV3,
+        isWithdrawing: isWithdrawingV3,
+        withdraw: withdrawV3,
+        balance: balanceV3,
+        currentTierNo: currentTierNoV3
+    } = useFund_OSCV3(CurrentFundAddresses[1]);
 
     const {
         startInvestmentPeriodDate,
         endInvestmentPeriodDate,
-        currentInvestment: currentInvestment_V2,
-        userLastInvestment: userLastInvestment_V2,
-        userReturned: userReturned_V2,
-        totalInvestedToDate: totalInvestedToDate_V2,
-        currentTierNo: currentTierNoV2,
-        roiToDate: roiToDate_V2,
-        totalInvestors: totalInvestors_V2,
-        disableDeposit,
-        profitUpToDate,
-        disableWithdraw: disableWithdraw_V2,
-        isWithdrawApproving: isWithdrawApprovingV2,
-        isWithdrawing: isWithdrawingV2,
-        balance: balanceV2,
-        withdraw: withdraw_V2
-    } = useFund_V2();
-
-    const {
-        disableDeposit: disableDepositV3,
-        currentTierNo: currentTierNoV3,
-        currentInvestment: currentInvestmentV3,
-        userReturned: userReturned_V3,
-        userLastInvestment: userLastInvestment_V3,
-        roiToDate: roiToDate_V3,
-        totalInvestors: totalInvestors_V3,
-        totalInvestedToDate: totalInvestedToDate_V3,
-        disableWithdraw: disableWithdraw_V3,
-        isWithdrawApproving: isWithdrawApprovingV3,
-        isWithdrawing: isWithdrawingV3,
-        balance: balanceV3,
-        withdraw: withdraw_V3,
-    } = useFundWithV3();
-
-    const {
         disableDeposit: disableDepositV4,
+        disableWithdraw: disableWithdrawV4,
         currentInvestment: currentInvestment_V4,
-        userLastInvestment: userLastInvestment_V4,
-        roiToDate: roiToDate_V4,
-        userReturned: userReturned_V4,
-        totalInvestors: totalInvestors_V4,
-        totalInvestedToDate: totalInvestedToDate_V4,
-        disableWithdraw: disableWithdraw_V4,
-        balance: balanceV4,
         isWithdrawApproving: isWithdrawApprovingV4,
         isWithdrawing: isWithdrawingV4,
-        withdraw: withdraw_V4
-    } = useFundWithV4();
+        withdraw: withdrawV4,
+        balance: balanceV4,
+        approve,
+        depositBusd,
+        agreeToTerms,
+        userAgreed
+    } = useFund(OpeningFundAddresses[0]);
 
     const [totalReferred, setTotalReferred] = useState(0);
     const [referredBy, setReferredBy] = useState('');
@@ -118,7 +92,7 @@ export default function Fund() {
 
     const handleWithdrawalSubmitV2 = async () => {
         const weiAmount = ethers.utils.parseEther(balanceV2);
-        const withdrawalResult = await withdraw_V2(weiAmount);
+        const withdrawalResult = await withdrawV2(weiAmount);
         if (!withdrawalResult.ok) {
             snackbar.snackbar.show(withdrawalResult.message, "error");
             return;
@@ -129,7 +103,7 @@ export default function Fund() {
 
     const handleWithdrawalSubmitV3 = async () => {
         const weiAmount = ethers.utils.parseEther(balanceV3);
-        const withdrawalResult = await withdraw_V3(weiAmount);
+        const withdrawalResult = await withdrawV3(weiAmount);
         if (!withdrawalResult.ok) {
             snackbar.snackbar.show(withdrawalResult.message, "error");
             return;
@@ -142,7 +116,7 @@ export default function Fund() {
         let bal = balanceV4
         if (Number(bal) <= 0) {
             try {
-                let oscbal: BigNumber = await tokenBalanceCallback(OrbitStableTokenAddressWithV4, 'bsc')
+                let oscbal: BigNumber = await tokenBalanceCallback(OrbitStableTokenAddressWithV3, 'bsc')
                 if (oscbal.gt(0)) bal = formatEther(oscbal)
             } catch (error) {
                 console.debug('Failed to get OSC balance', error)
@@ -150,7 +124,7 @@ export default function Fund() {
         }
         let approveAmount = Math.max(Math.floor(Number(bal)) + 1, Math.floor(Number(currentInvestment_V4)) + 1)
         const weiAmount = ethers.utils.parseEther(approveAmount.toString());
-        const withdrawalResult = await withdraw_V4(weiAmount);
+        const withdrawalResult = await withdrawV4(weiAmount);
         if (!withdrawalResult.ok) {
             snackbar.snackbar.show(withdrawalResult.message, "error");
             return;
@@ -206,60 +180,20 @@ export default function Fund() {
         processUserReferral();
     }, [id, account]);
 
-    const getCurrentInvestors = () => {
-        let res = Number(totalInvestors_V1) + Number(totalInvestors_V2) + Number(totalInvestors_V3) + Number(totalInvestors_V4)
-        return res.toLocaleString()
-    }
-
-    const getTotalInvestedToDate = () => {
-        let totalInvestedToDate: BigNumber = ethers.utils.parseEther(totalInvestedToDate_V1)
-        totalInvestedToDate = totalInvestedToDate.add(ethers.utils.parseEther(totalInvestedToDate_V2))
-        totalInvestedToDate = totalInvestedToDate.add(ethers.utils.parseEther(totalInvestedToDate_V3))
-        totalInvestedToDate = totalInvestedToDate.add(ethers.utils.parseEther(totalInvestedToDate_V4))
-        return ethers.FixedNumber.fromString(ethers.utils.formatEther(totalInvestedToDate)).round(2).toString()
-    }
-
-    const getLastMonthInvestment = () => {
-        if (account) {
-            let res = Number(userLastInvestment_V2) + Number(userLastInvestment_V3)
-            return res.toLocaleString()
-        } else {
-            let lastMonthInvestedToDate: BigNumber = ethers.utils.parseEther(totalInvestedToDate_V2)
-            lastMonthInvestedToDate = lastMonthInvestedToDate.add(ethers.utils.parseEther(totalInvestedToDate_V3))
-            return ethers.FixedNumber.fromString(ethers.utils.formatEther(lastMonthInvestedToDate)).round(2).toString()
-        }
-    }
-
-    const getLastMonthRoiToDate = () => {
-        if (account) {
-            let res = Number(roiToDate_V2) + Number(roiToDate_V3)
-            return res.toLocaleString()
-        } else {
-            return totalProfit_V1
-        }
-    }
-
-    const getLastMonthReturn = () => {
-        if (account) {
-            let res = Number(userReturned_V2) + Number(userReturned_V3)
-            return res.toLocaleString()
-        } else {
-            return totalReturned_V1
-        }
-    }
-
-    const getRoiToDate = () => {
-        let res = Number(roiToDate_V1) + Number(roiToDate_V2) + Number(roiToDate_V3) + Number(roiToDate_V4)
-        return res.toLocaleString()
-    }
-
     const closeLockTierModal = () => {
         setIsOpenLockTier(false)
     }
 
     return (
         <>
-            <DepositPopup isOpen={isOpenDeposit} version={version} handleClose={() => setIsOpenDeposit(false)} />
+            <DepositPopup 
+                isOpen={isOpenDeposit} 
+                handleClose={() => setIsOpenDeposit(false)} 
+                userAgreed={userAgreed}
+                approve={approve}
+                depositBusd={depositBusd}
+                agreeToTerms={agreeToTerms}
+            />
             <FundLockTierModal isOpen={isOpenLockTier} handleClose={closeLockTierModal} />
             <div className="desktop-content flex flex-col space-y-4 w-full">
 
@@ -274,8 +208,8 @@ export default function Fund() {
                                     loading={isWithdrawApprovingV2 || isWithdrawingV2}
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
-                                    onClick={disableWithdraw_V2 ? null : async () => await handleWithdrawalSubmitV2()}
-                                    disabled={disableWithdraw_V2 || currentTierNoV2 === 0}
+                                    onClick={disableWithdrawV2 ? null : async () => await handleWithdrawalSubmitV2()}
+                                    disabled={disableWithdrawV2 || currentTierNoV2 === 0}
                                 >
                                     {isWithdrawApprovingV2 ? 'Approving ...' : isWithdrawingV2 ? 'Withdrawing...' : 'Withdrawal (v2)'}
                                 </LoadingButton>
@@ -284,8 +218,8 @@ export default function Fund() {
                                     loading={isWithdrawApprovingV3 || isWithdrawingV3}
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
-                                    onClick={disableWithdraw_V3 ? null : async () => await handleWithdrawalSubmitV3()}
-                                    disabled={disableWithdraw_V3 || currentTierNoV3 === 0}
+                                    onClick={disableWithdrawV3 ? null : async () => await handleWithdrawalSubmitV3()}
+                                    disabled={disableWithdrawV3 || currentTierNoV3 === 0}
                                 >
                                     {isWithdrawApprovingV3 ? 'Approving ...' : isWithdrawingV3 ? 'Withdrawing...' : 'Withdrawal (v3)'}
                                 </LoadingButton>
@@ -319,14 +253,14 @@ export default function Fund() {
                                 <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                             </div>
                             <div className="text-xl">
-                                {!!account ? `$${(parseFloat(currentInvestment_V4)).toFixed(2)}` : getCurrentInvestors()}
+                                {!!account ? `$${userCurrentStats.investedAmount}` : totalStats.investors}
                             </div>
                         </div>
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                             <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                 <span>{!!account ? 'ROI to Date' : 'Total Invested to Date'}</span>
                             </div>
-                            <div className="text-xl">${!!account ? getRoiToDate() : getTotalInvestedToDate()}
+                            <div className="text-xl">${!!account ? userCurrentStats.RoiToDate : totalStats.investedAmount}
                             </div>
                         </div>
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4">
@@ -339,11 +273,11 @@ export default function Fund() {
                                         ? <>
                                             {/* <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">Tier {currentTierNo}</div>
                                             <div className="flex text-slate-400 md:col-span-8 lg:col-span-9 xl:col-span-9 text-sm">Up to {currentTierPercentage}% monthly ROI</div> */}
-                                            <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">Tier {userClaimedTier}</div>
-                                            <div className="flex text-slate-400 md:col-span-8 lg:col-span-9 xl:col-span-9 text-sm">Up to {userClaimedTier > 0 ? tierInformation[userClaimedTier - 1].monthlyPercent : '0'}% monthly ROI</div>
+                                            <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">Tier {currentTierNo}</div>
+                                            <div className="flex text-slate-400 md:col-span-8 lg:col-span-9 xl:col-span-9 text-sm">Up to {currentTierNo > 0 ? tierInformation[currentTierNo - 1].monthlyPercent : '0'}% monthly ROI</div>
                                         </>
                                         : <>
-                                            <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">${profitUpToDate}</div>
+                                            <div className="flex text-xl md:col-span-4 lg:col-span-3 xl:col-span-3 items-center">${totalStats.ProfitToDate}</div>
                                         </>
                                     }
                                 </div>
@@ -370,24 +304,24 @@ export default function Fund() {
                                 {!!account
                                     ? <>
                                         <div className="items-center text-xs text-white mb-2 font-light">
-                                            Last Month Investment:&nbsp;<span className="text-app-primary">${getLastMonthInvestment()}</span>
+                                            Last Month Investment:&nbsp;<span className="text-app-primary">${priorPersonalStats.investedAmount}</span>
                                         </div>
                                         <div className="items-center text-xs text-white mb-2 font-light">
-                                            Last Month Profit:&nbsp;<span className="text-app-primary">${getLastMonthRoiToDate()}</span>
+                                            Last Month Profit:&nbsp;<span className="text-app-primary">${priorPersonalStats.profit}</span>
                                         </div>
                                         <div className="items-center text-xs text-white mb-2 font-light">
-                                            Last Month Return:&nbsp;<span className="text-app-primary">${getLastMonthReturn()}</span>
+                                            Last Month Return:&nbsp;<span className="text-app-primary">${priorPersonalStats.returned}</span>
                                         </div>
                                     </>
                                     : <>
                                         <div className="items-center text-xs text-white mb-2 font-light">
-                                            Last Month Investment:&nbsp;<span className="text-app-primary">${getLastMonthInvestment()}</span>
+                                            Last Month Investment:&nbsp;<span className="text-app-primary">${priorTotalStats.investedAmount}</span>
                                         </div>
                                         <div className="items-center text-xs text-white mb-2 font-light">
-                                            Last Month Profit:&nbsp;<span className="text-app-primary">${getLastMonthRoiToDate()}</span>
+                                            Last Month Profit:&nbsp;<span className="text-app-primary">${priorTotalStats.profit}</span>
                                         </div>
                                         <div className="items-center text-xs text-white mb-2 font-light">
-                                            Last Month Return:&nbsp;<span className="text-app-primary">${getLastMonthReturn()}</span>
+                                            Last Month Return:&nbsp;<span className="text-app-primary">${priorTotalStats.returned}</span>
                                         </div>
                                     </>
                                 }
@@ -459,7 +393,7 @@ export default function Fund() {
                     </div>
                     <SliderCards
                         cardInformationList={tierInformation}
-                        selectedCardIndex={userClaimedTier - 1}
+                        selectedCardIndex={currentTierNo - 1}
                     />
                 </div>
             </div>
@@ -479,8 +413,8 @@ export default function Fund() {
                                     loading={isWithdrawApprovingV2 || isWithdrawingV2}
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
-                                    onClick={disableWithdraw_V2 ? null : async () => await handleWithdrawalSubmitV2()}
-                                    disabled={disableWithdraw_V2 || currentTierNoV2 === 0}
+                                    onClick={disableWithdrawV2 ? null : async () => await handleWithdrawalSubmitV2()}
+                                    disabled={disableWithdrawV2 || currentTierNoV2 === 0}
                                 >
                                     {isWithdrawApprovingV2 ? 'Approving ...' : isWithdrawingV2 ? 'Withdrawing...' : 'Withdrawal (v2)'}
                                 </LoadingButton>
@@ -490,8 +424,8 @@ export default function Fund() {
                                     loading={isWithdrawApprovingV3 || isWithdrawingV3}
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
-                                    onClick={disableWithdraw_V3 ? null : async () => await handleWithdrawalSubmitV3()}
-                                    disabled={disableWithdraw_V3 || currentTierNoV3 === 0}
+                                    onClick={disableWithdrawV3 ? null : async () => await handleWithdrawalSubmitV3()}
+                                    disabled={disableWithdrawV3 || currentTierNoV3 === 0}
                                 >
                                     {isWithdrawApprovingV3 ? 'Approving ...' : isWithdrawingV3 ? 'Withdrawing...' : 'Withdrawal (v3)'}
                                 </LoadingButton>
@@ -524,13 +458,13 @@ export default function Fund() {
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>{!!account ? 'Current Investment' : 'Investors'}</span>
                         </div>
-                        <div className="text-xl">{!!account ? `$${(parseFloat(currentInvestment_V4)).toFixed(2)}` : getCurrentInvestors()}</div>
+                        <div className="text-xl">{!!account ? `$${userCurrentStats.investedAmount}` : totalStats.investors}</div>
                     </div>
                     <div className="flex-1 rounded-2xl bg-[#001926] p-4">
                         <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                             <span>{!!account ? 'ROI to Date' : 'Total Invested to Date'}</span>
                         </div>
-                        <div className="text-xl">${!!account ? getRoiToDate() : getTotalInvestedToDate()}</div>
+                        <div className="text-xl">${!!account ? userCurrentStats.RoiToDate : totalStats.investedAmount}</div>
                     </div>
                 </div>
                 <div className="flex flex-row items-center space-x-4">
@@ -543,11 +477,11 @@ export default function Fund() {
                                 ? <>
                                     {/* <div className="text-xl items-center">Tier {currentTierNo}</div>
                                     <div className="text-slate-400 text-sm">Up to {currentTierPercentage}% monthly ROI</div> */}
-                                    <div className="text-xl items-center">Tier {userClaimedTier}</div>
-                                    <div className="text-slate-400 text-sm">Up to {userClaimedTier > 0 ? tierInformation[userClaimedTier - 1].monthlyPercent : '0'}% monthly ROI</div>
+                                    <div className="text-xl items-center">Tier {currentTierNo}</div>
+                                    <div className="text-slate-400 text-sm">Up to {currentTierNo > 0 ? tierInformation[currentTierNo - 1].monthlyPercent : '0'}% monthly ROI</div>
                                 </>
                                 : <>
-                                    <div className="text-xl items-center">${profitUpToDate}</div>
+                                    <div className="text-xl items-center">${totalStats.ProfitToDate}</div>
                                 </>
                             }
                         </div>
@@ -570,24 +504,24 @@ export default function Fund() {
                             {!!account
                                 ? <>
                                     <div className="items-center text-xs text-white mb-2 font-light">
-                                        Last Month Investment:&nbsp;<span className="text-app-primary">${getLastMonthInvestment()}</span>
+                                        Last Month Investment:&nbsp;<span className="text-app-primary">${priorPersonalStats.investedAmount}</span>
                                     </div>
                                     <div className="items-center text-xs text-white mb-2 font-light">
-                                        Last Month Profit:&nbsp;<span className="text-app-primary">${getLastMonthRoiToDate()}</span>
+                                        Last Month Profit:&nbsp;<span className="text-app-primary">${priorPersonalStats.profit}</span>
                                     </div>
                                     <div className="items-center text-xs text-white mb-2 font-light">
-                                        Last Month Return:&nbsp;<span className="text-app-primary">${getLastMonthReturn()}</span>
+                                        Last Month Return:&nbsp;<span className="text-app-primary">${priorPersonalStats.returned}</span>
                                     </div>
                                 </>
                                 : <>
                                     <div className="items-center text-xs text-white mb-2 font-light">
-                                        Last Month Investment:&nbsp;<span className="text-app-primary">${getLastMonthInvestment()}</span>
+                                        Last Month Investment:&nbsp;<span className="text-app-primary">${priorTotalStats.investedAmount}</span>
                                     </div>
                                     <div className="items-center text-xs text-white mb-2 font-light">
-                                        Last Month Profit:&nbsp;<span className="text-app-primary">${getLastMonthRoiToDate()}</span>
+                                        Last Month Profit:&nbsp;<span className="text-app-primary">${priorTotalStats.profit}</span>
                                     </div>
                                     <div className="items-center text-xs text-white mb-2 font-light">
-                                        Last Month Return:&nbsp;<span className="text-app-primary">${getLastMonthReturn()}</span>
+                                        Last Month Return:&nbsp;<span className="text-app-primary">${priorTotalStats.returned}</span>
                                     </div>
                                 </>
                             }
@@ -661,7 +595,7 @@ export default function Fund() {
                         </div>
                         <SliderCards
                             cardInformationList={tierInformation}
-                            selectedCardIndex={userClaimedTier - 1}
+                            selectedCardIndex={currentTierNo - 1}
                         />
                     </div>
                 </div>
