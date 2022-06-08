@@ -1,8 +1,5 @@
 import DepositInput from "@app/components/common/DepositInput";
 import Button from '@mui/material/Button';
-import useFundWithV3 from "@app/lib/hooks/useFundWithV3";
-import useFundWithV4 from "@app/lib/hooks/useFundWithV4";
-import useFund_V2 from "@app/lib/hooks/useFund_V2";
 import { useSnackbar } from "@app/lib/hooks/useSnackbar";
 import { useEffect, useState } from "react";
 import AgreeTermsPopup from "./AgreeTermsPopup";
@@ -14,22 +11,25 @@ import { useEthers, ChainId } from "@usedapp/core";
 import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
 
-interface DepositPopupProps {
-    version: number,
-    isOpen: boolean,
-    handleClose: () => void,
+interface DepositPopupProps {    
+    isOpen: boolean
+    handleClose: () => void
+    userAgreed: () => Promise<any>
+    approve: (amount:string) => Promise<any>
+    depositBusd: (amount:string) => Promise<any>
+    agreeToTerms: () => Promise<any>
 }
 
-export default function DepositPopup({
-    version,
+export default function DepositPopup({    
     isOpen,
     handleClose,
+    userAgreed,
+    approve,
+    depositBusd,
+    agreeToTerms
 }: DepositPopupProps) {
     const snackbar = useSnackbar();
-    const { library, account, chainId } = useEthers()
-    const { userAgreed, depositBusd, approve } = useFund_V2();
-    const { userAgreed: userAgreedV3, approve: approveV3, depositBusd: depositBusdV3 } = useFundWithV3();
-    const { userAgreed: userAgreedV4, approve: approveV4, depositBusd: depositBusdV4 } = useFundWithV4();    
+    const { library, account, chainId } = useEthers()  
     const [disableDepositButton, setDisableDepositButton] = useState(true);
     const [depositAmount, setDepositAmount] = useState('');
     const [selectedDepositCurrency, setSelectedDepositCurrency] = useState('BUSD');
@@ -65,7 +65,7 @@ export default function DepositPopup({
     }
 
     async function onApprove() {
-        const userAgreedResult = version === 2 ? await userAgreed() : version === 4 ? await userAgreedV4() : await userAgreedV3();
+        const userAgreedResult = await userAgreed();
         if (userAgreedResult.ok) {
             //If user agreement has not been done, open the agreement modal
             if (!userAgreedResult.returnedModel) {
@@ -74,7 +74,7 @@ export default function DepositPopup({
             }
 
             setIsWalletApproving(true)
-            const approveResult = version === 2 ? await approve(depositAmount) : version === 4 ? await approveV4(depositAmount) : await approveV3(depositAmount);
+            const approveResult = await approve(depositAmount);
             setIsWalletApproving(false)
             if (!approveResult.ok) {
                 snackbar.snackbar.show(approveResult.message, "error");
@@ -92,7 +92,7 @@ export default function DepositPopup({
 
     async function onDeposit() {
         setAttempting(true)
-        const depositResult = version === 2 ? await depositBusd(depositAmount) : version === 4 ? await depositBusdV4(depositAmount) : await depositBusdV3(depositAmount);
+        const depositResult = await depositBusd(depositAmount);
         setAttempting(false)
         if (!depositResult.ok) {
             snackbar.snackbar.show(depositResult.message, "error");
@@ -181,7 +181,7 @@ export default function DepositPopup({
             </Modal>
             <AgreeTermsPopup
                 isOpen={isOpenAgreeTerms}
-                version={version}
+                agreeToTerms={agreeToTerms}
                 handleClose={handleCloseAgreeTermsModal}
             />
         </>
