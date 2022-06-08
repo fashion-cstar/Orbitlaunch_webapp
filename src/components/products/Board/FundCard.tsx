@@ -6,10 +6,6 @@ export default function FundCard() {
     const { account } = useEthers();
     const { totalStats, userCurrentStats, currentTierNo} = useFundStates()
 
-    const getCurrentInvestors = (v1_investors: number, v2_investors: number) => {
-        return Number(v1_investors) + Number(v2_investors)
-    }
-
     return (
         <>
             {(!account) && (
