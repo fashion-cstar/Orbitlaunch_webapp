@@ -36,6 +36,7 @@ export default function DiceRollModal({ isOpen, handleClose }: DiceRollModalProp
         // if (!(isLocking || isUnlocking)) {
         //     handleClose()
         // }
+        handleClose()
     }
 
     return (
