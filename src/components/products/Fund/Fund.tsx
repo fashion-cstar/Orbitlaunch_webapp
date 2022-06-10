@@ -19,7 +19,7 @@ import FundLockTierModal from "../TierActions/FundLockTierModal";
 import { TWENTY_SIX_DAYS, ONEDAY_SECS } from "@app/utils";
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useTokenBalanceCallback } from 'src/state/hooks'
-import { CurrentFundAddresses, OpeningFundAddresses } from '@app/shared/FundConstant'
+import { CompletedFundAddresses, CurrentFundAddresses, OpeningFundAddresses } from '@app/shared/FundConstant'
 import { useFundStates } from "@app/contexts";
 import { BigNumber } from "ethers";
 import { formatEther } from "@ethersproject/units";
@@ -46,7 +46,7 @@ export default function Fund() {
         withdraw: withdrawV2,
         balance: balanceV2,
         currentTierNo: currentTierNoV2
-    } = useFund_OSCV2(CurrentFundAddresses[0]);
+    } = useFund_OSCV2(OpeningFundAddresses.length>0?CurrentFundAddresses[0]:CompletedFundAddresses[CompletedFundAddresses.length-2]);
 
     const {
         disableDeposit: disableDepositV3,
@@ -56,7 +56,7 @@ export default function Fund() {
         withdraw: withdrawV3,
         balance: balanceV3,
         currentTierNo: currentTierNoV3
-    } = useFund_OSCV3(CurrentFundAddresses[1]);
+    } = useFund_OSCV3(OpeningFundAddresses.length>0?CurrentFundAddresses[1]:CompletedFundAddresses[CompletedFundAddresses.length-1]);
 
     const {
         startInvestmentPeriodDate,
@@ -72,7 +72,7 @@ export default function Fund() {
         depositBusd,
         agreeToTerms,
         userAgreed
-    } = useFund(OpeningFundAddresses[0]);
+    } = useFund(OpeningFundAddresses.length>0?OpeningFundAddresses[0]:CurrentFundAddresses[0]);
 
     const [totalReferred, setTotalReferred] = useState(0);
     const [referredBy, setReferredBy] = useState('');
