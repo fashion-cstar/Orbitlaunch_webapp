@@ -221,6 +221,5 @@ export const TWENTY_EIGHT_DAYS = 28
 export const FOURTEEN_DAYS = 14
 export const TWENTY_SIX_DAYS = 26
 export const THIRTEEN_DAYS = 13
-// export const ONEDAY_SECS = 86400
-export const ONEDAY_SECS = 60
+export const ONEDAY_SECS = 86400
 export const maxUserLockAmount = tierInformation[0].requiredTokens.toNumber()
