@@ -46,17 +46,6 @@ export const TierTokenLockContractAddress = "0xFAF78a5fF12da33982928A7E5C2cB828f
 export const OrbtTokenAddress = "0x4bf5cd1AC6FfF12E88AEDD3c70EB4148F90F8894"
 export const MigrationOrbitAddress = "0x5B7Ce66AAeEF370019bfdE7F0566A3aD977C1306"
 
-// Use v2 as v1 for now
-export const OrbitFundContractAddress = "0xabc3b533fbcc4380fe1db477417125c5e7118609"; // testnet: 0x26E17791ee9a2116DDf78620D966b8967f0F85B2
-// Use v3 as v2 for now
-export const OrbitFundContractAddress_V2 = "0x73e59ca168161085eA8bdce48dD6CB4CeE49A096";
-
-// fund pool with newly launched token
-export const OrbitFundContractAddressWithV3Token = "0xFE5D5EEAaC9dF7B028340adb49Dd85339EC14b8F";
-
-// new fund pool with lock actions
-export const OrbitFundContractAddress_V4 = "0x244b8071cd98393401F60380962755A45490D7fb";
-
 export const BusdContractAddress = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"; // testnet MOCK BUSD: 0xCbdEB985e2189e615eAe14F5784733C0122c253c
 export const OrbitStableTokenAddress = "0xB96A921FD923FF5C23d2A4f5d3d099b47d9D95F1" // testnet: 0x2a087e33c0C44A2B351B5329cBFf8A63d352C599
 export const OrbitStableTokenAddressWithV3 = "0x297a70eee1504a174fa22e78648365381a1d9304";

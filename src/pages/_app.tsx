@@ -11,7 +11,7 @@ import { BSC_RPC_URL } from "@app/shared/AppConstant";
 import compose from "@app/shared/helpers/compose";
 import "@app/styles/globals.css";
 import { SnackbarContextProvider } from "@app/lib/hooks/useSnackbar";
-import { LockActionsProvider, RefreshContextProvider } from "@app/contexts";
+import { LockActionsProvider, RefreshContextProvider, FundStatsProvider } from "@app/contexts";
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
@@ -54,12 +54,14 @@ function OrbitApp({
         <ThemeProvider theme={theme}>
           <RefreshContextProvider>
             <LockActionsProvider>
-              <SnackbarContextProvider>
-                <CssBaseline />
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
-              </SnackbarContextProvider>
+              <FundStatsProvider>
+                <SnackbarContextProvider>
+                  <CssBaseline />
+                  <Layout>
+                    <Component {...pageProps} />
+                  </Layout>
+                </SnackbarContextProvider>
+              </FundStatsProvider>
             </LockActionsProvider>
           </RefreshContextProvider>
         </ThemeProvider>

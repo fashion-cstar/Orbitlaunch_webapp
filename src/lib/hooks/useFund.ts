@@ -1,41 +1,43 @@
-import { formatEther } from "@ethersproject/units";
 import { useEthers, useTokenBalance } from "@usedapp/core";
 import { useEffect, useMemo, useState } from "react";
 import {
-    AppTokenAddress,
-    BusdContractAddress,
-    OrbitFundContractAddress,
-    OrbitStableTokenAddress,
-    LAST_MONTH_PROFIT_URL
+    BusdContractAddress, OrbitStableTokenAddressWithV3
 } from "@app/shared/AppConstant";
 import { BigNumber, ethers } from "ethers";
-import { getTierValues, tierInformation } from '@app/shared/TierLevels';
 import moment from 'moment';
 import { getRemainingTimeBetweenTwoDates } from '@app/shared/helpers/time';
 import busdAbi from "@app/lib/contract/abis/busdAbi.json";
 import orbitStableCoinAbi from "@app/lib/contract/abis/orbitStableCoinAbi.json";
-import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbi.json";
+import orbitFundAbi from "@app/lib/contract/abis/OrbitFundAbiLockTier.json";
 import { getContract, getProviderOrSigner } from '@app/utils';
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { RpcProviders } from "@app/shared/PadConstant"
 import { getChainIdFromName } from 'src/utils'
+import { formatEther } from "@ethersproject/units";
 
-export default function useFund() {
+export default function useFund(fundContractAddress: string) {
     const { account, library } = useEthers();
-    const connectedUserBalance = useTokenBalance(AppTokenAddress, account);    
+    const connectedUserBalance = useTokenBalance(OrbitStableTokenAddressWithV3, account);
     const [isWithdrawApproving, setIsWithdrawApproving] = useState(false)
     const [isWithdrawing, setIsWithdrawing] = useState(false)
     const snackbar = useSnackbar()
-    
-    const agreeToTerms_V1 = async () => {
+
+    const agreeToTerms = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(fundContractAddress, orbitFundAbi, library, account ? account : undefined);
 
             return orbitFundContract.agreeToTerms()
-                .then((tx:any) => {
-                    return {
-                        ok: true
-                    };
+                .then((tx: any) => {
+                    return tx.wait().then(async (_: any) => {
+                        return {
+                            ok: true
+                        };
+                    }).catch(error => {
+                        return {
+                            ok: false,
+                            message: "Cannot agree to terms now. Please try again."
+                        };
+                    })
                 }).catch((err: any) => {
                     console.error("ERROR: " + (err.data?.message || err?.message || err));
                     return {
@@ -53,9 +55,9 @@ export default function useFund() {
         }
     }
 
-    const userAgreed_V1 = async () => {
+    const userAgreed = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(fundContractAddress, orbitFundAbi, library, account ? account : undefined);
 
             return await orbitFundContract.userAgreed(account)
                 .then((response: any) => {
@@ -80,13 +82,13 @@ export default function useFund() {
         }
     }
 
-    const approve_V1 = async (amount: string) => {
+    const approve = async (amount: string) => {
         try {
             const busdContract = getContract(BusdContractAddress, busdAbi, library, account ? account : undefined);
             const provider = getProviderOrSigner(library, account) as any;
 
             const weiAmount = ethers.utils.parseEther(amount);
-            return await busdContract.connect(provider).approve(OrbitFundContractAddress, weiAmount)
+            return await busdContract.connect(provider).approve(fundContractAddress, weiAmount)
                 .then((response: any) => {
                     return response.wait().then(async (_: any) => {
                         return {
@@ -102,7 +104,7 @@ export default function useFund() {
                     };
                 });
         }
-        catch (err) {            
+        catch (err) {
             console.error("ERROR: " + (err.data?.message || err?.message || err));
             return {
                 ok: false,
@@ -111,26 +113,26 @@ export default function useFund() {
         }
     }
 
-    const depositBusd_V1 = async (amount: string) => {
+    const depositBusd = async (amount: string) => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(fundContractAddress, orbitFundAbi, library, account ? account : undefined);
 
-            const weiAmount = ethers.utils.parseEther(amount);           
-                return await orbitFundContract.deposit(weiAmount)
-                    .then((response: any) => {
-                        return {
-                            ok: true,
-                            hash: response.hash
-                        };
-                    }).catch((err: any) => {
-                        console.error("ERROR: " + (err.data?.message || err?.message || err));
-                        return {
-                            ok: false,
-                            message: (err.data?.message || err?.message || err).toString()
-                        };
-                    });
+            const weiAmount = ethers.utils.parseEther(amount);
+            return await orbitFundContract.deposit(weiAmount)
+                .then((response: any) => {
+                    return {
+                        ok: true,
+                        hash: response.hash
+                    };
+                }).catch((err: any) => {
+                    console.error("ERROR: " + (err.data?.message || err?.message || err));
+                    return {
+                        ok: false,
+                        message: (err.data?.message || err?.message || err).toString()
+                    };
+                });
         }
-        catch (err) {            
+        catch (err) {
             console.error("ERROR: " + (err.data?.message || err?.message || err));
             return {
                 ok: false,
@@ -140,80 +142,26 @@ export default function useFund() {
     }
 
     const [{
-        startInvestmentPeriodDate_V1,
-        endInvestmentPeriodDate_V1,
-        currentInvestment_V1,
-        totalInvestedToDate_V1,
-        totalInvestors_V1,
-        userLastInvestment_V1,
-        roiToDate_V1, 
-        userReturned_V1,
-        currentTierNo_V1,
-        currentTierPercentage_V1,
-        disableDeposit_V1,
-        disableWithdraw_V1,
-        remainingTimeText_V1,
-        balance_V1,
-        totalProfit_V1,
-        totalReturned_V1
+        startInvestmentPeriodDate,
+        endInvestmentPeriodDate,
+        currentInvestment,
+        disableDeposit,
+        disableWithdraw,
+        remainingTimeText,
+        balance
     }, setInfo] = useState({
-        startInvestmentPeriodDate_V1: '-',
-        endInvestmentPeriodDate_V1: '-',
-        currentInvestment_V1: '0.00',
-        totalInvestedToDate_V1: '0.00',
-        totalInvestors_V1: 0,
-        userLastInvestment_V1: '0.00',
-        roiToDate_V1: '0.00',
-        userReturned_V1: '0.00',
-        currentTierNo_V1: 0,
-        currentTierPercentage_V1: "0",
-        disableDeposit_V1: true,
-        disableWithdraw_V1: true,
-        remainingTimeText_V1: '0 days 0 hours 0 minutes',
-        balance_V1: '0.00',
-        totalProfit_V1: '0.00',
-        totalReturned_V1: '0.00'
+        startInvestmentPeriodDate: '-',
+        endInvestmentPeriodDate: '-',
+        currentInvestment: '0.00',
+        disableDeposit: true,
+        disableWithdraw: true,
+        remainingTimeText: '0 days 0 hours 0 minutes',
+        balance: '0.00',
     });
-
-    const totalInvestedAmount = async () => {
-        try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
-
-            return await orbitFundContract.totalInvestedAmount()
-                .then((response: any) => {
-                    return response
-                }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err?.message || err));
-                    return ethers.utils.parseEther('0');
-                });
-        }
-        catch (err) {
-            console.error("ERROR: " + (err.data?.message || err?.message || err));
-            return ethers.utils.parseEther('0');
-        }
-    }
-
-    const getTotalInvestors = async () => {
-        try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
-
-            return await orbitFundContract.getTotalInvestors()
-                .then((response: any) => {
-                    return response;
-                }).catch((err: any) => {
-                    console.error("ERROR: " + (err.data?.message || err?.message || err));
-                    return '0';
-                });
-        }
-        catch (err) {
-            console.error("ERROR: " + (err.data?.message || err?.message || err));
-            return '0';
-        }
-    }
 
     const startPeriodTime = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
+            const orbitFundContract = getContract(fundContractAddress, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
 
             return await orbitFundContract.startTime()
                 .then((response: any) => {
@@ -240,7 +188,7 @@ export default function useFund() {
 
     const endPeriodTime = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
+            const orbitFundContract = getContract(fundContractAddress, orbitFundAbi, RpcProviders[getChainIdFromName('bsc')], account ? account : undefined);
 
             return await orbitFundContract.endTime()
                 .then((response: any) => {
@@ -263,21 +211,6 @@ export default function useFund() {
                 message: "End time is not received. Please try again."
             };
         }
-    }
-
-    const getPriorMonthProfit = async () => {
-        return await (fetch(LAST_MONTH_PROFIT_URL)
-            .then((res: any) => res.json())
-            .then((res) => {
-                if (res)
-                    return res.data.roiToDate.toFixed(2)
-                else
-                    return '0.00'
-            })
-            .catch(error => {
-                console.error("Failed to get Prior Months's Total Profit to Investors: " + error)
-                return '0.00'
-            }))
     }
 
     const depositPeriodInfo = async () => {
@@ -318,51 +251,32 @@ export default function useFund() {
 
     const depositInfos = async () => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(fundContractAddress, orbitFundAbi, library, account ? account : undefined);
 
             return await orbitFundContract.depositInfos(account)
                 .then((response: any) => {
-                    return { tierValue: response.tierValue.toNumber(), amount: formatEther(response.amount) };
+                    return formatEther(response.amount);
                 }).catch((err: any) => {
                     console.error("ERROR: " + (err.data?.message || err?.message || err));
-                    // return formatEther(ethers.utils.parseEther('0.000'));
-                    return { tierValue: -1, amount: formatEther(ethers.utils.parseEther('0.000')) };
+                    return formatEther(ethers.utils.parseEther('0.000'));
                 });
         }
         catch (err) {
             console.error("ERROR: " + (err.data?.message || err?.message || err));
-            return { tierValue: -1, amount: formatEther(ethers.utils.parseEther('0.000')) };
+            return formatEther(ethers.utils.parseEther('0.000'));
         }
     }
 
-    const userWithdrew = async () => {
+    const withdraw = async (weiAmount: ethers.BigNumber) => {
         try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
-
-            return await orbitFundContract.userWithdrew(account)
-                .then(async (result: any) => {
-                    return result;
-                }).catch((err: any) => {
-                    console.error("ERROR: " + err.data?.message || err?.message || err);
-                    return true;
-                })
-        }
-        catch (err) {
-            console.error("ERROR: " + err.data?.message || err?.message || err);
-            return true;
-        }
-    }
-
-    const withdraw_V1 = async (weiAmount: ethers.BigNumber) => {
-        try {
-            const orbitFundContract = getContract(OrbitFundContractAddress, orbitFundAbi, library, account ? account : undefined);
-            const orbitStableContract = getContract(OrbitStableTokenAddress, orbitStableCoinAbi, library, account ? account : undefined);
+            const orbitFundContract = getContract(fundContractAddress, orbitFundAbi, library, account ? account : undefined);
+            const orbitStableContract = getContract(OrbitStableTokenAddressWithV3, orbitStableCoinAbi, library, account ? account : undefined);
             const provider = getProviderOrSigner(library, account) as any;
 
             setIsWithdrawApproving(true)
             const approveTxHash = await orbitStableContract
                 .connect(provider)
-                .approve(OrbitFundContractAddress, weiAmount);
+                .approve(fundContractAddress, weiAmount);
 
             return approveTxHash.wait().then(async (_: any) => {
                 snackbar.snackbar.show("Approved!", "success");
@@ -398,147 +312,81 @@ export default function useFund() {
 
         const fetchConnectedData = async () => {
             let depositPeriodResult = await depositPeriodInfo();
-            let userWithdrewResult = await userWithdrew();
-
-            // let totalInvestment = await depositInfos();
-            let depositinfo = await depositInfos();
-            let ROIToDate = 0
-            if (depositinfo.tierValue !== -1) {
-                let profitPercent = Number(tierInformation[depositinfo.tierValue].monthlyPercent)
-                ROIToDate = Math.round(profitPercent * Number(depositinfo.amount)) / 100
-            }
-            const investmentAmountInDollars = (parseFloat(depositinfo.amount) * parseFloat("1")).toFixed(2);
-            const formattedConnectedBalance = formatEther(connectedUserBalance);
-            let totalInvestment = ethers.utils.formatEther(await totalInvestedAmount());
-            let tierResult = await getTierValues(ethers.BigNumber.from(Math.trunc(parseFloat(formattedConnectedBalance))));
-
-            let totalProfit = await getPriorMonthProfit()
-            let totalReturn = ethers.FixedNumber.fromString(totalInvestment).addUnsafe(ethers.FixedNumber.fromString(totalProfit)).round(2).toString()
-            let userReturn = (Number(ROIToDate) + Number(investmentAmountInDollars)).toLocaleString()
-            
+            let userInvestment = await depositInfos();
+            const formattedConnectedBalance = formatEther(connectedUserBalance ?? BigNumber.from(0));
+            const investmentAmountInDollars = (parseFloat(userInvestment) * parseFloat("1")).toFixed(2);
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
                 endInvestmentPeriodDate: depositPeriodResult.endDate,
-                currentInvestment: userWithdrewResult ? '0.00' : investmentAmountInDollars,
-                totalInvestedToDate: totalInvestment,
-                totalInvestors: 0,
-                userLastInvestment: investmentAmountInDollars,
-                roiToDate: ROIToDate.toLocaleString(),
-                userReturned: userReturn,
-                currentTierNo: tierResult.tierNo,
-                currentTierPercentage: tierResult.monthlyPercent,
+                currentInvestment: investmentAmountInDollars,
                 disableDeposit: depositPeriodResult.disabledDeposit,
                 disableWithdraw: depositPeriodResult.disabledWithdraw,
                 remainingTimeText: depositPeriodResult.remainingTimeText,
                 balance: formattedConnectedBalance,
-                totalProfit: totalProfit,
-                totalReturn: totalReturn
             };
         }
 
         const fetchNotConnectedData = async () => {
             let depositPeriodResult = await depositPeriodInfo();
-            let totalInvestment = ethers.utils.formatEther(await totalInvestedAmount());
-            let totalInvestorNumber = await getTotalInvestors();
-            let totalProfit = await getPriorMonthProfit()
-            let totalReturn = ethers.FixedNumber.fromString(totalInvestment).addUnsafe(ethers.FixedNumber.fromString(totalProfit)).round(2).toString()
-
             return {
                 startInvestmentPeriodDate: depositPeriodResult.startDate,
                 endInvestmentPeriodDate: depositPeriodResult.endDate,
                 currentInvestment: '0.00',
-                totalInvestedToDate: totalInvestment,
-                totalInvestors: totalInvestorNumber,
-                userLastInvestment: '0.00',
-                roiToDate: '0.00',
-                userReturned: '0.00',
-                currentTierNo: 0,
-                currentTierPercentage: "0",
                 disableDeposit: depositPeriodResult.disabledDeposit,
                 disableWithdraw: depositPeriodResult.disabledWithdraw,
                 remainingTimeText: depositPeriodResult.remainingTimeText,
                 balance: '0.00',
-                totalProfit: totalProfit,
-                totalReturn: totalReturn
             }
         }
 
         if (!!account && !!library && !!connectedUserBalance) {
             fetchConnectedData().then(result => {
                 setInfo({
-                    startInvestmentPeriodDate_V1: result.startInvestmentPeriodDate,
-                    endInvestmentPeriodDate_V1: result.endInvestmentPeriodDate,
-                    currentInvestment_V1: result.currentInvestment,
-                    totalInvestedToDate_V1: result.totalInvestedToDate,
-                    totalInvestors_V1: result.totalInvestors,
-                    userLastInvestment_V1: result.userLastInvestment,
-                    roiToDate_V1: result.roiToDate,
-                    userReturned_V1: result.userReturned,
-                    currentTierNo_V1: result.currentTierNo,
-                    currentTierPercentage_V1: result.currentTierPercentage,
-                    disableDeposit_V1: result.disableDeposit,
-                    disableWithdraw_V1: result.disableWithdraw,
-                    remainingTimeText_V1: result.remainingTimeText,
-                    balance_V1: result.balance,
-                    totalProfit_V1: result.totalProfit,
-                    totalReturned_V1: result.totalReturn
+                    startInvestmentPeriodDate: result.startInvestmentPeriodDate,
+                    endInvestmentPeriodDate: result.endInvestmentPeriodDate,
+                    currentInvestment: result.currentInvestment,
+                    disableDeposit: result.disableDeposit,
+                    disableWithdraw: result.disableWithdraw,
+                    remainingTimeText: result.remainingTimeText,
+                    balance: result.balance,
                 });
             }).catch(console.error);;
         }
         else {
             fetchNotConnectedData().then(result => {
                 setInfo({
-                    startInvestmentPeriodDate_V1: result.startInvestmentPeriodDate,
-                    endInvestmentPeriodDate_V1: result.endInvestmentPeriodDate,
-                    currentInvestment_V1: result.currentInvestment,
-                    totalInvestedToDate_V1: result.totalInvestedToDate,
-                    totalInvestors_V1: result.totalInvestors,
-                    userLastInvestment_V1: result.userLastInvestment,
-                    roiToDate_V1: result.roiToDate,
-                    userReturned_V1: result.userReturned,
-                    currentTierNo_V1: result.currentTierNo,
-                    currentTierPercentage_V1: result.currentTierPercentage,
-                    disableDeposit_V1: result.disableDeposit,
-                    disableWithdraw_V1: result.disableWithdraw,
-                    remainingTimeText_V1: result.remainingTimeText,
-                    balance_V1: result.balance,
-                    totalProfit_V1: result.totalProfit,
-                    totalReturned_V1: result.totalReturn
+                    startInvestmentPeriodDate: result.startInvestmentPeriodDate,
+                    endInvestmentPeriodDate: result.endInvestmentPeriodDate,
+                    currentInvestment: result.currentInvestment,
+                    disableDeposit: result.disableDeposit,
+                    disableWithdraw: result.disableWithdraw,
+                    remainingTimeText: result.remainingTimeText,
+                    balance: result.balance,
                 });
             }).catch(console.error);
         }
 
-    }, [account, connectedUserBalance, library]);
+    }, [account, library]);
 
     const fundInfo = useMemo(
         () => ({
             isWithdrawApproving,
-            isWithdrawing,
-            startInvestmentPeriodDate_V1,
-            endInvestmentPeriodDate_V1,
-            currentInvestment_V1,
-            totalInvestedToDate_V1,
-            totalInvestors_V1,
-            userLastInvestment_V1,
-            roiToDate_V1,
-            userReturned_V1,
-            currentTierNo_V1,
-            currentTierPercentage_V1,
-            disableDeposit_V1,
-            disableWithdraw_V1,
-            remainingTimeText_V1,
-            balance_V1,
-            totalProfit_V1,
-            totalReturned_V1,
-            agreeToTerms_V1,
-            userAgreed_V1,
-            approve_V1,
-            depositBusd_V1,
-            withdraw_V1
+            isWithdrawing,            
+            startInvestmentPeriodDate,
+            endInvestmentPeriodDate,
+            currentInvestment,
+            disableDeposit,
+            disableWithdraw,
+            remainingTimeText,
+            balance,
+            agreeToTerms,
+            userAgreed,
+            approve,
+            depositBusd,
+            withdraw
         }),
-        [ isWithdrawApproving, isWithdrawing, startInvestmentPeriodDate_V1, endInvestmentPeriodDate_V1, currentInvestment_V1, totalInvestors_V1,userLastInvestment_V1,
-            roiToDate_V1, userReturned_V1, currentTierNo_V1, currentTierPercentage_V1, disableDeposit_V1, disableWithdraw_V1,
-            remainingTimeText_V1, balance_V1, totalProfit_V1, totalReturned_V1, totalInvestedToDate_V1, agreeToTerms_V1, userAgreed_V1, approve_V1, depositBusd_V1, withdraw_V1]
+        [isWithdrawApproving, isWithdrawing, startInvestmentPeriodDate, endInvestmentPeriodDate, currentInvestment, disableDeposit, disableWithdraw,
+            remainingTimeText, balance, agreeToTerms, userAgreed, approve, depositBusd, withdraw]
     );
 
     return fundInfo;
