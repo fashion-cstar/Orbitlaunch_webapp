@@ -209,7 +209,7 @@ export default function Fund() {
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
                                     onClick={disableWithdrawV2 ? null : async () => await handleWithdrawalSubmitV2()}
-                                    disabled={disableWithdrawV2 || currentTierNoV2 === 0}
+                                    disabled={disableWithdrawV2}
                                 >
                                     {isWithdrawApprovingV2 ? 'Approving ...' : isWithdrawingV2 ? 'Withdrawing...' : 'Withdrawal (v2)'}
                                 </LoadingButton>
@@ -219,7 +219,7 @@ export default function Fund() {
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
                                     onClick={disableWithdrawV3 ? null : async () => await handleWithdrawalSubmitV3()}
-                                    disabled={disableWithdrawV3 || currentTierNoV3 === 0}
+                                    disabled={disableWithdrawV3}
                                 >
                                     {isWithdrawApprovingV3 ? 'Approving ...' : isWithdrawingV3 ? 'Withdrawing...' : 'Withdrawal (v3)'}
                                 </LoadingButton>
@@ -414,7 +414,7 @@ export default function Fund() {
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
                                     onClick={disableWithdrawV2 ? null : async () => await handleWithdrawalSubmitV2()}
-                                    disabled={disableWithdrawV2 || currentTierNoV2 === 0}
+                                    disabled={disableWithdrawV2}
                                 >
                                     {isWithdrawApprovingV2 ? 'Approving ...' : isWithdrawingV2 ? 'Withdrawing...' : 'Withdrawal (v2)'}
                                 </LoadingButton>
@@ -425,7 +425,7 @@ export default function Fund() {
                                     loadingPosition="start"
                                     sx={{ borderRadius: "12px" }}
                                     onClick={disableWithdrawV3 ? null : async () => await handleWithdrawalSubmitV3()}
-                                    disabled={disableWithdrawV3 || currentTierNoV3 === 0}
+                                    disabled={disableWithdrawV3}
                                 >
                                     {isWithdrawApprovingV3 ? 'Approving ...' : isWithdrawingV3 ? 'Withdrawing...' : 'Withdrawal (v3)'}
                                 </LoadingButton>
