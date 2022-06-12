@@ -14,8 +14,9 @@ import { getContract, getProviderOrSigner } from '@app/utils';
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { RpcProviders } from "@app/shared/PadConstant"
 import { getChainIdFromName } from 'src/utils'
-import { formatEther } from "@ethersproject/units";
+import { formatEther, parseEther } from "@ethersproject/units";
 import { getTierValues } from "@app/shared/TierLevels";
+import { maxUserLockAmount } from "@app/utils";
 
 export default function useFund_OSCV2(fundContractAddress: string) {
     const { account, library } = useEthers();    
@@ -260,7 +261,7 @@ export default function useFund_OSCV2(fundContractAddress: string) {
             setIsWithdrawApproving(true)
             const approveTxHash = await orbitStableContract
                 .connect(provider)
-                .approve(fundContractAddress, weiAmount);
+                .approve(fundContractAddress, parseEther(maxUserLockAmount.toString()));
 
             return approveTxHash.wait().then(async (_: any) => {
                 snackbar.snackbar.show("Approved!", "success");
