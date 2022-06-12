@@ -3,15 +3,22 @@ import { Button } from "@mui/material"
 import { useEthers } from "@usedapp/core"
 import Modal from 'src/components/common/Modal';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { useToken, useTokenBalanceCallback } from 'src/state/hooks'
-import { useLockActions } from "@app/contexts"
 import { useRouter } from 'next/router'
 import { BigNumber } from '@ethersproject/bignumber';
-import { tierInformation } from 'src/shared/TierLevels'
-import { getTierValues } from '@app/shared/TierLevels'
 import { formatEther, parseEther } from '@app/utils'
 import useRefresh from 'src/state/useRefresh'
 import { DiceRoll_MaxBet, DiceRoll_MinBet } from '@app/shared/PlayConstant';
+import BetAmountInput from './BetAmountInput';
+import BetSelectBox from './BetSelectBox';
+import Dice from './Dice';
+import DicePlaceActions from './DicePlaceActions';
+import { useToken } from 'src/state/hooks'
+// import {
+//     OrbtTokenAddress,
+// } from "@app/shared/AppConstant"
+import {
+    OrbtTokenAddress,
+} from "@app/shared/PlayConstant"
 
 interface DiceRollModalProps {
     isOpen: boolean
@@ -20,23 +27,70 @@ interface DiceRollModalProps {
 
 export default function DiceRollModal({ isOpen, handleClose }: DiceRollModalProps) {
     const { library, account, chainId } = useEthers()
-    const router = useRouter()
-    const [hash, setHash] = useState<string | undefined>()
-    const [userTotalOrbitAmount, setUserTotalOrbit] = useState<BigNumber>(BigNumber.from(0))
+    const router = useRouter()    
+    const [betAmount, setBetAmount] = useState(0)
+    const [isValidAmount, setIsValidAmount] = useState(false)
+    const [selectedBet, setSelectBet] = useState('')
+    const [orbitDecimals, setOrbitDecimals] = useState(18)
+    const userOrbitToken = useToken(OrbtTokenAddress, 'bsc')
+    const [isLoading, setIsLoading] = useState(false)
+    const [isWin, setIsWin] = useState(false)
+    const [destiny, setDestiny] = useState(0)
+    const [isEndedBet, setIsEndedBet] = useState(false)
 
     const init = () => {
-
+        setIsValidAmount(false)
+        setBetAmount(0)
+        setIsWin(false)
+        setIsLoading(false)
+        setSelectBet('')
+        setIsValidAmount(false)
+        setDestiny(0)
+        setIsEndedBet(false)
     }
 
     useEffect(() => {
         init()
     }, [account, isOpen])
 
+    useEffect(() => {
+        try {
+            if (userOrbitToken) {
+                if (userOrbitToken?.decimals) setOrbitDecimals(userOrbitToken?.decimals)
+            }
+        } catch (error) { }
+    }, [userOrbitToken])
+
     const closeModal = () => {
-        // if (!(isLocking || isUnlocking)) {
-        //     handleClose()
-        // }
-        handleClose()
+        if (!isLoading) {
+            handleClose()
+        }
+    }
+
+    const setPlaceDiceBetSuccess = (destiny: number) => {
+        setDestiny(destiny)
+        setIsEndedBet(true)
+        if (Number(selectedBet) == destiny) {
+            setIsWin(true)
+        } else {
+            setIsWin(false)
+        }
+    }
+
+    const onBetAmountInputChange = (val: any) => {
+        if (Number(val) !== NaN) setBetAmount(Number(val))
+        else setBetAmount(0)
+        if (Number(val) !== NaN) setBetAmount(Number(val))
+        else setBetAmount(0)
+        if (Number(val) >= DiceRoll_MinBet && Number(val) <= DiceRoll_MaxBet) {
+            setIsValidAmount(true)
+        } else {
+            setIsValidAmount(false)
+        }
+    }
+
+    const onSelectBet = (event: SelectChangeEvent) => {
+        setSelectBet(event.target.value as string)
     }
 
     return (
@@ -82,34 +136,29 @@ export default function DiceRollModal({ isOpen, handleClose }: DiceRollModalProp
                                         Returns:{' '}<span className='text-app-primary font-normal'>{`BET + 95% `}</span>{`(Bet 100 ORBIT win 195)`}
                                     </div>
                                 </div>
-                                <Button
-                                    variant="contained"
-                                    sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
-                                    // onClick={handleNextStep}
-                                    // disabled={Number(selectedTier) <= 0 || userClaimedTier === Number(selectedTier)}
-                                >
-                                    Claim your tier
-                                </Button>
-                                {/* <div className='w-full flex flex-col gap-4'>
-                                    <div className='text-white text-[16px] font-light whitespace-normal'>
-                                        {userClaimedTier > 0 ? 'Your tier is currently locked but you can upgrade your tier. Please select the tier you wish to upgrade and claim your tier below.' :
-                                            'Your tier is currently unallocated. Please select the tier you wish to claim and the amount of tokens will be locked for 14 days in order to access this utility.'}
+                                <div className="flex gap-4 my-3 w-full">
+                                    <div className="basis-1/2">
+                                        <BetAmountInput value={betAmount} onChange={onBetAmountInputChange} />
                                     </div>
-                                    <TierSelectBox
-                                        onSelectTier={onSelectTier}
-                                        selectedTier={selectedTier}
-                                        userClaimedTier={userClaimedTier}
-                                        maxAvailableTier={maxAvailableTier}
-                                        balanceTier={balanceTier} />
-                                    <Button
-                                        variant="contained"
-                                        sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
-                                        onClick={handleNextStep}
-                                        disabled={Number(selectedTier) <= 0 || userClaimedTier === Number(selectedTier)}
-                                    >
-                                        Claim your tier
-                                    </Button>
-                                </div> */}
+                                    <div className="basis-1/2">
+                                        <BetSelectBox selectedBet={selectedBet}
+                                            betlist={[{ label: '1', value: 1 }, { label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }, { label: '5', value: 5 }, { label: '6', value: 6 }]}
+                                            placeholder="Select dice number"
+                                            onSelectBet={onSelectBet}
+                                        />
+                                    </div>
+                                </div>
+                                <DicePlaceActions
+                                    amount={parseEther(betAmount, orbitDecimals)}
+                                    diceNumber={Number(selectedBet)}
+                                    isLoading={isLoading}
+                                    ORBIT_TOKEN={OrbtTokenAddress}
+                                    isOpen={isOpen}
+                                    isValidAmount={isValidAmount}
+                                    setPlaceDiceBetSuccess={setPlaceDiceBetSuccess}
+                                    setIsLoading={setIsLoading}
+                                />
+                                {isLoading && <Dice destiny={destiny} isRoll={isLoading} />}
                             </>
                             {hash && <>
                                 <div className='flex flex-col gap-6 justify-center items-center h-full w-full'>
@@ -117,9 +166,9 @@ export default function DiceRollModal({ isOpen, handleClose }: DiceRollModalProp
                                         Awesome!
                                     </div>
                                     <div className='text-white text-[15px] font-light whitespace-normal text-center'>
-                                      
+
                                     </div>
-                                    
+
                                 </div>
                             </>}
                         </div>

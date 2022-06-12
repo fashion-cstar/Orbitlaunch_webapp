@@ -1,13 +1,12 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
-import TokenQtyInputBox from '@app/components/common/TokenQtyInputBox'
+import BetQtyInputBox from './BetQtyInputBox'
 
 interface TokenInputProps {
-    value: any
-    name: string
+    value: any    
     onChange: (val: any) => void
 }
 
-export default function BetAmountInput({ value, name, onChange }: TokenInputProps) {
+export default function BetAmountInput({ value, onChange }: TokenInputProps) {
     const [isBorder, setIsBorder] = useState(false)
     const handleFocus = () => {
         setIsBorder(true)
@@ -18,20 +17,20 @@ export default function BetAmountInput({ value, name, onChange }: TokenInputProp
     }
     
     return (
-        <div className="flex flex-col rounded-2xl bg-[#001926] py-3 px-5" style={{ border: isBorder ? "1px solid white" : "none" }}>
+        <div className="flex flex-col rounded-2xl bg-[#06111C] py-3 px-5" style={{ border: isBorder ? "1px solid white" : "none" }}>
             <div className="text-[12px] font-bold uppercase text-app-primary">
                 BET Amount
             </div>
-            <div className='flex gap-2 justify-between w-full mt-2'>
+            <div className='flex gap-2 justify-between w-full mt-1'>
                 <div className='flex gap-4'>                    
-                    <TokenQtyInputBox
+                    <BetQtyInputBox
                         handleFocus={handleFocus}
                         handleBlur={handleBlur}
                         onChange={onChange}
                         value={value}
                     />
                 </div>
-                <div className="text-[#FFFFFF]/[.5] text-[20px] rounded-md text-right">
+                <div className="text-[#FFFFFF] text-[16px] rounded-md text-right">
                     ORBIT
                 </div>
             </div>

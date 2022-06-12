@@ -223,3 +223,5 @@ export const TWENTY_SIX_DAYS = 26
 export const THIRTEEN_DAYS = 13
 export const ONEDAY_SECS = 86400
 export const maxUserLockAmount = tierInformation[0].requiredTokens.toNumber()
+
+export const maxUserPlayAmount = 100000000

@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@diceSize: 160px;
+@dotSize: @diceSize*.18;
+
 html,
 body {
   overscroll-behavior: none;
@@ -264,3 +267,4 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
