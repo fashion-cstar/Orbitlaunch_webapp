@@ -26,7 +26,8 @@ export function usePlayActions(playContractAddress: string, blockchain: string):
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
                 return response.wait().then((res: any) => {
-                    return res
+                    console.log(res)
+                    return res.events.pop()
                 })
             })
         })
@@ -48,8 +49,8 @@ export function usePlayActions(playContractAddress: string, blockchain: string):
 
 export function useOrbitPlayStats(playContractAddress: string, blockchain: string, isOpen: boolean): { playInfo: any, diceInfo: any, updateOrbitPlayStats: () => void } {
     const { account, library } = useEthers()
-    const [playInfo, setPlayInfo] = useState<any>({timesPlayed: 0, paidOut: BigNumber.from(0), burnt: BigNumber.from(0)})
-    const [diceInfo, setDiceInfo] = useState<any>({timesPlayed: 0, paidOut: BigNumber.from(0), burnt: BigNumber.from(0)})    
+    const [playInfo, setPlayInfo] = useState<any>({ timesPlayed: 0, paidOut: BigNumber.from(0), burnt: BigNumber.from(0) })
+    const [diceInfo, setDiceInfo] = useState<any>({ timesPlayed: 0, paidOut: BigNumber.from(0), burnt: BigNumber.from(0) })
     const chainId = getChainIdFromName(blockchain);
     const { slowRefresh } = useRefresh()
 
@@ -66,10 +67,10 @@ export function useOrbitPlayStats(playContractAddress: string, blockchain: strin
 
     const updateOrbitPlayStats = async () => {
         fetchPlayInfo().then(async (result: any) => {
-            setPlayInfo({timesPlayed: result?.timesPlayed, paidOut: result?.paidOut, burnt: result?.burnt})
+            setPlayInfo({ timesPlayed: result?.timesPlayed, paidOut: result?.paidOut, burnt: result?.burnt })
         }).catch(error => { console.log(error) })
         fetchDiceInfo().then(result => {
-            setDiceInfo({timesPlayed: result?.timesPlayed, paidOut: result?.paidOut, burnt: result?.burnt})
+            setDiceInfo({ timesPlayed: result?.timesPlayed, paidOut: result?.paidOut, burnt: result?.burnt })
         }).catch(error => { console.log(error) })
     }
 

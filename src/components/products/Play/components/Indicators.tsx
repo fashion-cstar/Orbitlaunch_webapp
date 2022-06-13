@@ -1,7 +1,11 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import { useEthers } from "@usedapp/core";
+import { OrbitPlayContractAddress } from "@app/shared/PlayConstant"
+import { useOrbitPlayStats } from '@app/state/Play';
+import { formatEther } from '@app/utils'
 
-export default function Indicators() {
+export default function Indicators({orbitDecimals}:{orbitDecimals: number}) {
+    const { playInfo } = useOrbitPlayStats(OrbitPlayContractAddress, 'bsc', false)
 
     return (
         <div className="flex flex-col space-y-4">
@@ -10,19 +14,19 @@ export default function Indicators() {
                     <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                         <span>GAMES PLAYED</span>
                     </div>
-                    <div className="text-xl text-white">{Number('2137').toLocaleString()}</div>
+                    <div className="text-xl text-white">{playInfo?.timesPlayed.toLocaleString()}</div>
                 </div>
                 <div className="flex-1 rounded-2xl bg-[#001926] p-4 lg:basis-1/3 w-full">
                     <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                         <span>TOTAL $ORBIT WON</span>
                     </div>
-                    <div className="text-xl text-white">{Number('2137420.78').toLocaleString()}</div>
+                    <div className="text-xl text-white">{formatEther(playInfo?.paidOut, orbitDecimals, 2)}</div>
                 </div>
                 <div className="flex-1 rounded-2xl bg-[#001926] p-4 lg:basis-1/3 w-full">
                     <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                         <span>TOTAL $ORBIT BURNT</span>
                     </div>
-                    <div className="text-xl text-white">{Number('387532.25').toLocaleString()}</div>
+                    <div className="text-xl text-white">{formatEther(playInfo?.burnt, orbitDecimals, 2)}</div>
                 </div>
             </div>
         </div>

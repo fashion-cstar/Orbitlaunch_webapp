@@ -17,12 +17,29 @@ import {
     SpinWheel_MaxBet,
 } from '@app/shared/PlayConstant';
 import DiceRollModal from './components/DiceRollModal'
+// import {
+//     OrbtTokenAddress,
+// } from "@app/shared/AppConstant"
+import {
+    OrbtTokenAddress,
+} from "@app/shared/PlayConstant"
+import { useToken } from 'src/state/hooks'
 
 export default function Play() {
     const [isOpenCoinFlip, setIsOpenCoinFlip] = useState(false)
     const [isOpenDiceRoll, setIsOpenDiceRoll] = useState(false)
     const [isOpenRockScissors, setIsOpenRockScissors] = useState(false)
     const [isOpenSpinWheel, setIsOpenSpinWheel] = useState(false)
+    const [orbitDecimals, setOrbitDecimals] = useState(18)
+    const userOrbitToken = useToken(OrbtTokenAddress, 'bsc')
+
+    useEffect(() => {
+        try {
+            if (userOrbitToken) {
+                if (userOrbitToken?.decimals) setOrbitDecimals(userOrbitToken?.decimals)
+            }
+        } catch (error) { }
+    }, [userOrbitToken])
 
     const handelCloseCoin = () => {
         setIsOpenCoinFlip(false)
@@ -42,14 +59,14 @@ export default function Play() {
 
     return (
         <>
-            <DiceRollModal isOpen={isOpenDiceRoll} handleClose={handelCloseDice} />
+            <DiceRollModal isOpen={isOpenDiceRoll} orbitDecimals={orbitDecimals} handleClose={handelCloseDice} />
             <div className="w-full">
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
                     <h1 className="text-[35px] md:text-[40px] font-medium">OrbitPlay</h1>
                     <BuyButton />
                 </div>
                 <div className="flex flex-col gap-6 mt-8">
-                    <Indicators />
+                    <Indicators orbitDecimals={orbitDecimals} />
                     <div className="flex flex-col gap-6">
                         <div className='flex flex-col lg:flex-row justify-center gap-6 items-stretch'>
                             <div className='lg:basis-1/2 w-full rounded-2xl bg-[#001926] p-6'>

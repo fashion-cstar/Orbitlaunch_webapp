@@ -1,10 +1,9 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 
-export default function Dice({ isRoll, destiny }: { isRoll: boolean, destiny: number }) {
+export default function DiceAnimate({ isRoll, destiny }: { isRoll: boolean, destiny: number }) {
     const faces = 6;    
     const [intrvl, setIntrvl] = useState<any>();
     const [diceFace, setDiceFace] = useState(1);    
-    const [rollTimes, setRollTimes] = useState(0);
     const [rolling, setRolling] = useState(false)
 
     useEffect(() => {
@@ -13,8 +12,7 @@ export default function Dice({ isRoll, destiny }: { isRoll: boolean, destiny: nu
                 clearInterval(intrvl);
                 const interval = setInterval(() => {
                     setDiceFace(Math.floor(Math.random() * faces) + 1)
-                    setRollTimes(rollTimes+1);
-                }, 300);
+                }, 400);
                 setIntrvl(interval)
                 setRolling(true)
             }
@@ -23,12 +21,12 @@ export default function Dice({ isRoll, destiny }: { isRoll: boolean, destiny: nu
     }, [isRoll])
 
     useEffect(() => {
-        if (destiny>0 || !isRoll){
-            if (destiny>0) setDiceFace(destiny)
-            if (rolling) clearInterval(intrvl)
+        if (destiny>0){   
+            setDiceFace(destiny)         
+            clearInterval(intrvl)
             setRolling(false)
         }
-    }, [rollTimes])
+    }, [destiny])
    
     const dice = (
         <div className="dice-container">

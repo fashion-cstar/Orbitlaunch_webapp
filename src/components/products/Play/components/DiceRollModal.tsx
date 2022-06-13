@@ -6,60 +6,61 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useRouter } from 'next/router'
 import { BigNumber } from '@ethersproject/bignumber';
 import { formatEther, parseEther } from '@app/utils'
-import useRefresh from 'src/state/useRefresh'
 import { DiceRoll_MaxBet, DiceRoll_MinBet } from '@app/shared/PlayConstant';
 import BetAmountInput from './BetAmountInput';
 import BetSelectBox from './BetSelectBox';
-import Dice from './Dice';
+import Dice from './DiceAnimate';
 import DicePlaceActions from './DicePlaceActions';
-import { useToken } from 'src/state/hooks'
+import { useOrbitPlayStats } from '@app/state/Play';
 // import {
 //     OrbtTokenAddress,
 // } from "@app/shared/AppConstant"
 import {
     OrbtTokenAddress,
 } from "@app/shared/PlayConstant"
+import WinInBetIcon from './svgs/WinInBetIcon';
+import LossInBetIcon from './svgs/LossInBetIcon';
+import DiceClaimActions from './DiceClaimActions';
+import { OrbitPlayContractAddress } from "@app/shared/PlayConstant"
 
 interface DiceRollModalProps {
     isOpen: boolean
+    orbitDecimals: number
     handleClose: () => void
 }
 
-export default function DiceRollModal({ isOpen, handleClose }: DiceRollModalProps) {
+export default function DiceRollModal({ isOpen, orbitDecimals, handleClose }: DiceRollModalProps) {
     const { library, account, chainId } = useEthers()
-    const router = useRouter()    
+    const { diceInfo, updateOrbitPlayStats } = useOrbitPlayStats(OrbitPlayContractAddress, 'bsc', isOpen)
     const [betAmount, setBetAmount] = useState(0)
     const [isValidAmount, setIsValidAmount] = useState(false)
-    const [selectedBet, setSelectBet] = useState('')
-    const [orbitDecimals, setOrbitDecimals] = useState(18)
-    const userOrbitToken = useToken(OrbtTokenAddress, 'bsc')
+    const [selectedBet, setSelectBet] = useState('')    
     const [isLoading, setIsLoading] = useState(false)
+    const [isClaiming, setIsClaiming] = useState(false)
+    const [isClaimed, setIsClaimed] = useState(false)
     const [isWin, setIsWin] = useState(false)
     const [destiny, setDestiny] = useState(0)
+    const [returningAmount, setReturningAmount] = useState(BigNumber.from(0))
     const [isEndedBet, setIsEndedBet] = useState(false)
-
+    const [isShowingResult, setIsShowingResult] = useState(false)
     const init = () => {
         setIsValidAmount(false)
         setBetAmount(0)
         setIsWin(false)
         setIsLoading(false)
+        setIsClaiming(false)
+        setIsClaimed(false)
         setSelectBet('')
         setIsValidAmount(false)
         setDestiny(0)
         setIsEndedBet(false)
+        setIsShowingResult(false)
+        setReturningAmount(BigNumber.from(0))
     }
 
     useEffect(() => {
         init()
-    }, [account, isOpen])
-
-    useEffect(() => {
-        try {
-            if (userOrbitToken) {
-                if (userOrbitToken?.decimals) setOrbitDecimals(userOrbitToken?.decimals)
-            }
-        } catch (error) { }
-    }, [userOrbitToken])
+    }, [account, isOpen])    
 
     const closeModal = () => {
         if (!isLoading) {
@@ -67,14 +68,25 @@ export default function DiceRollModal({ isOpen, handleClose }: DiceRollModalProp
         }
     }
 
-    const setPlaceDiceBetSuccess = (destiny: number) => {
+    const setPlaceDiceBetSuccess = (destiny: number, returning: BigNumber) => {
         setDestiny(destiny)
-        setIsEndedBet(true)
+        setReturningAmount(returning)
+        setIsShowingResult(true)
+        updateOrbitPlayStats()
+        console.log(destiny, returning, Number(selectedBet))
         if (Number(selectedBet) == destiny) {
             setIsWin(true)
         } else {
             setIsWin(false)
         }
+        setTimeout(() => {
+            setIsShowingResult(false)
+            setIsEndedBet(true)
+        }, 2000);
+    }
+
+    const setDiceClaimSuccess = () => {
+        setIsClaimed(true)
     }
 
     const onBetAmountInputChange = (val: any) => {
@@ -107,30 +119,30 @@ export default function DiceRollModal({ isOpen, handleClose }: DiceRollModalProp
                                 <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                     <span>Times played</span>
                                 </div>
-                                <div className="text-xl text-white">{Number('1502').toLocaleString()}</div>
+                                <div className="text-xl text-white">{diceInfo?.timesPlayed.toLocaleString()}</div>
                             </div>
                             <div className="flex-1 rounded-2xl bg-[#001926] p-4 w-full">
                                 <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                     <span>ORBIT paid out</span>
                                 </div>
-                                <div className="text-xl text-white">{Number('21374200').toLocaleString()}</div>
+                                <div className="text-xl text-white">{formatEther(diceInfo?.paidOut, orbitDecimals, 2)}</div>
                             </div>
                             <div className="flex-1 rounded-2xl bg-[#001926] p-4 w-full">
                                 <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                     <span>ORBIT burnt</span>
                                 </div>
-                                <div className="text-xl text-white">{Number('75052').toLocaleString()}</div>
+                                <div className="text-xl text-white">{formatEther(diceInfo?.burnt, orbitDecimals, 2)}</div>
                             </div>
                         </div>
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4 w-full lg:w-[460px] max-w-[480px] ">
-                            <>
+                            {!isEndedBet && !isLoading && !isShowingResult && <>
                                 <div className='text-white text-[32px] mb-4'>Place your bet</div>
                                 <div className='flex flex-col'>
                                     <div className='text-[15px] lg:text-[16px] text-white font-light'>
-                                        Minimum Bet:{' '}<span className='text-app-primary font-normal'>{`${DiceRoll_MinBet.toLocaleString()} $ORBIT`}</span>
+                                        Minimum Bet:{' '}<span className='text-app-primary font-normal'>{`${DiceRoll_MinBet.toLocaleString()} ORBIT`}</span>
                                     </div>
                                     <div className='text-[15px] lg:text-[16px] text-white font-light'>
-                                        Maximum Bet:{' '}<span className='text-app-primary font-normal'>{`${DiceRoll_MaxBet.toLocaleString()} $ORBIT`}</span>
+                                        Maximum Bet:{' '}<span className='text-app-primary font-normal'>{`${DiceRoll_MaxBet.toLocaleString()} ORBIT`}</span>
                                     </div>
                                     <div className='text-[15px] lg:text-[16px] text-white font-light'>
                                         Returns:{' '}<span className='text-app-primary font-normal'>{`BET + 95% `}</span>{`(Bet 100 ORBIT win 195)`}
@@ -158,17 +170,61 @@ export default function DiceRollModal({ isOpen, handleClose }: DiceRollModalProp
                                     setPlaceDiceBetSuccess={setPlaceDiceBetSuccess}
                                     setIsLoading={setIsLoading}
                                 />
-                                {isLoading && <Dice destiny={destiny} isRoll={isLoading} />}
-                            </>
-                            {hash && <>
+                            </>}
+                            {!isEndedBet && (isLoading || isShowingResult) &&
                                 <div className='flex flex-col gap-6 justify-center items-center h-full w-full'>
-                                    <div className='text-white text-[32px] mb-2'>
-                                        Awesome!
+                                    <Dice destiny={destiny} isRoll={isLoading} />
+                                    <div className='text-white text-[15px] font-light whitespace-normal text-center'>
+                                        The dice will roll until the blockchain confirms <br />your transaction...
+                                    </div>
+                                </div>}
+                            {isEndedBet && isWin && <>
+                                <div className='flex flex-col gap-6 justify-center items-center h-full w-full'>
+                                    <WinInBetIcon />
+                                    <div className='text-white text-[28px] lg:text-[32px]'>
+                                        Winner!
+                                    </div>
+                                    {isClaimed ? <>
+                                        <div className='text-white text-[15px] font-light whitespace-normal text-center'>
+                                            {`You have been collected ${formatEther(returningAmount, orbitDecimals, 2)} ORBIT`}
+                                        </div>
+                                        <Button
+                                            variant="contained"
+                                            sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
+                                            onClick={init}
+                                        >
+                                            Play Again
+                                        </Button>
+                                    </> : <>
+                                        <div className='text-white text-[15px] font-light whitespace-normal text-center'>
+                                            {`Congratulations, you won ${formatEther(returningAmount, orbitDecimals, 2)} ORBIT`}
+                                        </div>
+                                        <DiceClaimActions
+                                            isClaiming={isClaiming}
+                                            setDiceClaimSuccess={setDiceClaimSuccess}
+                                            setIsClaiming={setIsClaiming}
+                                        />
+                                    </>}
+
+                                </div>
+                            </>}
+                            {isEndedBet && !isWin && <>
+                                <div className='flex flex-col gap-6 justify-center items-center h-full w-full'>
+                                    <LossInBetIcon />
+                                    <div className='text-white text-[28px] lg:text-[32px]'>
+                                        Better luck next time
                                     </div>
                                     <div className='text-white text-[15px] font-light whitespace-normal text-center'>
-
+                                        {`You lost your bet of ${betAmount} ORBIT.`}
+                                        {`10 ORBIT has been burnt.`}
                                     </div>
-
+                                    <Button
+                                        variant="contained"
+                                        sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
+                                        onClick={init}
+                                    >
+                                        Play Again
+                                    </Button>
                                 </div>
                             </>}
                         </div>

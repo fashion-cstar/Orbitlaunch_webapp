@@ -16,7 +16,7 @@ interface DiceBetActionProps {
     ORBIT_TOKEN: string
     isOpen: boolean
     isValidAmount: boolean
-    setPlaceDiceBetSuccess: (destiny: number) => void
+    setPlaceDiceBetSuccess: (destiny: number, returning: BigNumber) => void
     setIsLoading: (value: boolean) => void
 }
 
@@ -44,7 +44,7 @@ export default function DiceBetAction({
             setIsCheckingAllowance(true)
             let res = await tokenAllowanceCallback(account, OrbitPlayContractAddress, ORBIT_TOKEN, 'bsc')
             setIsCheckingAllowance(false)
-            if (res.gte(amount)) {
+            if (res.gte(amount) && amount.gt(0)) {
                 return true
             } else {
                 return false
@@ -92,8 +92,8 @@ export default function DiceBetAction({
     async function onPlaceDiceBet() {
         setIsLoading(true)
         try {
-            placeDiceRollBetCallback(amount, diceNumber).then((res: any) => {
-                setPlaceDiceBetSuccess(Number(res))
+            placeDiceRollBetCallback(amount, diceNumber).then((res: any) => {                   
+                setPlaceDiceBetSuccess(Number(res.args.winNumber), res.args.returned)
                 setIsLoading(false)
             }).catch(error => {
                 setIsLoading(false)
@@ -117,7 +117,7 @@ export default function DiceBetAction({
                     loading={isWalletApproving}
                     loadingPosition="start"
                     onClick={onApprove}
-                    disabled={isApproved || isCheckingAllowance || diceNumber<=0 || !isValidAmount}
+                    disabled={isApproved || isCheckingAllowance || diceNumber<=0 || !isValidAmount || !account}
                 >
                     {isWalletApproving ? 'Approving ...' : isApproved ? "Approved" : "Approve"}
                 </LoadingButton> : <LoadingButton
@@ -126,7 +126,7 @@ export default function DiceBetAction({
                     loading={isLoading}
                     loadingPosition="start"
                     onClick={onPlaceDiceBet}
-                    disabled={!isApproved || diceNumber<=0 || !isValidAmount}
+                    disabled={!isApproved || diceNumber<=0 || !isValidAmount || !account}
                 >
                     {isLoading ? 'Placing ...' : "Place DiceRoll"}
                 </LoadingButton>}
