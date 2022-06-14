@@ -72,7 +72,7 @@ export default function DiceRollModal({ isOpen, orbitDecimals, handleClose }: Di
         setDestiny(destiny)
         setReturningAmount(returning)
         setIsShowingResult(true)
-        updateOrbitPlayStats()
+        updateOrbitPlayStats()        
         console.log(destiny, returning, Number(selectedBet))
         if (Number(selectedBet) == destiny) {
             setIsWin(true)
