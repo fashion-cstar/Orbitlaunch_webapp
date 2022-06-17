@@ -10,30 +10,32 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { usePlayActions } from "src/state/Play"
 
 interface DiceBetActionProps {
+    playType: number
     amount: BigNumber
-    diceNumber: number
+    betNumber: number
     isLoading: boolean
     ORBIT_TOKEN: string
     isOpen: boolean
     isValidAmount: boolean
-    setPlaceDiceBetSuccess: (destiny: number, returning: BigNumber) => void
+    setPlaceBetSuccess: (destiny: number, returning: BigNumber) => void
     setIsLoading: (value: boolean) => void
 }
 
 export default function DiceBetAction({
+    playType,
     amount,
-    diceNumber,
+    betNumber,
     isLoading,
     ORBIT_TOKEN,
     isOpen,
     isValidAmount,
-    setPlaceDiceBetSuccess,
+    setPlaceBetSuccess,
     setIsLoading }: DiceBetActionProps) {
 
     const { library, account, chainId } = useEthers()
     const { tokenAllowanceCallback } = useTokenAllowance()
     const { approveCallback } = useApproveCallback()
-    const { placeDiceRollBetCallback } = usePlayActions(OrbitPlayContractAddress, 'bsc')
+    const { placeDiceRollBetCallback, placeCoinFlipBetCallback } = usePlayActions(OrbitPlayContractAddress, 'bsc')
     const snackbar = useSnackbar()
     const [isWalletApproving, setIsWalletApproving] = useState(false)
     const [isApproved, setIsApproved] = useState(false)
@@ -63,7 +65,7 @@ export default function DiceBetAction({
         fetch()
     }, [amount, account, isOpen])
 
-    async function onApprove() {
+    const onApprove = async () => {
         setIsWalletApproving(true)
         let res = await checkUserApproved()
         if (!res) {
@@ -89,11 +91,11 @@ export default function DiceBetAction({
         return null;
     }
 
-    async function onPlaceDiceBet() {
+    const onPlaceDiceBet = async () => {
         setIsLoading(true)
         try {
-            placeDiceRollBetCallback(amount, diceNumber).then((res: any) => {                   
-                setPlaceDiceBetSuccess(Number(res.args.winNumber), res.args.returned)
+            placeDiceRollBetCallback(amount, betNumber).then((res: any) => {
+                setPlaceBetSuccess(Number(res.args.winNumber), res.args.returned)
                 setIsLoading(false)
             }).catch(error => {
                 setIsLoading(false)
@@ -108,6 +110,43 @@ export default function DiceBetAction({
         return null;
     }
 
+    const onPlaceCoinFlipBet = async () => {
+        setIsLoading(true)
+        try {
+            placeCoinFlipBetCallback(amount, betNumber).then((res: any) => {
+                let result = 0
+                if (playType == 1) {
+                    console.log(res.args.result.toLowerCase())
+                    result = res.args.result.toLowerCase() == "heads"?1:2
+                }else if (playType == 2){
+                    result = Number(res.args.result)
+                }
+                setPlaceBetSuccess(result, res.args.returned)
+                setIsLoading(false)
+            }).catch(error => {
+                setIsLoading(false)
+                console.log(error)
+                let err: any = error
+                snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
+            })
+        } catch (error) {
+            setIsLoading(false)
+            console.log(error)
+        }
+        return null;
+    }
+
+    const onPlace = () => {
+        switch (playType) {
+            case 1:
+                onPlaceCoinFlipBet()
+                break;
+            case 2:
+                onPlaceDiceBet()
+                break;
+        }
+    }
+
     return (
         <div className='w-full flex gap-6 justify-between'>
             {!isApproved ?
@@ -117,7 +156,7 @@ export default function DiceBetAction({
                     loading={isWalletApproving}
                     loadingPosition="start"
                     onClick={onApprove}
-                    disabled={isApproved || isCheckingAllowance || diceNumber<=0 || !isValidAmount || !account}
+                    disabled={isApproved || isCheckingAllowance || betNumber <= 0 || !isValidAmount || !account}
                 >
                     {isWalletApproving ? 'Approving ...' : isApproved ? "Approved" : "Approve"}
                 </LoadingButton> : <LoadingButton
@@ -125,8 +164,8 @@ export default function DiceBetAction({
                     sx={{ width: "100%", borderRadius: "12px", height: '45px' }}
                     loading={isLoading}
                     loadingPosition="start"
-                    onClick={onPlaceDiceBet}
-                    disabled={!isApproved || diceNumber<=0 || !isValidAmount || !account}
+                    onClick={onPlace}
+                    disabled={!isApproved || betNumber <= 0 || !isValidAmount || !account}
                 >
                     {isLoading ? 'Placing ...' : "Place DiceRoll"}
                 </LoadingButton>}

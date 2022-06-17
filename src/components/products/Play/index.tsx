@@ -16,7 +16,8 @@ import {
     SpinWheel_MinBet,
     SpinWheel_MaxBet,
 } from '@app/shared/PlayConstant';
-import DiceRollModal from './components/DiceRollModal'
+import DiceRollModal from './components/dice/DiceRollModal'
+import CoinFlipModal from './components/coin/CoinFlipModal'
 // import {
 //     OrbtTokenAddress,
 // } from "@app/shared/AppConstant"
@@ -60,6 +61,7 @@ export default function Play() {
     return (
         <>
             <DiceRollModal isOpen={isOpenDiceRoll} orbitDecimals={orbitDecimals} handleClose={handelCloseDice} />
+            <CoinFlipModal isOpen={isOpenCoinFlip} orbitDecimals={orbitDecimals} handleClose={handelCloseCoin} />
             <div className="w-full">
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
                     <h1 className="text-[35px] md:text-[40px] font-medium">OrbitPlay</h1>
@@ -88,7 +90,7 @@ export default function Play() {
                                     <Button
                                         variant="contained"
                                         sx={{ borderRadius: "12px" }}
-                                        onClick={() => { }}
+                                        onClick={() => setIsOpenCoinFlip(true)}
                                     >
                                         <span className="text-[16px]">Play Coin Flip</span>
                                     </Button>

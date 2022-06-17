@@ -1,33 +1,40 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react'
+import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react'
+import useInterval from 'src/state/useInterval'
 
 export default function DiceAnimate({ isRoll, destiny }: { isRoll: boolean, destiny: number }) {
-    const faces = 6;    
-    const [intrvl, setIntrvl] = useState<any>();
-    const [diceFace, setDiceFace] = useState(1);    
+    const faces = 6;
+    const [diceFace, setDiceFace] = useState(1);
     const [rolling, setRolling] = useState(false)
+    const [prevFace, setPrevFace] = useState(0)
 
     useEffect(() => {
         if (isRoll) {
             if (!rolling) {
-                clearInterval(intrvl);
-                const interval = setInterval(() => {
-                    setDiceFace(Math.floor(Math.random() * faces) + 1)
-                }, 400);
-                setIntrvl(interval)
                 setRolling(true)
             }
+        } else {
+            if (rolling) {
+                setRolling(false)
+            }
         }
-
     }, [isRoll])
 
-    useEffect(() => {
-        if (destiny>0){   
-            setDiceFace(destiny)         
-            clearInterval(intrvl)
+    const updateCallback = useCallback(() => {
+        if (destiny > 0) {
+            setDiceFace(destiny)            
             setRolling(false)
+        } else {
+            let num = 0
+            while(true){
+                num=Math.floor(Math.random() * faces) + 1
+                if (num!=prevFace) break
+            }
+            setDiceFace(num)
+            setPrevFace(num)
         }
     }, [destiny])
-   
+    useInterval(updateCallback, rolling ? 400 : null)
+
     const dice = (
         <div className="dice-container">
             <div className={`dice face-${diceFace}`}>

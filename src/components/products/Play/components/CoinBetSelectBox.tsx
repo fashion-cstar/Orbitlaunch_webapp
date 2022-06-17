@@ -54,7 +54,7 @@ const MenuItemStyle = (isLast: boolean) => {
     }
 }
 
-export default function BetSelectBox({ selectedBet, betlist, placeholder, onSelectBet }: BetSelectBoxProps) {
+export default function CoinBetSelectBox({ selectedBet, betlist, placeholder, onSelectBet }: BetSelectBoxProps) {
 
     return (
         <div className="flex flex-col rounded-2xl bg-[#06111C] py-3 px-5">
@@ -74,7 +74,7 @@ export default function BetSelectBox({ selectedBet, betlist, placeholder, onSele
                                 return <div className='text-[14px] text-[#BAB8CC]/[.48]'>{placeholder}</div>;
                             }
 
-                            return <div className='pl-4 text-[18px]'>{selectedBet}</div>;
+                            return <div className='pl-4 text-[18px]'>{Number(selectedBet)==1?"Heads":"Tails"}</div>;
                         }}
                         style={MuiSelectStyle}
                         MenuProps={MenuProps}

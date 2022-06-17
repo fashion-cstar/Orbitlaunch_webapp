@@ -3,14 +3,13 @@ import { Button } from "@mui/material"
 import { useEthers } from "@usedapp/core"
 import Modal from 'src/components/common/Modal';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { useRouter } from 'next/router'
 import { BigNumber } from '@ethersproject/bignumber';
 import { formatEther, parseEther } from '@app/utils'
 import { DiceRoll_MaxBet, DiceRoll_MinBet } from '@app/shared/PlayConstant';
-import BetAmountInput from './BetAmountInput';
-import BetSelectBox from './BetSelectBox';
+import BetAmountInput from '../BetAmountInput';
+import BetSelectBox from '../DiceBetSelectBox';
 import Dice from './DiceAnimate';
-import DicePlaceActions from './DicePlaceActions';
+import PlaceActions from '../PlaceBetActions';
 import { useOrbitPlayStats } from '@app/state/Play';
 // import {
 //     OrbtTokenAddress,
@@ -18,9 +17,9 @@ import { useOrbitPlayStats } from '@app/state/Play';
 import {
     OrbtTokenAddress,
 } from "@app/shared/PlayConstant"
-import WinInBetIcon from './svgs/WinInBetIcon';
-import LossInBetIcon from './svgs/LossInBetIcon';
-import DiceClaimActions from './DiceClaimActions';
+import WinInBetIcon from '../svgs/WinInBetIcon';
+import LossInBetIcon from '../svgs/LossInBetIcon';
+import ClaimActions from '../ClaimWinActions';
 import { OrbitPlayContractAddress } from "@app/shared/PlayConstant"
 
 interface DiceRollModalProps {
@@ -34,7 +33,7 @@ export default function DiceRollModal({ isOpen, orbitDecimals, handleClose }: Di
     const { diceInfo, updateOrbitPlayStats } = useOrbitPlayStats(OrbitPlayContractAddress, 'bsc', isOpen)
     const [betAmount, setBetAmount] = useState(0)
     const [isValidAmount, setIsValidAmount] = useState(false)
-    const [selectedBet, setSelectBet] = useState('')    
+    const [selectedBet, setSelectBet] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [isClaiming, setIsClaiming] = useState(false)
     const [isClaimed, setIsClaimed] = useState(false)
@@ -60,7 +59,7 @@ export default function DiceRollModal({ isOpen, orbitDecimals, handleClose }: Di
 
     useEffect(() => {
         init()
-    }, [account, isOpen])    
+    }, [account, isOpen])
 
     const closeModal = () => {
         if (!isLoading) {
@@ -72,7 +71,7 @@ export default function DiceRollModal({ isOpen, orbitDecimals, handleClose }: Di
         setDestiny(destiny)
         setReturningAmount(returning)
         setIsShowingResult(true)
-        updateOrbitPlayStats()        
+        updateOrbitPlayStats()
         console.log(destiny, returning, Number(selectedBet))
         if (Number(selectedBet) == destiny) {
             setIsWin(true)
@@ -145,7 +144,7 @@ export default function DiceRollModal({ isOpen, orbitDecimals, handleClose }: Di
                                         Maximum Bet:{' '}<span className='text-app-primary font-normal'>{`${DiceRoll_MaxBet.toLocaleString()} ORBIT`}</span>
                                     </div>
                                     <div className='text-[15px] lg:text-[16px] text-white font-light'>
-                                        Returns:{' '}<span className='text-app-primary font-normal'>{`BET + 95% `}</span>{`(Bet 100 ORBIT win 195)`}
+                                        Returns:{' '}<span className='text-app-primary font-normal'>{`BET + 500% `}</span>{`(Bet 100 ORBIT win 600)`}
                                     </div>
                                 </div>
                                 <div className="flex gap-4 my-3 w-full">
@@ -160,14 +159,15 @@ export default function DiceRollModal({ isOpen, orbitDecimals, handleClose }: Di
                                         />
                                     </div>
                                 </div>
-                                <DicePlaceActions
+                                <PlaceActions
+                                    playType={2}
                                     amount={parseEther(betAmount, orbitDecimals)}
-                                    diceNumber={Number(selectedBet)}
+                                    betNumber={Number(selectedBet)}
                                     isLoading={isLoading}
                                     ORBIT_TOKEN={OrbtTokenAddress}
                                     isOpen={isOpen}
                                     isValidAmount={isValidAmount}
-                                    setPlaceDiceBetSuccess={setPlaceDiceBetSuccess}
+                                    setPlaceBetSuccess={setPlaceDiceBetSuccess}
                                     setIsLoading={setIsLoading}
                                 />
                             </>}
@@ -199,9 +199,10 @@ export default function DiceRollModal({ isOpen, orbitDecimals, handleClose }: Di
                                         <div className='text-white text-[15px] font-light whitespace-normal text-center'>
                                             {`Congratulations, you won ${formatEther(returningAmount, orbitDecimals, 2)} ORBIT`}
                                         </div>
-                                        <DiceClaimActions
+                                        <ClaimActions
+                                            playType={2}
                                             isClaiming={isClaiming}
-                                            setDiceClaimSuccess={setDiceClaimSuccess}
+                                            setClaimSuccess={setDiceClaimSuccess}
                                             setIsClaiming={setIsClaiming}
                                         />
                                     </>}

@@ -7,6 +7,6 @@ export const RockScissors_MaxBet = 1250;
 export const SpinWheel_MinBet = 250;
 export const SpinWheel_MaxBet = 1250;
 
-export const OrbitPlayContractAddress="0x7f1891010A94AE49268394B73129667396D71539";
+export const OrbitPlayContractAddress="0xF718016B8c1BBf0f4130c6ED414b37B8B808Cc7A";
 //just for test
-export const OrbtTokenAddress = "0x8401e6E7ba1A1EC011BDf34CD59Fb11545FaE523"
+export const OrbtTokenAddress = "0xD3C7eeC9daA9b061303CFe54F880978D7D033987"

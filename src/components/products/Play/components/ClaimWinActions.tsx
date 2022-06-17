@@ -1,36 +1,33 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import LoadingButton from '@mui/lab/LoadingButton';
 import { BigNumber } from '@ethersproject/bignumber';
-import { useTokenAllowance, useApproveCallback } from 'src/state/hooks'
 import { OrbitPlayContractAddress } from "@app/shared/PlayConstant"
-import { formatEther, maxUserPlayAmount, parseEther } from '@app/utils'
 import { useEthers } from "@usedapp/core"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
-import { TransactionResponse } from '@ethersproject/providers'
 import { usePlayActions } from "src/state/Play"
 
 interface DiceClaimActionProps {    
+    playType: number
     isClaiming: boolean    
-    setDiceClaimSuccess: () => void
+    setClaimSuccess: () => void
     setIsClaiming: (value: boolean) => void
 }
 
 export default function DiceBetAction({    
+    playType,
     isClaiming,    
-    setDiceClaimSuccess,
+    setClaimSuccess,
     setIsClaiming }: DiceClaimActionProps) {
 
-    const { library, account, chainId } = useEthers()
-    const { tokenAllowanceCallback } = useTokenAllowance()
-    const { approveCallback } = useApproveCallback()
-    const { claimDiceRollWinCallback } = usePlayActions(OrbitPlayContractAddress, 'bsc')
+    const { library, account, chainId } = useEthers()    
+    const { claimDiceRollWinCallback, claimCoinFlipWinCallback } = usePlayActions(OrbitPlayContractAddress, 'bsc')
     const snackbar = useSnackbar()
 
-    async function onDiceClaim() {
+    const onDiceClaim = async () => {
         setIsClaiming(true)
         try {
             claimDiceRollWinCallback().then((res: any) => {
-                setDiceClaimSuccess()
+                setClaimSuccess()
                 setIsClaiming(false)
             }).catch(error => {
                 setIsClaiming(false)
@@ -45,6 +42,35 @@ export default function DiceBetAction({
         return null;
     }
 
+    const onCoinFlipClaim = async () => {
+        setIsClaiming(true)
+        try {
+            claimCoinFlipWinCallback().then((res: any) => {
+                setClaimSuccess()
+                setIsClaiming(false)
+            }).catch(error => {
+                setIsClaiming(false)
+                console.log(error)
+                let err: any = error
+                snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
+            })
+        } catch (error) {
+            setIsClaiming(false)
+            console.log(error)
+        }
+        return null;
+    }
+
+    const onClaim = () => {
+        switch(playType){
+            case 1:
+                onCoinFlipClaim()
+                break;
+            case 2:
+                onDiceClaim()
+                break;
+        }
+    }
     return (
         <div className='w-full flex gap-6 justify-between'>
             <LoadingButton
@@ -53,7 +79,7 @@ export default function DiceBetAction({
                 loading={isClaiming}
                 loadingPosition="start"
                 disabled={!account}
-                onClick={onDiceClaim}                
+                onClick={onClaim}                
             >
                 {isClaiming ? 'Collecting...' : "Collect Your Win"}
             </LoadingButton>
