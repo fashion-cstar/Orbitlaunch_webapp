@@ -1,7 +1,7 @@
-import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react'
+import React, { useMemo, useState, useEffect, useRef, useCallback, memo } from 'react'
 import useInterval from 'src/state/useInterval'
 
-export default function CoinFlipAnimate({ isRoll, destiny }: { isRoll: boolean, destiny: number }) {    
+function CoinFlipAnimate({ isRoll, destiny }: { isRoll: boolean, destiny: number }) {
     const [rolling, setRolling] = useState(false)
     const [flipClassName, setFlipClassName] = useState("")
 
@@ -13,21 +13,27 @@ export default function CoinFlipAnimate({ isRoll, destiny }: { isRoll: boolean, 
         } else {
             if (rolling) {
                 setRolling(false)
+                setCoinFace()
             }
         }
     }, [isRoll])
 
-    const updateCallback = useCallback(() => {
+    const setCoinFace = () => {
         if (destiny > 0) {            
-            setRolling(false)
             if (destiny == 1) {
                 if (flipClassName == "tails") setFlipClassName("heads")
             } else {
                 if (flipClassName == "heads") setFlipClassName("tails")
-            }                        
-        } else {            
+            }
+        }
+    }
+    const updateCallback = useCallback(() => {
+        if (destiny > 0) {
+            setRolling(false)
+            setCoinFace()
+        } else {
             if (flipClassName === "") {
-                setFlipClassName("heads")
+                setFlipClassName("tails")
             } else {
                 if (flipClassName === "heads") {
                     setFlipClassName("tails")
@@ -43,12 +49,14 @@ export default function CoinFlipAnimate({ isRoll, destiny }: { isRoll: boolean, 
         <div>
             <div id="coin" className={`${flipClassName}`} key={+new Date()}>
                 <div className="flex justify-center items-center side-a">
-                    <h2>TAIL</h2>
+                    <h2>HEAD</h2>
                 </div>
                 <div className="flex justify-center items-center side-b">
-                    <h2>HEAD</h2>
+                    <h2>TAIL</h2>
                 </div>
             </div>
         </div>
     )
 }
+
+export default memo(CoinFlipAnimate)

@@ -21,13 +21,13 @@
   }
 
   .side-a {
-    background-color: #bb0000;
-    color: white;    
+    background-color: #c5ebf7;
+    color: rgb(22, 14, 14);    
   }
 
   .side-b {
-    background-color: #c5ebf7;
-    color: rgb(22, 14, 14);    
+    background-color: #bb0000;
+    color: white;    
   }
 
   #coin {

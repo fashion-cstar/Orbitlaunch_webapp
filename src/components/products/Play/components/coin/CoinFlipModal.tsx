@@ -171,7 +171,7 @@ export default function CoinFlipModal({ isOpen, orbitDecimals, handleClose }: Co
                                     setPlaceBetSuccess={setPlaceCoinFlipSuccess}
                                     setIsLoading={setIsLoading}
                                 />
-                            </>}
+                            </>}                            
                             {!isEndedBet && (isLoading || isShowingResult) &&
                                 <div className='flex flex-col gap-6 justify-center items-center h-full w-full'>
                                     <Coin destiny={destiny} isRoll={isLoading} />

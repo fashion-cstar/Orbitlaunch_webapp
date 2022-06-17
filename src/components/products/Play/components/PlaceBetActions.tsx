@@ -95,7 +95,7 @@ export default function DiceBetAction({
         setIsLoading(true)
         try {
             placeDiceRollBetCallback(amount, betNumber).then((res: any) => {
-                setPlaceBetSuccess(Number(res.args.winNumber), res.args.returned)
+                setPlaceBetSuccess(Number(res.args.result), res.args.returned)
                 setIsLoading(false)
             }).catch(error => {
                 setIsLoading(false)
@@ -114,13 +114,8 @@ export default function DiceBetAction({
         setIsLoading(true)
         try {
             placeCoinFlipBetCallback(amount, betNumber).then((res: any) => {
-                let result = 0
-                if (playType == 1) {
-                    console.log(res.args.result.toLowerCase())
-                    result = res.args.result.toLowerCase() == "heads"?1:2
-                }else if (playType == 2){
-                    result = Number(res.args.result)
-                }
+                let result = 0                
+                result = res.args.result.toLowerCase() == "heads"?1:2              
                 setPlaceBetSuccess(result, res.args.returned)
                 setIsLoading(false)
             }).catch(error => {
