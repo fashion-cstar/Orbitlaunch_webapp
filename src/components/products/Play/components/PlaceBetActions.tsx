@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
 import LoadingButton from '@mui/lab/LoadingButton';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useTokenAllowance, useApproveCallback } from 'src/state/hooks'
@@ -8,6 +8,7 @@ import { useEthers } from "@usedapp/core"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { TransactionResponse } from '@ethersproject/providers'
 import { usePlayActions } from "src/state/Play"
+import { debounce } from "lodash"
 
 interface DiceBetActionProps {
     playType: number
@@ -41,33 +42,44 @@ export default function DiceBetAction({
     const [isApproved, setIsApproved] = useState(false)
     const [isCheckingAllowance, setIsCheckingAllowance] = useState(false)
 
-    const checkUserApproved = async (): Promise<boolean> => {
+    const checkUserApproved = useRef(
+        debounce(async () => {
+            setIsCheckingAllowance(true)            
+        }, 500)
+    ).current;
+    
+    const checkAllowance = async (): Promise<boolean> => {
         try {
-            setIsCheckingAllowance(true)
+            console.log(isCheckingAllowance, account, OrbitPlayContractAddress, ORBIT_TOKEN)
             let res = await tokenAllowanceCallback(account, OrbitPlayContractAddress, ORBIT_TOKEN, 'bsc')
-            setIsCheckingAllowance(false)
             if (res.gte(amount) && amount.gt(0)) {
                 return true
             } else {
                 return false
             }
         } catch (error) {
-            setIsCheckingAllowance(false)
             return false
         }
     }
 
     useEffect(() => {
         const fetch = async () => {
-            let res = await checkUserApproved()
+            let res = await checkAllowance()
             if (res) setIsApproved(true)
+            setIsCheckingAllowance(false)
         }
-        fetch()
+        if (isCheckingAllowance){
+            fetch()
+        }
+    }, [isCheckingAllowance])
+    
+    useEffect(() => {
+        checkUserApproved()
     }, [amount, account, isOpen])
 
     const onApprove = async () => {
         setIsWalletApproving(true)
-        let res = await checkUserApproved()
+        let res = await checkAllowance()
         if (!res) {
             try {
                 await approveCallback(OrbitPlayContractAddress, ORBIT_TOKEN, maxUserPlayAmount, 'bsc').then((hash: string) => {
@@ -114,8 +126,8 @@ export default function DiceBetAction({
         setIsLoading(true)
         try {
             placeCoinFlipBetCallback(amount, betNumber).then((res: any) => {
-                let result = 0                
-                result = res.args.result.toLowerCase() == "heads"?1:2              
+                let result = 0
+                result = res.args.result.toLowerCase() == "heads" ? 1 : 2
                 setPlaceBetSuccess(result, res.args.returned)
                 setIsLoading(false)
             }).catch(error => {

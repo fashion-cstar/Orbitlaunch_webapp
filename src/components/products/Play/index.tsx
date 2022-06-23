@@ -10,7 +10,7 @@ import {
     CoinFlip_MinBet,
     CoinFlip_MaxBet,
     DiceRoll_MinBet,
-    DiceRoll_MaxBet,    
+    DiceRoll_MaxBet,
     RockScissors_MinBet,
     RockScissors_MaxBet,
     SpinWheel_MinBet,
@@ -25,6 +25,7 @@ import {
     OrbtTokenAddress,
 } from "@app/shared/PlayConstant"
 import { useToken } from 'src/state/hooks'
+import SpinWheelModal from './components/spin/SpinWheelModal'
 
 export default function Play() {
     const [isOpenCoinFlip, setIsOpenCoinFlip] = useState(false)
@@ -62,6 +63,7 @@ export default function Play() {
         <>
             <DiceRollModal isOpen={isOpenDiceRoll} orbitDecimals={orbitDecimals} handleClose={handelCloseDice} />
             <CoinFlipModal isOpen={isOpenCoinFlip} orbitDecimals={orbitDecimals} handleClose={handelCloseCoin} />
+            <SpinWheelModal isOpen={isOpenSpinWheel} orbitDecimals={orbitDecimals} handleClose={handelCloseSpin} />
             <div className="w-full">
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
                     <h1 className="text-[35px] md:text-[40px] font-medium">OrbitPlay</h1>
@@ -115,7 +117,7 @@ export default function Play() {
                                     <Button
                                         variant="contained"
                                         sx={{ borderRadius: "12px" }}
-                                        onClick={() => setIsOpenDiceRoll(true) }
+                                        onClick={() => setIsOpenDiceRoll(true)}
                                     >
                                         <span className="text-[16px]">Play Coin Flip</span>
                                     </Button>
@@ -127,7 +129,29 @@ export default function Play() {
                                 <RockScissorsIcon />
                             </div>
                             <div className='lg:basis-1/2 w-full rounded-2xl bg-[#001926] p-6'>
-                                <SpinWheelIcon />
+                                <div className='w-full flex flex-col gap-4 lg:gap-5'>
+                                    <SpinWheelIcon />
+                                    <div className='text-[22px] lg:text-[24px] text-white'>Spin the wheel</div>
+                                    <hr style={{ borderColor: "#112B40" }} />
+                                    <div className='flex flex-col'>
+                                        <div className='text-[16px] lg:text-[18px] text-white font-light'>
+                                            Minimum Bet:{' '}<span className='text-app-primary font-normal'>{`${SpinWheel_MinBet.toLocaleString()} ORBIT`}</span>
+                                        </div>
+                                        <div className='text-[16px] lg:text-[18px] text-white font-light'>
+                                            Maximum Bet:{' '}<span className='text-app-primary font-normal'>{`${SpinWheel_MaxBet.toLocaleString()} ORBIT`}</span>
+                                        </div>
+                                        <div className='text-[16px] text-[#BAB8CC] my-3 font-light'>Payout: 6:1</div>
+                                    </div>
+                                </div>
+                                <div className='my-2'>
+                                    <Button
+                                        variant="contained"
+                                        sx={{ borderRadius: "12px" }}
+                                        onClick={() => setIsOpenSpinWheel(true)}
+                                    >
+                                        <span className="text-[16px]">Play Spin the wheel</span>
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     </div>

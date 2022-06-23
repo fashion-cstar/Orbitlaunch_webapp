@@ -14,7 +14,9 @@ export function usePlayActions(playContractAddress: string, blockchain: string):
     placeDiceRollBetCallback: (amount: BigNumber, diceNumber: number,) => Promise<any>,
     claimDiceRollWinCallback: () => Promise<TransactionResponse>,
     placeCoinFlipBetCallback: (amount: BigNumber, diceNumber: number,) => Promise<any>,
-    claimCoinFlipWinCallback: () => Promise<TransactionResponse>
+    claimCoinFlipWinCallback: () => Promise<TransactionResponse>,
+    placeSpinBetCallback: (amount: BigNumber, diceNumber: number,) => Promise<any>,
+    claimSpinWinCallback: () => Promise<TransactionResponse>
 } {
     // get claim data for this account
     const { account, library } = useEthers()
@@ -73,18 +75,49 @@ export function usePlayActions(playContractAddress: string, blockchain: string):
             })
         })
     }
+
+    const placeSpinBetCallback = async function (amount: BigNumber, diceNumber: number) {
+        if (!account || !library || !playContractAddress) return
+        return playContract.estimateGas.placeSpinBet(amount, BigNumber.from(diceNumber)).then(estimatedGasLimit => {
+            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            return playContract.placeSpinBet(amount, BigNumber.from(diceNumber), {
+                gasLimit: calculateGasMargin(gas)
+            }).then((response: TransactionResponse) => {
+                return response.wait().then((res: any) => {
+                    console.log(res)
+                    return res.events.pop()
+                })
+            })
+        })
+    }
+
+    const claimSpinWinCallback = async function () {
+        if (!account || !library || !playContractAddress) return
+        return playContract.estimateGas.claimSpinWin().then(estimatedGasLimit => {
+            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            return playContract.claimSpinWin({
+                gasLimit: calculateGasMargin(gas)
+            }).then((response: TransactionResponse) => {
+                return response
+            })
+        })
+    }
+
     return {
         placeDiceRollBetCallback,
         claimDiceRollWinCallback,
         placeCoinFlipBetCallback,
-        claimCoinFlipWinCallback
+        claimCoinFlipWinCallback,
+        placeSpinBetCallback,
+        claimSpinWinCallback
     }
 }
 
-export function useOrbitPlayStats(playContractAddress: string, blockchain: string, isOpen: boolean): { playInfo: any, diceInfo: any, coinFlipInfo: any, updateOrbitPlayStats: () => void } {
+export function useOrbitPlayStats(playContractAddress: string, blockchain: string, isOpen: boolean): { playInfo: any, diceInfo: any, coinFlipInfo: any, spinInfo: any, updateOrbitPlayStats: () => void } {
     const { account, library } = useEthers()
     const [playInfo, setPlayInfo] = useState<any>({ timesPlayed: 0, paidOut: BigNumber.from(0), burnt: BigNumber.from(0) })
     const [diceInfo, setDiceInfo] = useState<any>({ timesPlayed: 0, paidOut: BigNumber.from(0), burnt: BigNumber.from(0) })
+    const [spinInfo, setSpinInfo] = useState<any>({ timesPlayed: 0, paidOut: BigNumber.from(0), burnt: BigNumber.from(0) })
     const [coinFlipInfo, setCoinFlipInfo] = useState<any>({ timesPlayed: 0, paidOut: BigNumber.from(0), burnt: BigNumber.from(0) })
     const chainId = getChainIdFromName(blockchain);
     const { slowRefresh } = useRefresh()
@@ -107,6 +140,12 @@ export function useOrbitPlayStats(playContractAddress: string, blockchain: strin
         return res
     }
 
+    const fetchSpinInfo = async () => {
+        const playContract: Contract = getContract(playContractAddress, orbitplay, RpcProviders[chainId], account ? account : undefined)
+        const res = await playContract.spinInfo()
+        return res
+    }
+
     const updateOrbitPlayStats = async () => {
 
         fetchPlayInfo().then(async (result: any) => {
@@ -120,6 +159,10 @@ export function useOrbitPlayStats(playContractAddress: string, blockchain: strin
         fetchCoinFlipInfo().then(result => {
             setCoinFlipInfo({ timesPlayed: result?.timesPlayed, paidOut: result?.paidOut, burnt: result?.burnt })
         }).catch(error => { console.log(error) })
+
+        fetchSpinInfo().then(result => {
+            setSpinInfo({ timesPlayed: result?.timesPlayed, paidOut: result?.paidOut, burnt: result?.burnt })
+        }).catch(error => { console.log(error) })
     }
 
     useEffect(() => {
@@ -128,5 +171,5 @@ export function useOrbitPlayStats(playContractAddress: string, blockchain: strin
         }
     }, [playContractAddress, slowRefresh, isOpen, account])
 
-    return { playInfo, diceInfo, coinFlipInfo, updateOrbitPlayStats }
+    return { playInfo, diceInfo, coinFlipInfo, spinInfo, updateOrbitPlayStats }
 }
