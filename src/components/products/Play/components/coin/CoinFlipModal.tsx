@@ -1,26 +1,26 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import { Button } from "@mui/material"
 import { useEthers } from "@usedapp/core"
-import Modal from 'src/components/common/Modal';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Modal from 'src/components/common/Modal'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
 import { useRouter } from 'next/router'
-import { BigNumber } from '@ethersproject/bignumber';
+import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther, parseEther } from '@app/utils'
-import { CoinFlip_MaxBet, CoinFlip_MinBet } from '@app/shared/PlayConstant';
-import BetAmountInput from '../BetAmountInput';
-import BetSelectBox from '../CoinBetSelectBox';
-import Coin from './CoinFlipAnimate';
-import PlaceActions from '../PlaceBetActions';
-import { useOrbitPlayStats } from '@app/state/Play';
+import { CoinFlip_MaxBet, CoinFlip_MinBet } from '@app/shared/PlayConstant'
+import BetAmountInput from '../BetAmountInput'
+import BetSelectBox from '../CoinBetSelectBox'
+import Coin from './CoinFlipAnimate'
+import PlaceActions from '../PlaceBetActions'
+import { usePlay } from '@app/contexts'
 // import {
 //     OrbtTokenAddress,
 // } from "@app/shared/AppConstant"
 import {
     OrbtTokenAddress,
 } from "@app/shared/PlayConstant"
-import WinInBetIcon from '../svgs/WinInBetIcon';
-import LossInBetIcon from '../svgs/LossInBetIcon';
-import ClaimActions from '../ClaimWinActions';
+import WinInBetIcon from '../svgs/WinInBetIcon'
+import LossInBetIcon from '../svgs/LossInBetIcon'
+import ClaimActions from '../ClaimWinActions'
 import { OrbitPlayContractAddress } from "@app/shared/PlayConstant"
 
 interface CoinFlipModalProps {
@@ -31,7 +31,7 @@ interface CoinFlipModalProps {
 
 export default function CoinFlipModal({ isOpen, orbitDecimals, handleClose }: CoinFlipModalProps) {
     const { library, account, chainId } = useEthers()
-    const { coinFlipInfo, updateOrbitPlayStats } = useOrbitPlayStats(OrbitPlayContractAddress, 'bsc', isOpen)
+    const { coinFlipInfo, updateOrbitPlayStats } = usePlay()
     const [betAmount, setBetAmount] = useState(0)
     const [isValidAmount, setIsValidAmount] = useState(false)
     const [selectedBet, setSelectBet] = useState('')
@@ -41,6 +41,7 @@ export default function CoinFlipModal({ isOpen, orbitDecimals, handleClose }: Co
     const [isWin, setIsWin] = useState(false)
     const [destiny, setDestiny] = useState(0)
     const [returningAmount, setReturningAmount] = useState(BigNumber.from(0))
+    const [burnAmount, setBurnAmount] = useState(BigNumber.from(0))
     const [isEndedBet, setIsEndedBet] = useState(false)
     const [isShowingResult, setIsShowingResult] = useState(false)
     const init = () => {
@@ -71,9 +72,10 @@ export default function CoinFlipModal({ isOpen, orbitDecimals, handleClose }: Co
     const setPlaceCoinFlipSuccess = (destiny: number, returning: BigNumber, burnt: BigNumber) => {
         setDestiny(destiny)
         setReturningAmount(returning)
+        setBurnAmount(burnt)
         setIsShowingResult(true)
-        updateOrbitPlayStats()
-        console.log(destiny, returning, Number(selectedBet))
+        updateOrbitPlayStats()        
+        console.log(destiny, returning, Number(selectedBet), burnt)
         if (Number(selectedBet) == destiny) {
             setIsWin(true)
         } else {
@@ -82,7 +84,7 @@ export default function CoinFlipModal({ isOpen, orbitDecimals, handleClose }: Co
         setTimeout(() => {
             setIsShowingResult(false)
             setIsEndedBet(true)
-        }, 2000);
+        }, 3000)
     }
 
     const setCoinFlipClaimSuccess = () => {
@@ -218,7 +220,7 @@ export default function CoinFlipModal({ isOpen, orbitDecimals, handleClose }: Co
                                     </div>
                                     <div className='text-white text-[15px] font-light whitespace-normal text-center'>
                                         {`You lost your bet of ${betAmount} ORBIT.`}<br />
-                                        {`10 ORBIT has been burnt.`}
+                                        {`${formatEther(burnAmount, orbitDecimals, 2)} ORBIT has been burnt.`}
                                     </div>
                                     <Button
                                         variant="contained"
@@ -234,5 +236,5 @@ export default function CoinFlipModal({ isOpen, orbitDecimals, handleClose }: Co
                 </div>
             </Modal >
         </div >
-    );
+    )
 }

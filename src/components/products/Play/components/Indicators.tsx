@@ -1,11 +1,11 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import { useEthers } from "@usedapp/core";
 import { OrbitPlayContractAddress } from "@app/shared/PlayConstant"
-import { useOrbitPlayStats } from '@app/state/Play';
+import { usePlay } from '@app/contexts'
 import { formatEther } from '@app/utils'
 
 export default function Indicators({orbitDecimals}:{orbitDecimals: number}) {
-    const { playInfo } = useOrbitPlayStats(OrbitPlayContractAddress, 'bsc', false)
+    const { playInfo } = usePlay()
 
     return (
         <div className="flex flex-col space-y-4">

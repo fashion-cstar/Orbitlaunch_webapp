@@ -1,25 +1,25 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import { Button } from "@mui/material"
 import { useEthers } from "@usedapp/core"
-import Modal from 'src/components/common/Modal';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { BigNumber } from '@ethersproject/bignumber';
+import Modal from 'src/components/common/Modal'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
+import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther, parseEther } from '@app/utils'
-import { SpinWheel_MaxBet, SpinWheel_MinBet } from '@app/shared/PlayConstant';
-import BetAmountInput from '../BetAmountInput';
+import { SpinWheel_MaxBet, SpinWheel_MinBet } from '@app/shared/PlayConstant'
+import BetAmountInput from '../BetAmountInput'
 import BetSelectBox from '../SpinBetSelectBox'
-import Spin from './SpinAnimate';
-import PlaceActions from '../PlaceBetActions';
-import { useOrbitPlayStats } from '@app/state/Play';
+import Spin from './SpinAnimate'
+import PlaceActions from '../PlaceBetActions'
+import { usePlay } from '@app/contexts'
 // import {
 //     OrbtTokenAddress,
 // } from "@app/shared/AppConstant"
 import {
     OrbtTokenAddress,
 } from "@app/shared/PlayConstant"
-import WinInBetIcon from '../svgs/WinInBetIcon';
-import LossInBetIcon from '../svgs/LossInBetIcon';
-import ClaimActions from '../ClaimWinActions';
+import WinInBetIcon from '../svgs/WinInBetIcon'
+import LossInBetIcon from '../svgs/LossInBetIcon'
+import ClaimActions from '../ClaimWinActions'
 import { OrbitPlayContractAddress } from "@app/shared/PlayConstant"
 
 interface SpinWheelModalProps {
@@ -30,7 +30,7 @@ interface SpinWheelModalProps {
 
 export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: SpinWheelModalProps) {
     const { library, account, chainId } = useEthers()
-    const { spinInfo, updateOrbitPlayStats } = useOrbitPlayStats(OrbitPlayContractAddress, 'bsc', isOpen)
+    const { spinInfo, updateOrbitPlayStats } = usePlay()
     const [betAmount, setBetAmount] = useState(0)
     const [isValidAmount, setIsValidAmount] = useState(false)
     const [selectedBet, setSelectBet] = useState('')
@@ -40,6 +40,7 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
     const [isWin, setIsWin] = useState(false)
     const [destiny, setDestiny] = useState(0)
     const [returningAmount, setReturningAmount] = useState(BigNumber.from(0))
+    const [burnAmount, setBurnAmount] = useState(BigNumber.from(0))
     const [isEndedBet, setIsEndedBet] = useState(false)
     const [isShowingResult, setIsShowingResult] = useState(false)
     const init = () => {
@@ -70,9 +71,10 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
     const setPlaceSpinBetSuccess = (destiny: number, returning: BigNumber, burnt: BigNumber) => {
         setDestiny(destiny)
         setReturningAmount(returning)
+        setBurnAmount(burnt)
         setIsShowingResult(true)
         updateOrbitPlayStats()
-        console.log(destiny, returning, Number(selectedBet))
+        console.log(destiny, returning, Number(selectedBet), burnt)
         if (Number(selectedBet) == destiny) {
             setIsWin(true)
         } else {
@@ -81,7 +83,7 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
         setTimeout(() => {
             setIsShowingResult(false)
             setIsEndedBet(true)
-        }, 30000);
+        }, 4000)
     }
 
     const setSpinClaimSuccess = () => {
@@ -170,7 +172,7 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
                                     setPlaceBetSuccess={setPlaceSpinBetSuccess}
                                     setIsLoading={setIsLoading}
                                 />
-                            </>}                            
+                            </>}                                                    
                             {!isEndedBet && (isLoading || isShowingResult) &&
                                 <div className='flex flex-col gap-6 justify-center items-center h-full w-full'>
                                     <Spin destiny={destiny} isSpin={isLoading} />
@@ -217,7 +219,7 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
                                     </div>
                                     <div className='text-white text-[15px] font-light whitespace-normal text-center'>
                                         {`You lost your bet of ${betAmount} ORBIT.`}<br />
-                                        {`10 ORBIT has been burnt.`}
+                                        {`${formatEther(burnAmount, orbitDecimals, 2)} ORBIT has been burnt.`}
                                     </div>
                                     <Button
                                         variant="contained"
@@ -233,5 +235,5 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
                 </div>
             </Modal >
         </div >
-    );
+    )
 }

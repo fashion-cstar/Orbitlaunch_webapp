@@ -7,7 +7,7 @@ import { formatEther, maxUserPlayAmount, parseEther } from '@app/utils'
 import { useEthers } from "@usedapp/core"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { TransactionResponse } from '@ethersproject/providers'
-import { usePlayActions } from "src/state/Play"
+import { usePlay } from "@app/contexts"
 import { debounce } from "lodash"
 
 interface DiceBetActionProps {
@@ -36,7 +36,7 @@ export default function DiceBetAction({
     const { library, account, chainId } = useEthers()
     const { tokenAllowanceCallback } = useTokenAllowance()
     const { approveCallback } = useApproveCallback()
-    const { placeDiceRollBetCallback, placeCoinFlipBetCallback, placeSpinBetCallback } = usePlayActions(OrbitPlayContractAddress, 'bsc')
+    const { placeDiceRollBetCallback, placeCoinFlipBetCallback, placeSpinBetCallback } = usePlay()
     const snackbar = useSnackbar()
     const [isWalletApproving, setIsWalletApproving] = useState(false)
     const [isApproved, setIsApproved] = useState(false)

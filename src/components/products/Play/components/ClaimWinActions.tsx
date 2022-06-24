@@ -4,7 +4,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { OrbitPlayContractAddress } from "@app/shared/PlayConstant"
 import { useEthers } from "@usedapp/core"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
-import { usePlayActions } from "src/state/Play"
+import { usePlay } from "@app/contexts"
 
 interface DiceClaimActionProps {
     playType: number
@@ -20,7 +20,7 @@ export default function DiceBetAction({
     setIsClaiming }: DiceClaimActionProps) {
 
     const { library, account, chainId } = useEthers()
-    const { claimDiceRollWinCallback, claimCoinFlipWinCallback, claimSpinWinCallback } = usePlayActions(OrbitPlayContractAddress, 'bsc')
+    const { claimDiceRollWinCallback, claimCoinFlipWinCallback, claimSpinWinCallback } = usePlay()
     const snackbar = useSnackbar()
 
     const onDiceClaim = async () => {
