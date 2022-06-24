@@ -45,9 +45,7 @@ export const PlayProvider = ({ children = null as any }) => {
     const [coinFlipInfo, setCoinFlipInfo] = useState<IPlayedInfo>({ timesPlayed: 0, paidOut: BigNumber.from(0), burnt: BigNumber.from(0) })
 
     useEffect(() => {
-        if (account && library) {
-            updateOrbitPlayStats()
-        }
+        updateOrbitPlayStats()
     }, [slowRefresh, account])
 
     const placeDiceRollBetCallback = async function (amount: BigNumber, diceNumber: number) {
