@@ -1,0 +1,49 @@
+#wheel.spin180 {
+    -webkit-animation: spin180 2s linear;
+    animation: spin180 2s linear;
+}
+
+#wheel.spin360 {
+    -webkit-animation: spin360 2s linear;
+    animation: spin360 2s linear;
+}
+
+@-webkit-keyframes spin180 {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(180deg);
+    }
+}
+
+@keyframes spin180 {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(180deg);
+    }
+}
+
+@-webkit-keyframes spin360 {
+    0% {
+        -webkit-transform: rotate(180deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin360 {
+    0% {
+        transform: rotate(180deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

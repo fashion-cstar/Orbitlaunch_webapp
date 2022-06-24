@@ -54,12 +54,20 @@ const MenuItemStyle = (isLast: boolean) => {
     }
 }
 
-export default function CoinBetSelectBox({ selectedBet, betlist, placeholder, onSelectBet }: BetSelectBoxProps) {
+export default function SpinBetSelectBox({ selectedBet, betlist, placeholder, onSelectBet }: BetSelectBoxProps) {
 
+    const getSpinPlaceFromNo = (num: number) => {
+        if (num === 1) return "Red"
+        if (num === 2) return "Yellow"
+        if (num === 3) return "Green"
+        if (num === 4) return "Blue"
+        return "Red"
+    }
+    
     return (
         <div className="flex flex-col rounded-2xl bg-[#06111C] py-3 px-5">
             <div className="text-[12px] font-bold uppercase text-app-primary">
-                Coin Side
+                Your Place
             </div>
             <div className='flex gap-2 justify-between w-full mt-1'>            
                 <FormControl fullWidth variant="standard" sx={{ border: 'none'}}>
@@ -74,7 +82,7 @@ export default function CoinBetSelectBox({ selectedBet, betlist, placeholder, on
                                 return <div className='text-[14px] text-[#BAB8CC]/[.48]'>{placeholder}</div>;
                             }
 
-                            return <div className='pl-4 text-[18px]'>{Number(selectedBet)==1?"Heads":"Tails"}</div>;
+                            return <div className='pl-4 text-[18px]'>{getSpinPlaceFromNo(Number(selectedBet))}</div>;
                         }}
                         style={MuiSelectStyle}
                         MenuProps={MenuProps}

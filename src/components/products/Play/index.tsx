@@ -140,7 +140,7 @@ export default function Play() {
                                         <div className='text-[16px] lg:text-[18px] text-white font-light'>
                                             Maximum Bet:{' '}<span className='text-app-primary font-normal'>{`${SpinWheel_MaxBet.toLocaleString()} ORBIT`}</span>
                                         </div>
-                                        <div className='text-[16px] text-[#BAB8CC] my-3 font-light'>Payout: 6:1</div>
+                                        <div className='text-[16px] text-[#BAB8CC] my-3 font-light'>Payout: 4:1</div>
                                     </div>
                                 </div>
                                 <div className='my-2'>

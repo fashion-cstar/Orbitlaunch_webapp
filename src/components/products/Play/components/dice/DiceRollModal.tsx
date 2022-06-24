@@ -67,7 +67,7 @@ export default function DiceRollModal({ isOpen, orbitDecimals, handleClose }: Di
         }
     }
 
-    const setPlaceDiceBetSuccess = (destiny: number, returning: BigNumber) => {
+    const setPlaceDiceBetSuccess = (destiny: number, returning: BigNumber, burnt: BigNumber) => {
         setDestiny(destiny)
         setReturningAmount(returning)
         setIsShowingResult(true)
@@ -216,7 +216,7 @@ export default function DiceRollModal({ isOpen, orbitDecimals, handleClose }: Di
                                         Better luck next time
                                     </div>
                                     <div className='text-white text-[15px] font-light whitespace-normal text-center'>
-                                        {`You lost your bet of ${betAmount} ORBIT.`}
+                                        {`You lost your bet of ${betAmount} ORBIT.`}<br />
                                         {`10 ORBIT has been burnt.`}
                                     </div>
                                     <Button

@@ -6,21 +6,21 @@ import { useEthers } from "@usedapp/core"
 import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { usePlayActions } from "src/state/Play"
 
-interface DiceClaimActionProps {    
+interface DiceClaimActionProps {
     playType: number
-    isClaiming: boolean    
+    isClaiming: boolean
     setClaimSuccess: () => void
     setIsClaiming: (value: boolean) => void
 }
 
-export default function DiceBetAction({    
+export default function DiceBetAction({
     playType,
-    isClaiming,    
+    isClaiming,
     setClaimSuccess,
     setIsClaiming }: DiceClaimActionProps) {
 
-    const { library, account, chainId } = useEthers()    
-    const { claimDiceRollWinCallback, claimCoinFlipWinCallback } = usePlayActions(OrbitPlayContractAddress, 'bsc')
+    const { library, account, chainId } = useEthers()
+    const { claimDiceRollWinCallback, claimCoinFlipWinCallback, claimSpinWinCallback } = usePlayActions(OrbitPlayContractAddress, 'bsc')
     const snackbar = useSnackbar()
 
     const onDiceClaim = async () => {
@@ -61,13 +61,35 @@ export default function DiceBetAction({
         return null;
     }
 
+    const onSpinClaim = async () => {
+        setIsClaiming(true)
+        try {
+            claimSpinWinCallback().then((res: any) => {
+                setClaimSuccess()
+                setIsClaiming(false)
+            }).catch(error => {
+                setIsClaiming(false)
+                console.log(error)
+                let err: any = error
+                snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
+            })
+        } catch (error) {
+            setIsClaiming(false)
+            console.log(error)
+        }
+        return null;
+    }
+
     const onClaim = () => {
-        switch(playType){
+        switch (playType) {
             case 1:
                 onCoinFlipClaim()
                 break;
             case 2:
                 onDiceClaim()
+                break;
+            case 3:
+                onSpinClaim()
                 break;
         }
     }
@@ -79,7 +101,7 @@ export default function DiceBetAction({
                 loading={isClaiming}
                 loadingPosition="start"
                 disabled={!account}
-                onClick={onClaim}                
+                onClick={onClaim}
             >
                 {isClaiming ? 'Collecting...' : "Collect Your Win"}
             </LoadingButton>

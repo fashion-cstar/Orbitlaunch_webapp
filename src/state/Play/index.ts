@@ -29,8 +29,7 @@ export function usePlayActions(playContractAddress: string, blockchain: string):
             return playContract.placeDiceRollBet(amount, BigNumber.from(diceNumber), {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
-                return response.wait().then((res: any) => {
-                    console.log(res)
+                return response.wait().then((res: any) => {                    
                     return res.events.pop()
                 })
             })
@@ -56,8 +55,7 @@ export function usePlayActions(playContractAddress: string, blockchain: string):
             return playContract.placeCoinFlipBet(amount, BigNumber.from(diceNumber), {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
-                return response.wait().then((res: any) => {
-                    console.log(res)
+                return response.wait().then((res: any) => {                    
                     return res.events.pop()
                 })
             })
@@ -83,8 +81,7 @@ export function usePlayActions(playContractAddress: string, blockchain: string):
             return playContract.placeSpinBet(amount, BigNumber.from(diceNumber), {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
-                return response.wait().then((res: any) => {
-                    console.log(res)
+                return response.wait().then((res: any) => {                    
                     return res.events.pop()
                 })
             })

@@ -10,16 +10,11 @@ function CoinFlipAnimate({ isRoll, destiny }: { isRoll: boolean, destiny: number
             if (!rolling) {
                 setRolling(true)
             }
-        } else {
-            if (rolling) {
-                setRolling(false)
-                setCoinFace()
-            }
         }
     }, [isRoll])
 
     const setCoinFace = () => {
-        if (destiny > 0) {            
+        if (destiny > 0) {
             if (destiny == 1) {
                 if (flipClassName == "tails") setFlipClassName("heads")
             } else {
@@ -27,7 +22,13 @@ function CoinFlipAnimate({ isRoll, destiny }: { isRoll: boolean, destiny: number
             }
         }
     }
+
     const updateCallback = useCallback(() => {
+        if (!isRoll && rolling) {
+            setRolling(false)
+            setCoinFace()
+            return
+        }
         if (destiny > 0) {
             setRolling(false)
             setCoinFace()
@@ -42,7 +43,7 @@ function CoinFlipAnimate({ isRoll, destiny }: { isRoll: boolean, destiny: number
                 }
             }
         }
-    }, [flipClassName, destiny])
+    }, [flipClassName, destiny, isRoll])
     useInterval(updateCallback, rolling ? 400 : null)
 
     return (

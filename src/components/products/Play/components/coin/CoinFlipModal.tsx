@@ -68,7 +68,7 @@ export default function CoinFlipModal({ isOpen, orbitDecimals, handleClose }: Co
         }
     }
 
-    const setPlaceCoinFlipSuccess = (destiny: number, returning: BigNumber) => {
+    const setPlaceCoinFlipSuccess = (destiny: number, returning: BigNumber, burnt: BigNumber) => {
         setDestiny(destiny)
         setReturningAmount(returning)
         setIsShowingResult(true)
@@ -217,7 +217,7 @@ export default function CoinFlipModal({ isOpen, orbitDecimals, handleClose }: Co
                                         Better luck next time
                                     </div>
                                     <div className='text-white text-[15px] font-light whitespace-normal text-center'>
-                                        {`You lost your bet of ${betAmount} ORBIT.`}
+                                        {`You lost your bet of ${betAmount} ORBIT.`}<br />
                                         {`10 ORBIT has been burnt.`}
                                     </div>
                                     <Button

@@ -18,7 +18,7 @@ interface DiceBetActionProps {
     ORBIT_TOKEN: string
     isOpen: boolean
     isValidAmount: boolean
-    setPlaceBetSuccess: (destiny: number, returning: BigNumber) => void
+    setPlaceBetSuccess: (destiny: number, returning: BigNumber, burnt: BigNumber) => void
     setIsLoading: (value: boolean) => void
 }
 
@@ -36,7 +36,7 @@ export default function DiceBetAction({
     const { library, account, chainId } = useEthers()
     const { tokenAllowanceCallback } = useTokenAllowance()
     const { approveCallback } = useApproveCallback()
-    const { placeDiceRollBetCallback, placeCoinFlipBetCallback } = usePlayActions(OrbitPlayContractAddress, 'bsc')
+    const { placeDiceRollBetCallback, placeCoinFlipBetCallback, placeSpinBetCallback } = usePlayActions(OrbitPlayContractAddress, 'bsc')
     const snackbar = useSnackbar()
     const [isWalletApproving, setIsWalletApproving] = useState(false)
     const [isApproved, setIsApproved] = useState(false)
@@ -44,13 +44,12 @@ export default function DiceBetAction({
 
     const checkUserApproved = useRef(
         debounce(async () => {
-            setIsCheckingAllowance(true)            
+            setIsCheckingAllowance(true)
         }, 500)
     ).current;
-    
+
     const checkAllowance = async (): Promise<boolean> => {
         try {
-            console.log(isCheckingAllowance, account, OrbitPlayContractAddress, ORBIT_TOKEN)
             let res = await tokenAllowanceCallback(account, OrbitPlayContractAddress, ORBIT_TOKEN, 'bsc')
             if (res.gte(amount) && amount.gt(0)) {
                 return true
@@ -68,11 +67,11 @@ export default function DiceBetAction({
             if (res) setIsApproved(true)
             setIsCheckingAllowance(false)
         }
-        if (isCheckingAllowance){
+        if (isCheckingAllowance) {
             fetch()
         }
     }, [isCheckingAllowance])
-    
+
     useEffect(() => {
         checkUserApproved()
     }, [amount, account, isOpen])
@@ -107,7 +106,7 @@ export default function DiceBetAction({
         setIsLoading(true)
         try {
             placeDiceRollBetCallback(amount, betNumber).then((res: any) => {
-                setPlaceBetSuccess(Number(res.args.result), res.args.returned)
+                setPlaceBetSuccess(Number(res.args.result), res.args.returned, res.args.burnt)
                 setIsLoading(false)
             }).catch(error => {
                 setIsLoading(false)
@@ -128,7 +127,36 @@ export default function DiceBetAction({
             placeCoinFlipBetCallback(amount, betNumber).then((res: any) => {
                 let result = 0
                 result = res.args.result.toLowerCase() == "heads" ? 1 : 2
-                setPlaceBetSuccess(result, res.args.returned)
+                setPlaceBetSuccess(result, res.args.returned, res.args.burnt)
+                setIsLoading(false)
+            }).catch(error => {
+                setIsLoading(false)
+                console.log(error)
+                let err: any = error
+                snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
+            })
+        } catch (error) {
+            setIsLoading(false)
+            console.log(error)
+        }
+        return null;
+    }
+
+    const getSpinPlaceFromName = (name: string) => {
+        if (name === "red") return 1
+        if (name === "yellow") return 2
+        if (name === "green") return 3
+        if (name === "blue") return 4
+        return 1
+    }
+
+    const onPlaceSpinBet = async () => {
+        setIsLoading(true)
+        try {
+            placeSpinBetCallback(amount, betNumber).then((res: any) => {
+                let result = 0
+                result = getSpinPlaceFromName(res.args.result.toLowerCase())
+                setPlaceBetSuccess(result, res.args.returned, res.args.burnt)
                 setIsLoading(false)
             }).catch(error => {
                 setIsLoading(false)
@@ -150,6 +178,9 @@ export default function DiceBetAction({
                 break;
             case 2:
                 onPlaceDiceBet()
+                break;
+            case 3:
+                onPlaceSpinBet()
                 break;
         }
     }

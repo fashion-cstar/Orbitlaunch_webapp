@@ -12,6 +12,7 @@ import compose from "@app/shared/helpers/compose";
 import "@app/styles/globals.css";
 import "@app/styles/play/dice.css";
 import "@app/styles/play/coinflip.css";
+import "@app/styles/play/spin.css";
 import { SnackbarContextProvider } from "@app/lib/hooks/useSnackbar";
 import { LockActionsProvider, RefreshContextProvider, FundStatsProvider } from "@app/contexts";
 // Client-side cache, shared for the whole session of the user in the browser.

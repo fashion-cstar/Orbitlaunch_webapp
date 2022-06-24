@@ -5,9 +5,9 @@ import Modal from 'src/components/common/Modal';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { BigNumber } from '@ethersproject/bignumber';
 import { formatEther, parseEther } from '@app/utils'
-import { DiceRoll_MaxBet, DiceRoll_MinBet } from '@app/shared/PlayConstant';
+import { SpinWheel_MaxBet, SpinWheel_MinBet } from '@app/shared/PlayConstant';
 import BetAmountInput from '../BetAmountInput';
-import BetSelectBox from '../DiceBetSelectBox';
+import BetSelectBox from '../SpinBetSelectBox'
 import Spin from './SpinAnimate';
 import PlaceActions from '../PlaceBetActions';
 import { useOrbitPlayStats } from '@app/state/Play';
@@ -67,7 +67,7 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
         }
     }
 
-    const setPlaceDiceBetSuccess = (destiny: number, returning: BigNumber) => {
+    const setPlaceSpinBetSuccess = (destiny: number, returning: BigNumber, burnt: BigNumber) => {
         setDestiny(destiny)
         setReturningAmount(returning)
         setIsShowingResult(true)
@@ -81,10 +81,10 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
         setTimeout(() => {
             setIsShowingResult(false)
             setIsEndedBet(true)
-        }, 2000);
+        }, 30000);
     }
 
-    const setDiceClaimSuccess = () => {
+    const setSpinClaimSuccess = () => {
         setIsClaimed(true)
     }
 
@@ -93,7 +93,7 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
         else setBetAmount(0)
         if (Number(val) !== NaN) setBetAmount(Number(val))
         else setBetAmount(0)
-        if (Number(val) >= DiceRoll_MinBet && Number(val) <= DiceRoll_MaxBet) {
+        if (Number(val) >= SpinWheel_MinBet && Number(val) <= SpinWheel_MaxBet) {
             setIsValidAmount(true)
         } else {
             setIsValidAmount(false)
@@ -138,13 +138,13 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
                                 <div className='text-white text-[32px] mb-4'>Place your bet</div>
                                 <div className='flex flex-col'>
                                     <div className='text-[15px] lg:text-[16px] text-white font-light'>
-                                        Minimum Bet:{' '}<span className='text-app-primary font-normal'>{`${DiceRoll_MinBet.toLocaleString()} ORBIT`}</span>
+                                        Minimum Bet:{' '}<span className='text-app-primary font-normal'>{`${SpinWheel_MinBet.toLocaleString()} ORBIT`}</span>
                                     </div>
                                     <div className='text-[15px] lg:text-[16px] text-white font-light'>
-                                        Maximum Bet:{' '}<span className='text-app-primary font-normal'>{`${DiceRoll_MaxBet.toLocaleString()} ORBIT`}</span>
+                                        Maximum Bet:{' '}<span className='text-app-primary font-normal'>{`${SpinWheel_MaxBet.toLocaleString()} ORBIT`}</span>
                                     </div>
                                     <div className='text-[15px] lg:text-[16px] text-white font-light'>
-                                        Returns:{' '}<span className='text-app-primary font-normal'>{`BET + 500% `}</span>{`(Bet 100 ORBIT win 600)`}
+                                        Returns:{' '}<span className='text-app-primary font-normal'>{`BET + 300% `}</span>{`(Bet 100 ORBIT win 400)`}
                                     </div>
                                 </div>
                                 <div className="flex gap-4 my-3 w-full">
@@ -153,24 +153,24 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
                                     </div>
                                     <div className="basis-1/2">
                                         <BetSelectBox selectedBet={selectedBet}
-                                            betlist={[{ label: '1', value: 1 }, { label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }, { label: '5', value: 5 }, { label: '6', value: 6 }]}
-                                            placeholder="Select dice number"
+                                            betlist={[{ label: 'Red', value: 1 }, { label: 'Yellow', value: 2 }, { label: 'Green', value: 3 }, { label: 'Blue', value: 4 }]}
+                                            placeholder="Select your place"
                                             onSelectBet={onSelectBet}
                                         />
                                     </div>
                                 </div>
                                 <PlaceActions
-                                    playType={2}
+                                    playType={3}
                                     amount={parseEther(betAmount, orbitDecimals)}
                                     betNumber={Number(selectedBet)}
                                     isLoading={isLoading}
                                     ORBIT_TOKEN={OrbtTokenAddress}
                                     isOpen={isOpen}
                                     isValidAmount={isValidAmount}
-                                    setPlaceBetSuccess={setPlaceDiceBetSuccess}
+                                    setPlaceBetSuccess={setPlaceSpinBetSuccess}
                                     setIsLoading={setIsLoading}
                                 />
-                            </>}
+                            </>}                            
                             {!isEndedBet && (isLoading || isShowingResult) &&
                                 <div className='flex flex-col gap-6 justify-center items-center h-full w-full'>
                                     <Spin destiny={destiny} isSpin={isLoading} />
@@ -200,9 +200,9 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
                                             {`Congratulations, you won ${formatEther(returningAmount, orbitDecimals, 2)} ORBIT`}
                                         </div>
                                         <ClaimActions
-                                            playType={2}
+                                            playType={3}
                                             isClaiming={isClaiming}
-                                            setClaimSuccess={setDiceClaimSuccess}
+                                            setClaimSuccess={setSpinClaimSuccess}
                                             setIsClaiming={setIsClaiming}
                                         />
                                     </>}
@@ -216,7 +216,7 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
                                         Better luck next time
                                     </div>
                                     <div className='text-white text-[15px] font-light whitespace-normal text-center'>
-                                        {`You lost your bet of ${betAmount} ORBIT.`}
+                                        {`You lost your bet of ${betAmount} ORBIT.`}<br />
                                         {`10 ORBIT has been burnt.`}
                                     </div>
                                     <Button
