@@ -20,7 +20,7 @@ export default function DiceBetAction({
     setIsClaiming }: DiceClaimActionProps) {
 
     const { library, account, chainId } = useEthers()
-    const { claimDiceRollWinCallback, claimCoinFlipWinCallback, claimSpinWinCallback } = usePlay()
+    const { claimDiceRollWinCallback, claimCoinFlipWinCallback, claimSpinWinCallback, claimRoshamboWinCallback } = usePlay()
     const snackbar = useSnackbar()
 
     const onDiceClaim = async () => {
@@ -80,6 +80,25 @@ export default function DiceBetAction({
         return null;
     }
 
+    const onRoshamboClaim = async () => {
+        setIsClaiming(true)
+        try {
+            claimRoshamboWinCallback().then((res: any) => {
+                setClaimSuccess()
+                setIsClaiming(false)
+            }).catch(error => {
+                setIsClaiming(false)
+                console.log(error)
+                let err: any = error
+                snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
+            })
+        } catch (error) {
+            setIsClaiming(false)
+            console.log(error)
+        }
+        return null;
+    }
+
     const onClaim = () => {
         switch (playType) {
             case 1:
@@ -90,6 +109,9 @@ export default function DiceBetAction({
                 break;
             case 3:
                 onSpinClaim()
+                break;
+            case 4:
+                onRoshamboClaim()
                 break;
         }
     }

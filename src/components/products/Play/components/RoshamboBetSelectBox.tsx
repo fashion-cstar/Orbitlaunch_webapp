@@ -54,46 +54,36 @@ const MenuItemStyle = (isLast: boolean) => {
     }
 }
 
-export default function SpinBetSelectBox({ selectedBet, betlist, placeholder, onSelectBet }: BetSelectBoxProps) {
+export default function RoshamboBetSelectBox({ selectedBet, betlist, placeholder, onSelectBet }: BetSelectBoxProps) {
 
-    const getSpinPlaceFromNo = (num: number) => {
-        if (num === 1) return "Red"
-        if (num === 2) return "Yellow"
-        if (num === 3) return "Green"
-        if (num === 4) return "Blue"
-        return "Red"
+    const getRoshamboFromNo = (num: number) => {
+        if (num === 1) return "Rock"
+        if (num === 2) return "Paper"
+        if (num === 3) return "Scissors"        
+        return "Rock"
     }
 
-    const getWheelPlace = (index: number) => {
+    const getRoshamboIcon = (index: number, height: string) => {
         switch (index) {
             case 0:
-                return (<div className='rounded-full bg-[#e91e50] w-[32px] h-[32px] border border-2 border-white' />)
+                return (
+                    <img src="./images/play/rock.png" height={height} />
+                )
             case 1:
-                return (<div className='rounded-full bg-[#ffc107] w-[32px] h-[32px] border border-2 border-white' />)
+                return (
+                    <img src="./images/play/paper.png" height={height} />
+                )
             case 2:
-                return (<div className='rounded-full bg-[#3bff40] w-[32px] h-[32px] border border-2 border-white' />)
-            case 3:
-                return (<div className='rounded-full bg-[#0389ff] w-[32px] h-[32px] border border-2 border-white' />)
-        }
-    }
-
-    const getWheelPlaceSmall = (index: number) => {
-        switch (index) {
-            case 0:
-                return (<div className='rounded-full bg-[#e91e50] w-[22px] h-[22px] border border border-white' />)
-            case 1:
-                return (<div className='rounded-full bg-[#ffc107] w-[22px] h-[22px] border border border-white' />)
-            case 2:
-                return (<div className='rounded-full bg-[#3bff40] w-[22px] h-[22px] border border border-white' />)
-            case 3:
-                return (<div className='rounded-full bg-[#0389ff] w-[22px] h-[22px] border border border-white' />)
+                return (
+                    <img src="./images/play/scissors.png" height={height} />
+                )
         }
     }
 
     return (
-        <div className="flex flex-col rounded-2xl bg-[#06111C] py-3 px-5">
+        <div className="flex flex-col rounded-2xl bg-[#06111C] py-3 px-5">            
             <div className="text-[12px] font-bold uppercase text-app-primary">
-                Your Place
+                Your Gesture
             </div>
             <div className='flex gap-2 justify-between w-full mt-1'>
                 <FormControl fullWidth variant="standard" sx={{ border: 'none' }}>
@@ -110,10 +100,10 @@ export default function SpinBetSelectBox({ selectedBet, betlist, placeholder, on
 
                             return (
                                 <div className='w-full flex justify-start gap-4 items-center pl-4 pb-2'>
-                                    <div className='w-[26px] h-[24px]'>
-                                        {getWheelPlaceSmall(Number(selectedBet) - 1)}
+                                    <div className='w-[26px] h-[26px]'>
+                                        {getRoshamboIcon(Number(selectedBet) - 1, "26px")}
                                     </div>
-                                    <div className='pl-4 text-[18px]'>{getSpinPlaceFromNo(Number(selectedBet))}</div>
+                                    <div className='pl-4 text-[18px]'>{getRoshamboFromNo(Number(selectedBet))}</div>
                                 </div>
                             )
                         }}
@@ -127,7 +117,9 @@ export default function SpinBetSelectBox({ selectedBet, betlist, placeholder, on
                             betlist.map((item, index) => {
                                 return (<MenuItem value={item.value} style={MenuItemStyle(index === betlist.length - 1 ? true : false)} key={index}>
                                     <div className='w-full flex justify-between items-center'>
-                                        {getWheelPlace(index)}
+                                        <div className='w-[36px] h-[36px]'>
+                                            {getRoshamboIcon(index, "36px")}
+                                        </div>
                                         <div className='text-[16px] text-white'>{item.label}</div>
                                     </div>
                                 </MenuItem>)

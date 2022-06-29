@@ -11,8 +11,8 @@ import {
     CoinFlip_MaxBet,
     DiceRoll_MinBet,
     DiceRoll_MaxBet,
-    RockScissors_MinBet,
-    RockScissors_MaxBet,
+    Roshambo_MinBet,
+    Roshambo_MaxBet,
     SpinWheel_MinBet,
     SpinWheel_MaxBet,
 } from '@app/shared/PlayConstant';
@@ -26,11 +26,12 @@ import {
 } from "@app/shared/PlayConstant"
 import { useToken } from 'src/state/hooks'
 import SpinWheelModal from './components/spin/SpinWheelModal'
+import RoshamboModal from './components/roshambo/RoshamboModal'
 
 export default function Play() {
     const [isOpenCoinFlip, setIsOpenCoinFlip] = useState(false)
     const [isOpenDiceRoll, setIsOpenDiceRoll] = useState(false)
-    const [isOpenRockScissors, setIsOpenRockScissors] = useState(false)
+    const [isOpenRoshambo, setIsOpenRoshambo] = useState(false)
     const [isOpenSpinWheel, setIsOpenSpinWheel] = useState(false)
     const [orbitDecimals, setOrbitDecimals] = useState(18)
     const userOrbitToken = useToken(OrbtTokenAddress, 'bsc')
@@ -51,8 +52,8 @@ export default function Play() {
         setIsOpenDiceRoll(false)
     }
 
-    const handelCloseRock = () => {
-        setIsOpenRockScissors(false)
+    const handelCloseRoshambo = () => {
+        setIsOpenRoshambo(false)
     }
 
     const handelCloseSpin = () => {
@@ -64,6 +65,7 @@ export default function Play() {
             <DiceRollModal isOpen={isOpenDiceRoll} orbitDecimals={orbitDecimals} handleClose={handelCloseDice} />
             <CoinFlipModal isOpen={isOpenCoinFlip} orbitDecimals={orbitDecimals} handleClose={handelCloseCoin} />
             <SpinWheelModal isOpen={isOpenSpinWheel} orbitDecimals={orbitDecimals} handleClose={handelCloseSpin} />
+            <RoshamboModal isOpen={isOpenRoshambo} orbitDecimals={orbitDecimals} handleClose={handelCloseRoshambo} />
             <div className="w-full">
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
                     <h1 className="text-[35px] md:text-[40px] font-medium">OrbitPlay</h1>
@@ -119,14 +121,36 @@ export default function Play() {
                                         sx={{ borderRadius: "12px" }}
                                         onClick={() => setIsOpenDiceRoll(true)}
                                     >
-                                        <span className="text-[16px]">Play Coin Flip</span>
+                                        <span className="text-[16px]">Play Dice Roll</span>
                                     </Button>
                                 </div>
                             </div>
                         </div>
                         <div className='flex flex-col lg:flex-row justify-center gap-6 items-stretch'>
                             <div className='lg:basis-1/2 w-full rounded-2xl bg-[#001926] p-6'>
-                                <RockScissorsIcon />
+                                <div className='w-full flex flex-col gap-4 lg:gap-5'>
+                                    <RockScissorsIcon />
+                                    <div className='text-[22px] lg:text-[24px] text-white'>Rock, Paper, Scissors</div>
+                                    <hr style={{ borderColor: "#112B40" }} />
+                                    <div className='flex flex-col'>
+                                        <div className='text-[16px] lg:text-[18px] text-white font-light'>
+                                            Minimum Bet:{' '}<span className='text-app-primary font-normal'>{`${Roshambo_MinBet.toLocaleString()} ORBIT`}</span>
+                                        </div>
+                                        <div className='text-[16px] lg:text-[18px] text-white font-light'>
+                                            Maximum Bet:{' '}<span className='text-app-primary font-normal'>{`${Roshambo_MaxBet.toLocaleString()} ORBIT`}</span>
+                                        </div>
+                                        <div className='text-[16px] text-[#BAB8CC] my-3 font-light'>Payout: 3:1</div>
+                                    </div>
+                                </div>
+                                <div className='my-2'>
+                                    <Button
+                                        variant="contained"
+                                        sx={{ borderRadius: "12px" }}
+                                        onClick={() => setIsOpenRoshambo(true)}
+                                    >
+                                        <span className="text-[16px]">Play Rock, Paper, Scissors</span>
+                                    </Button>
+                                </div>
                             </div>
                             <div className='lg:basis-1/2 w-full rounded-2xl bg-[#001926] p-6'>
                                 <div className='w-full flex flex-col gap-4 lg:gap-5'>

@@ -36,7 +36,7 @@ export default function DiceBetAction({
     const { library, account, chainId } = useEthers()
     const { tokenAllowanceCallback } = useTokenAllowance()
     const { approveCallback } = useApproveCallback()
-    const { placeDiceRollBetCallback, placeCoinFlipBetCallback, placeSpinBetCallback } = usePlay()
+    const { placeDiceRollBetCallback, placeCoinFlipBetCallback, placeSpinBetCallback, placeRoshamboBetCallback } = usePlay()
     const snackbar = useSnackbar()
     const [isWalletApproving, setIsWalletApproving] = useState(false)
     const [isApproved, setIsApproved] = useState(false)
@@ -142,7 +142,7 @@ export default function DiceBetAction({
         return null;
     }
 
-    const getSpinPlaceFromName = (name: string) => {
+    const getSpinPlaceIdFromName = (name: string) => {
         if (name === "red") return 1
         if (name === "yellow") return 2
         if (name === "green") return 3
@@ -155,8 +155,36 @@ export default function DiceBetAction({
         try {
             placeSpinBetCallback(amount, betNumber).then((res: any) => {
                 let result = 0
-                result = getSpinPlaceFromName(res.args.result.toLowerCase())
+                result = getSpinPlaceIdFromName(res.args.result.toLowerCase())
                 setPlaceBetSuccess(result, res.args.returned, res.args.burnt)
+                setIsLoading(false)
+            }).catch(error => {
+                setIsLoading(false)
+                console.log(error)
+                let err: any = error
+                snackbar.snackbar.show((err.data?.message || err?.message || err).toString(), "error")
+            })
+        } catch (error) {
+            setIsLoading(false)
+            console.log(error)
+        }
+        return null;
+    }
+
+    const getRoshamboIdFromName = (name: string) => {
+        if (name === "rock") return 1
+        if (name === "paper") return 2
+        if (name === "scissors") return 3
+        return 1
+    }
+
+    const onPlaceRoshamboBet = async () => {        
+        setIsLoading(true)
+        try {
+            placeRoshamboBetCallback(amount, betNumber).then((res: any) => {
+                let result = 0
+                result = getRoshamboIdFromName(res.args.result.toLowerCase())
+                setPlaceBetSuccess(result, res.args.returned, res.args.burnt)                
                 setIsLoading(false)
             }).catch(error => {
                 setIsLoading(false)
@@ -181,6 +209,9 @@ export default function DiceBetAction({
                 break;
             case 3:
                 onPlaceSpinBet()
+                break;
+            case 4:
+                onPlaceRoshamboBet()
                 break;
         }
     }

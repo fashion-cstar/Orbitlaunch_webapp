@@ -20,7 +20,6 @@ import {
 import WinInBetIcon from '../svgs/WinInBetIcon'
 import LossInBetIcon from '../svgs/LossInBetIcon'
 import ClaimActions from '../ClaimWinActions'
-import { OrbitPlayContractAddress } from "@app/shared/PlayConstant"
 
 interface DiceRollModalProps {
     isOpen: boolean
@@ -175,9 +174,12 @@ export default function DiceRollModal({ isOpen, orbitDecimals, handleClose }: Di
                             </>}
                             {!isEndedBet && (isLoading || isShowingResult) &&
                                 <div className='flex flex-col gap-6 justify-center items-center h-full w-full'>
+                                    <div className='text-white text-[26px] md:text-[32px] text-center'>
+                                        Rolling dice
+                                    </div>
                                     <Dice destiny={destiny} isRoll={isLoading} />
                                     <div className='text-white text-[15px] font-light whitespace-normal text-center'>
-                                        The dice will roll until the blockchain confirms <br />your transaction...
+                                        The dice will roll until the blockchain <br />confirms your transaction...
                                     </div>
                                 </div>}
                             {isEndedBet && isWin && <>

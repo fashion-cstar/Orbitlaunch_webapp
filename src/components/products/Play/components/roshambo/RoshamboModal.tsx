@@ -5,10 +5,10 @@ import Modal from 'src/components/common/Modal'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatEther, parseEther } from '@app/utils'
-import { SpinWheel_MaxBet, SpinWheel_MinBet } from '@app/shared/PlayConstant'
+import { Roshambo_MaxBet, Roshambo_MinBet } from '@app/shared/PlayConstant'
 import BetAmountInput from '../BetAmountInput'
-import BetSelectBox from '../SpinBetSelectBox'
-import Spin from './SpinAnimate'
+import BetSelectBox from '../RoshamboBetSelectBox'
+import Roshambo from './RoshamboAnimate'
 import PlaceActions from '../PlaceBetActions'
 import { usePlay } from '@app/contexts'
 // import {
@@ -21,15 +21,15 @@ import WinInBetIcon from '../svgs/WinInBetIcon'
 import LossInBetIcon from '../svgs/LossInBetIcon'
 import ClaimActions from '../ClaimWinActions'
 
-interface SpinWheelModalProps {
+interface RoshamboModalProps {
     isOpen: boolean
     orbitDecimals: number
     handleClose: () => void
 }
 
-export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: SpinWheelModalProps) {
+export default function RoshamboModal({ isOpen, orbitDecimals, handleClose }: RoshamboModalProps) {
     const { library, account, chainId } = useEthers()
-    const { spinInfo, updateOrbitPlayStats } = usePlay()
+    const { roshamboInfo, updateOrbitPlayStats } = usePlay()
     const [betAmount, setBetAmount] = useState(0)
     const [isValidAmount, setIsValidAmount] = useState(false)
     const [selectedBet, setSelectBet] = useState('')
@@ -67,14 +67,19 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
         }
     }
 
-    const setPlaceSpinBetSuccess = (destiny: number, returning: BigNumber, burnt: BigNumber) => {
+    const checkRoshambo = (result:number, userBet:number) => {
+        if (result === 1 && userBet === 2 || result === 2 && userBet === 3 || result === 3 && userBet === 1) return true
+        return false
+    }
+
+    const setPlaceRoshamboBetSuccess = (destiny: number, returning: BigNumber, burnt: BigNumber) => {
         setDestiny(destiny)
         setReturningAmount(returning)
         setBurnAmount(burnt)
         setIsShowingResult(true)
         updateOrbitPlayStats()
         console.log(destiny, returning, Number(selectedBet), burnt)
-        if (Number(selectedBet) == destiny) {
+        if (checkRoshambo(destiny, Number(selectedBet))) {
             setIsWin(true)
         } else {
             setIsWin(false)
@@ -85,7 +90,7 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
         }, 4000)
     }
 
-    const setSpinClaimSuccess = () => {
+    const setRoshamboClaimSuccess = () => {
         setIsClaimed(true)
     }
 
@@ -94,7 +99,7 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
         else setBetAmount(0)
         if (Number(val) !== NaN) setBetAmount(Number(val))
         else setBetAmount(0)
-        if (Number(val) >= SpinWheel_MinBet && Number(val) <= SpinWheel_MaxBet) {
+        if (Number(val) >= Roshambo_MinBet && Number(val) <= Roshambo_MaxBet) {
             setIsValidAmount(true)
         } else {
             setIsValidAmount(false)
@@ -109,7 +114,7 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
         <div>
             <Modal
                 isOpen={isOpen}
-                header={"Spin the wheel"}
+                header={"Rock, Paper, Scissors"}
                 handleClose={closeModal}
             >
                 <div className='m-4 md:m-6 min-w-[300px]'>
@@ -119,19 +124,19 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
                                 <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                     <span>Times played</span>
                                 </div>
-                                <div className="text-xl text-white">{spinInfo?.timesPlayed.toLocaleString()}</div>
+                                <div className="text-xl text-white">{roshamboInfo?.timesPlayed.toLocaleString()}</div>
                             </div>
                             <div className="flex-1 rounded-2xl bg-[#001926] p-4 w-full">
                                 <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                     <span>ORBIT paid out</span>
                                 </div>
-                                <div className="text-xl text-white">{formatEther(spinInfo?.paidOut, orbitDecimals, 2)}</div>
+                                <div className="text-xl text-white">{formatEther(roshamboInfo?.paidOut, orbitDecimals, 2)}</div>
                             </div>
                             <div className="flex-1 rounded-2xl bg-[#001926] p-4 w-full">
                                 <div className="flex items-center space-x-5 text-[11px] font-bold uppercase text-app-primary mb-2">
                                     <span>ORBIT burnt</span>
                                 </div>
-                                <div className="text-xl text-white">{formatEther(spinInfo?.burnt, orbitDecimals, 2)}</div>
+                                <div className="text-xl text-white">{formatEther(roshamboInfo?.burnt, orbitDecimals, 2)}</div>
                             </div>
                         </div>
                         <div className="flex-1 rounded-2xl bg-[#001926] p-4 w-full lg:w-[460px] max-w-[480px] ">
@@ -139,13 +144,13 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
                                 <div className='text-white text-[32px] mb-4'>Place your bet</div>
                                 <div className='flex flex-col'>
                                     <div className='text-[15px] lg:text-[16px] text-white font-light'>
-                                        Minimum Bet:{' '}<span className='text-app-primary font-normal'>{`${SpinWheel_MinBet.toLocaleString()} ORBIT`}</span>
+                                        Minimum Bet:{' '}<span className='text-app-primary font-normal'>{`${Roshambo_MinBet.toLocaleString()} ORBIT`}</span>
                                     </div>
                                     <div className='text-[15px] lg:text-[16px] text-white font-light'>
-                                        Maximum Bet:{' '}<span className='text-app-primary font-normal'>{`${SpinWheel_MaxBet.toLocaleString()} ORBIT`}</span>
+                                        Maximum Bet:{' '}<span className='text-app-primary font-normal'>{`${Roshambo_MaxBet.toLocaleString()} ORBIT`}</span>
                                     </div>
                                     <div className='text-[15px] lg:text-[16px] text-white font-light'>
-                                        Returns:{' '}<span className='text-app-primary font-normal'>{`BET + 300% `}</span>{`(Bet 100 ORBIT win 400)`}
+                                        Returns:{' '}<span className='text-app-primary font-normal'>{`BET + 200% `}</span>{`(Bet 100 ORBIT win 300)`}
                                     </div>
                                 </div>
                                 <div className="flex gap-4 my-3 w-full">
@@ -154,32 +159,32 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
                                     </div>
                                     <div className="basis-1/2">
                                         <BetSelectBox selectedBet={selectedBet}
-                                            betlist={[{ label: 'Red', value: 1 }, { label: 'Yellow', value: 2 }, { label: 'Green', value: 3 }, { label: 'Blue', value: 4 }]}
-                                            placeholder="Select your place"
+                                            betlist={[{ label: 'Rock', value: 1 }, { label: 'Paper', value: 2 }, { label: 'Scissors', value: 3 }]}
+                                            placeholder="Select your gesture"
                                             onSelectBet={onSelectBet}
                                         />
                                     </div>
                                 </div>
                                 <PlaceActions
-                                    playType={3}
+                                    playType={4}
                                     amount={parseEther(betAmount, orbitDecimals)}
                                     betNumber={Number(selectedBet)}
                                     isLoading={isLoading}
                                     ORBIT_TOKEN={OrbtTokenAddress}
                                     isOpen={isOpen}
                                     isValidAmount={isValidAmount}
-                                    setPlaceBetSuccess={setPlaceSpinBetSuccess}
+                                    setPlaceBetSuccess={setPlaceRoshamboBetSuccess}
                                     setIsLoading={setIsLoading}
                                 />
-                            </>}
+                            </>}                            
                             {!isEndedBet && (isLoading || isShowingResult) &&
                                 <div className='flex flex-col gap-6 justify-center items-center h-full w-full'>
                                     <div className='text-white text-[26px] md:text-[32px] text-center'>
-                                        Spinning the wheel
+                                        Picking gesture
                                     </div>
-                                    <Spin destiny={destiny} isSpin={isLoading} />
+                                    <Roshambo destiny={destiny} isSpin={isLoading} />
                                     <div className='text-white text-[15px] font-light whitespace-normal text-center'>
-                                        The wheel will be spinning until the blockchain <br />confirms your transaction...
+                                        Gesture will be switching until the blockchain <br />confirms your transaction...
                                     </div>
                                 </div>}
                             {isEndedBet && isWin && <>
@@ -204,9 +209,9 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
                                             {`Congratulations, you won ${formatEther(returningAmount, orbitDecimals, 2)} ORBIT`}
                                         </div>
                                         <ClaimActions
-                                            playType={3}
+                                            playType={4}
                                             isClaiming={isClaiming}
-                                            setClaimSuccess={setSpinClaimSuccess}
+                                            setClaimSuccess={setRoshamboClaimSuccess}
                                             setIsClaiming={setIsClaiming}
                                         />
                                     </>}

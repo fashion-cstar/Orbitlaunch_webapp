@@ -24,12 +24,15 @@ export interface IPlayContext {
     diceInfo: IPlayedInfo
     spinInfo: IPlayedInfo
     coinFlipInfo: IPlayedInfo
+    roshamboInfo: IPlayedInfo
     placeDiceRollBetCallback: (amount: BigNumber, diceNumber: number,) => Promise<any>
     claimDiceRollWinCallback: () => Promise<TransactionResponse>
     placeCoinFlipBetCallback: (amount: BigNumber, diceNumber: number,) => Promise<any>
     claimCoinFlipWinCallback: () => Promise<TransactionResponse>
     placeSpinBetCallback: (amount: BigNumber, diceNumber: number,) => Promise<any>
     claimSpinWinCallback: () => Promise<TransactionResponse>
+    placeRoshamboBetCallback: (amount: BigNumber, diceNumber: number,) => Promise<any>
+    claimRoshamboWinCallback: () => Promise<TransactionResponse>
     updateOrbitPlayStats: () => void
 }
 
@@ -43,9 +46,12 @@ export const PlayProvider = ({ children = null as any }) => {
     const [diceInfo, setDiceInfo] = useState<IPlayedInfo>({ timesPlayed: 0, paidOut: BigNumber.from(0), burnt: BigNumber.from(0) })
     const [spinInfo, setSpinInfo] = useState<IPlayedInfo>({ timesPlayed: 0, paidOut: BigNumber.from(0), burnt: BigNumber.from(0) })
     const [coinFlipInfo, setCoinFlipInfo] = useState<IPlayedInfo>({ timesPlayed: 0, paidOut: BigNumber.from(0), burnt: BigNumber.from(0) })
+    const [roshamboInfo, setRoshamboInfo] = useState<IPlayedInfo>({ timesPlayed: 0, paidOut: BigNumber.from(0), burnt: BigNumber.from(0) })
 
     useEffect(() => {
+        // if (account && library) {
         updateOrbitPlayStats()
+        // }
     }, [slowRefresh, account])
 
     const placeDiceRollBetCallback = async function (amount: BigNumber, diceNumber: number) {
@@ -78,13 +84,13 @@ export const PlayProvider = ({ children = null as any }) => {
         })
     }
 
-    const placeCoinFlipBetCallback = async function (amount: BigNumber, diceNumber: number) {
+    const placeCoinFlipBetCallback = async function (amount: BigNumber, sideNumber: number) {
         const chainId = getChainIdFromName(blockchain);
         const playContract: Contract = getContract(playContractAddress, orbitplay, library, account ? account : undefined)
         if (!account || !library || !playContractAddress) return
-        return playContract.estimateGas.placeCoinFlipBet(amount, BigNumber.from(diceNumber)).then(estimatedGasLimit => {
+        return playContract.estimateGas.placeCoinFlipBet(amount, BigNumber.from(sideNumber)).then(estimatedGasLimit => {
             const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
-            return playContract.placeCoinFlipBet(amount, BigNumber.from(diceNumber), {
+            return playContract.placeCoinFlipBet(amount, BigNumber.from(sideNumber), {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
                 return response.wait().then((res: any) => {
@@ -108,13 +114,13 @@ export const PlayProvider = ({ children = null as any }) => {
         })
     }
 
-    const placeSpinBetCallback = async function (amount: BigNumber, diceNumber: number) {
+    const placeSpinBetCallback = async function (amount: BigNumber, placeNumber: number) {
         const chainId = getChainIdFromName(blockchain);
         const playContract: Contract = getContract(playContractAddress, orbitplay, library, account ? account : undefined)
         if (!account || !library || !playContractAddress) return
-        return playContract.estimateGas.placeSpinBet(amount, BigNumber.from(diceNumber)).then(estimatedGasLimit => {
+        return playContract.estimateGas.placeSpinBet(amount, BigNumber.from(placeNumber)).then(estimatedGasLimit => {
             const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
-            return playContract.placeSpinBet(amount, BigNumber.from(diceNumber), {
+            return playContract.placeSpinBet(amount, BigNumber.from(placeNumber), {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
                 return response.wait().then((res: any) => {
@@ -131,6 +137,36 @@ export const PlayProvider = ({ children = null as any }) => {
         return playContract.estimateGas.claimSpinWin().then(estimatedGasLimit => {
             const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
             return playContract.claimSpinWin({
+                gasLimit: calculateGasMargin(gas)
+            }).then((response: TransactionResponse) => {
+                return response
+            })
+        })
+    }
+
+    const placeRoshamboBetCallback = async function (amount: BigNumber, roshamboNumber: number) {
+        const chainId = getChainIdFromName(blockchain);
+        const playContract: Contract = getContract(playContractAddress, orbitplay, library, account ? account : undefined)
+        if (!account || !library || !playContractAddress) return        
+        return playContract.estimateGas.placeRoshamboBet(amount, BigNumber.from(roshamboNumber)).then(estimatedGasLimit => {
+            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            return playContract.placeRoshamboBet(amount, BigNumber.from(roshamboNumber), {
+                gasLimit: calculateGasMargin(gas)
+            }).then((response: TransactionResponse) => {                
+                return response.wait().then((res: any) => {
+                    return res.events.pop()
+                })
+            })
+        })
+    }
+
+    const claimRoshamboWinCallback = async function () {
+        const chainId = getChainIdFromName(blockchain);
+        const playContract: Contract = getContract(playContractAddress, orbitplay, library, account ? account : undefined)
+        if (!account || !library || !playContractAddress) return
+        return playContract.estimateGas.claimRoshamboWin().then(estimatedGasLimit => {
+            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            return playContract.claimRoshamboWin({
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
                 return response
@@ -158,6 +194,11 @@ export const PlayProvider = ({ children = null as any }) => {
         return res
     }
 
+    const fetchRoshamboInfo = async (playContract: Contract) => {
+        const res = await playContract.roshamboInfo()
+        return res
+    }
+
     const updateOrbitPlayStats = async () => {
         const chainId = getChainIdFromName(blockchain);
         const playContract: Contract = getContract(playContractAddress, orbitplay, RpcProviders[chainId], account ? account : undefined)
@@ -176,6 +217,10 @@ export const PlayProvider = ({ children = null as any }) => {
         fetchSpinInfo(playContract).then(result => {
             setSpinInfo({ timesPlayed: result?.timesPlayed, paidOut: result?.paidOut, burnt: result?.burnt })
         }).catch(error => { console.log(error) })
+
+        fetchRoshamboInfo(playContract).then(result => {
+            setRoshamboInfo({ timesPlayed: result?.timesPlayed, paidOut: result?.paidOut, burnt: result?.burnt })
+        }).catch(error => { console.log(error) })
     }
 
     return (
@@ -185,12 +230,15 @@ export const PlayProvider = ({ children = null as any }) => {
                 diceInfo,
                 spinInfo,
                 coinFlipInfo,
+                roshamboInfo,
                 placeDiceRollBetCallback,
                 claimDiceRollWinCallback,
                 placeCoinFlipBetCallback,
                 claimCoinFlipWinCallback,
                 placeSpinBetCallback,
                 claimSpinWinCallback,
+                placeRoshamboBetCallback,
+                claimRoshamboWinCallback,
                 updateOrbitPlayStats
             }}
         >

@@ -21,7 +21,6 @@ import {
 import WinInBetIcon from '../svgs/WinInBetIcon'
 import LossInBetIcon from '../svgs/LossInBetIcon'
 import ClaimActions from '../ClaimWinActions'
-import { OrbitPlayContractAddress } from "@app/shared/PlayConstant"
 
 interface CoinFlipModalProps {
     isOpen: boolean
@@ -74,7 +73,7 @@ export default function CoinFlipModal({ isOpen, orbitDecimals, handleClose }: Co
         setReturningAmount(returning)
         setBurnAmount(burnt)
         setIsShowingResult(true)
-        updateOrbitPlayStats()        
+        updateOrbitPlayStats()
         console.log(destiny, returning, Number(selectedBet), burnt)
         if (Number(selectedBet) == destiny) {
             setIsWin(true)
@@ -173,12 +172,15 @@ export default function CoinFlipModal({ isOpen, orbitDecimals, handleClose }: Co
                                     setPlaceBetSuccess={setPlaceCoinFlipSuccess}
                                     setIsLoading={setIsLoading}
                                 />
-                            </>}                            
+                            </>}
                             {!isEndedBet && (isLoading || isShowingResult) &&
                                 <div className='flex flex-col gap-6 justify-center items-center h-full w-full'>
+                                    <div className='text-white text-[26px] md:text-[32px] text-center'>
+                                        Flipping coin
+                                    </div>
                                     <Coin destiny={destiny} isRoll={isLoading} />
                                     <div className='text-white text-[15px] font-light whitespace-normal text-center'>
-                                        The coin will flip until the blockchain confirms <br />your transaction...
+                                        The coin will flip until the blockchain <br />confirms your transaction...
                                     </div>
                                 </div>}
                             {isEndedBet && isWin && <>
