@@ -3,11 +3,14 @@ import { formatEther } from "@ethersproject/units"
 import { Contract } from '@ethersproject/contracts'
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useEthers, ChainId } from "@usedapp/core"
-import { getContract } from 'src/utils'
+import { calculateGasMargin, getContract, parseEther } from 'src/utils'
 import ERC20_ABI from 'src/lib/contract/abis/erc20.json'
 import { RpcProviders } from "@app/shared/PadConstant"
 import { getChainIdFromName } from 'src/utils'
 import useRefresh from '../useRefresh'
+import SWAP_ABI from 'src/lib/contract/abis/orbitswap.json'
+import { BNB_TOKEN_ADDRESS, PancakeRouterContractAddress } from '@app/shared/AppConstant'
+import { TransactionResponse } from '@ethersproject/providers'
 
 const DRIVE_TRADING_IDS = ['binancecoin', 'solana', 'maker', 'terra-luna', 'basic-attention-token']
 export function useDriveTradingTokens(): any[] {
@@ -73,5 +76,72 @@ export function usePromotedTrendingTokens(): any[] {
     }, [slowRefresh])
 
     return tokensList
+}
+
+export function useSwapCallback(): {
+    swapExactETHForTokens: (swapContractAddress: string, outTokenAddress: string, amount: number, to: string, blockchain: string) => Promise<string>, 
+    swapTokensForETH: (swapContractAddress: string, inTokenAddress: string, amount: number, to: string, blockchain: string) => Promise<string>, 
+    swapTokensForTokens: (swapContractAddress: string, inTokenAddress: string, outTokenAddress: string, amount: number, to: string, blockchain: string) => Promise<string>
+} {
+    // get claim data for this account
+    const { account, library, chainId } = useEthers()
+
+    const swapExactETHForTokens = async function (swapContractAddress: string, outTokenAddress: string, amount: number, to: string, blockchain: string) {
+        const chainId = getChainIdFromName(blockchain);
+        const swapContract: Contract = getContract(swapContractAddress, SWAP_ABI, library, account ? account : undefined)
+
+        if (!account || !library || !swapContract) return
+        var deadline = Math.floor(Date.now() / 1000) + 900;
+        return swapContract.estimateGas.swapExactETHForTokens(BigNumber.from(0), [BNB_TOKEN_ADDRESS, outTokenAddress], to, deadline, PancakeRouterContractAddress, {
+            value: parseEther(amount, 18)
+        }).then(estimatedGasLimit => {
+            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            return swapContract.swapExactETHForTokens(BigNumber.from(0), [BNB_TOKEN_ADDRESS, outTokenAddress], to, deadline, PancakeRouterContractAddress, {
+                gasLimit: calculateGasMargin(gas), value: parseEther(amount, 18)
+            }).then((response: TransactionResponse) => {
+                return response.hash
+            })
+        })
+    }
+
+    const swapTokensForETH = async function (swapContractAddress: string, inTokenAddress: string, amount: number, to: string, blockchain: string) {
+        const chainId = getChainIdFromName(blockchain);
+        const swapContract: Contract = getContract(swapContractAddress, SWAP_ABI, library, account ? account : undefined)
+        const tokenContract: Contract = getContract(inTokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+        let decimals = await tokenContract.decimals()
+        if (!account || !library || !swapContract) return
+        var deadline = Math.floor(Date.now() / 1000) + 900;
+        return swapContract.estimateGas.swapTokensForETH(parseEther(amount, decimals), BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS], to, deadline, PancakeRouterContractAddress, {
+            value: parseEther(amount, 18)
+        }).then(estimatedGasLimit => {
+            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            return swapContract.swapTokensForETH(parseEther(amount, decimals), BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS], to, deadline, PancakeRouterContractAddress, {
+                gasLimit: calculateGasMargin(gas)
+            }).then((response: TransactionResponse) => {
+                return response.hash
+            })
+        })
+    }
+
+    const swapTokensForTokens = async function (swapContractAddress: string, inTokenAddress: string, outTokenAddress: string, amount: number, to: string, blockchain: string) {
+        const chainId = getChainIdFromName(blockchain);
+        const swapContract: Contract = getContract(swapContractAddress, SWAP_ABI, library, account ? account : undefined)
+        const tokenContract: Contract = getContract(inTokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+        let decimals = await tokenContract.decimals()
+        if (!account || !library || !swapContract) return
+        var deadline = Math.floor(Date.now() / 1000) + 900;
+        return swapContract.estimateGas.swapTokensForTokens(parseEther(amount, decimals), BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS, outTokenAddress], to, deadline, PancakeRouterContractAddress, {
+            value: parseEther(amount, 18)
+        }).then(estimatedGasLimit => {
+            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            return swapContract.swapTokensForTokens(parseEther(amount, decimals), BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS, outTokenAddress], to, deadline, PancakeRouterContractAddress, {
+                gasLimit: calculateGasMargin(gas)
+            }).then((response: TransactionResponse) => {
+                return response.hash
+            })
+        })
+    }
+
+    return { swapExactETHForTokens, swapTokensForETH, swapTokensForTokens }
 }
 
