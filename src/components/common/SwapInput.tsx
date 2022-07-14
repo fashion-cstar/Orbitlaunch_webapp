@@ -1,15 +1,16 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import SwapQtyInputBox from '@app/components/common/SwapQtyInputBox'
-import M31Icon from '../svgs/M31Icon'
 
 interface TokenInputProps {
     value: any    
     name: string
-    balance : string
+    balance: string
+    logoURI: string
     onChange: (val: any) => void
+    onSelectToken: () => void
 }
 
-export default function SwapInput({ value, name, balance, onChange }: TokenInputProps) {
+export default function SwapInput({ value, name, balance, logoURI, onChange, onSelectToken }: TokenInputProps) {
     const [isBorder, setIsBorder] = useState(false)
     const handleFocus = () => {
         setIsBorder(true)
@@ -24,11 +25,11 @@ export default function SwapInput({ value, name, balance, onChange }: TokenInput
                 <span>From</span>
                 <span>Balance</span>
             </div>
-            <div className='flex gap-2 justify-between w-full mt-2'>
-                <div className='flex gap-4'>
-                    <div className='flex space-x-4 py-2 px-4 bg-[#001926] rounded-xl justify-center'>
+            <div className='flex gap-2 justify-between items-center w-full mt-2'>
+                <div className='flex gap-3 items-center'>
+                    <div className='flex min-w-[100px] gap-3 py-2 px-3 bg-[#001926] rounded-xl justify-left hover:bg-[#102936] cursor-pointer' onClick={onSelectToken}>
                         <div className="flex items-center justify-center w-6 h-6">
-                            <M31Icon />
+                            <img src={logoURI} width="22" height="22" />
                         </div>
                         <div className='uppercase text-white text-[14px]'>{name}</div>
                     </div>
