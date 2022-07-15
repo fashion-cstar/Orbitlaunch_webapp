@@ -9,10 +9,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
 import { useEthers } from "@usedapp/core";
 import TaskAltIcon from '@mui/icons-material/TaskAlt'
-import { getEtherscanLink, CHAIN_LABELS } from 'src/utils'
+import { getEtherscanLink, CHAIN_LABELS, formatEther } from 'src/utils'
 import UpHeadIcon from '../svgs/UpHeadIcon'
 import swapTokens from '@app/shared/SwapTokens'
 import SelectTokenModal from './SelectTokenModal'
+import { useToken, useTokenBalanceCallback } from 'src/state/hooks'
+import { BigNumber } from 'ethers'
 
 export default function OrbitSwap() {
     const { library, account, chainId } = useEthers()
@@ -25,6 +27,58 @@ export default function OrbitSwap() {
     const [inToken, setInToken] = useState<any>(swapTokens[0])
     const [outToken, setOutToken] = useState<any>(swapTokens[1])
     const [isOpenSelectToken, setIsOpenSelectToken] = useState(false)
+    const [isInToken, setIsInToken] = useState(true)
+    const { tokenBalanceCallback, nativeBalanceCallback } = useTokenBalanceCallback()
+    const [inTokenBalance, setInTokenBalance] = useState(BigNumber.from(0))
+    const [outTokenBalance, setOutTokenBalance] = useState(BigNumber.from(0))
+    const [isLoadingInBalance, setIsLoadingInBalance] = useState(false)
+    const [isLoadingOutBalance, setIsLoadingOutBalance] = useState(false)
+
+    useEffect(() => {
+        if (inToken) {
+            callInTokenBalanceCallback()
+        }
+    }, [inToken, account])
+
+    useEffect(() => {
+        if (outToken) {
+            callOutTokenBalanceCallback()
+        }
+    }, [outToken, account])
+
+    const callInTokenBalanceCallback = async () => {
+        setIsLoadingInBalance(true)
+        try {            
+            let res = BigNumber.from(0)
+            if (inToken?.symbol.toLowerCase().indexOf('bnb')>0){                
+                res = await nativeBalanceCallback('bsc')
+            }else{
+                res = await tokenBalanceCallback(inToken?.address, 'bsc')
+            }            
+            setInTokenBalance(res)
+        } catch (error) {
+            setInTokenBalance(BigNumber.from(0))
+            console.debug('Failed to get balance', error)
+        }
+        setIsLoadingInBalance(false)
+    }
+
+    const callOutTokenBalanceCallback = async () => {
+        setIsLoadingOutBalance(true)
+        try {
+            let res = BigNumber.from(0)
+            if (outToken?.symbol.toLowerCase().indexOf('bnb')>0){
+                res = await nativeBalanceCallback('bsc')
+            }else{
+                res = await tokenBalanceCallback(outToken?.address, 'bsc')
+            }
+            setOutTokenBalance(res)
+        } catch (error) {
+            setOutTokenBalance(BigNumber.from(0))
+            console.debug('Failed to get balance', error)
+        }
+        setIsLoadingOutBalance(false)
+    }
 
     const onInputChange = (val: any) => {
         if (!isApproved) {
@@ -40,7 +94,8 @@ export default function OrbitSwap() {
         }
     }
 
-    const onSelectToken = () => {
+    const onOpenSelectModal = (isIn: boolean) => {
+        setIsInToken(isIn)
         setIsOpenSelectToken(true)
     }
 
@@ -54,17 +109,23 @@ export default function OrbitSwap() {
         setIsOpenSelectToken(false)
     }
 
+    const onSelectToken = (token: any, isInToken: boolean) => {
+        if (isInToken) setInToken(token)
+        else setOutToken(token)
+        setIsOpenSelectToken(false)
+    }
+
     return (
-        <>            
+        <>
             <div className="rounded-2xl bg-[#001926] p-4">
-                <SelectTokenModal isOpen={isOpenSelectToken} handleClose={onCloseSelectToken} inToken={inToken} outToken={outToken} />
+                <SelectTokenModal isOpen={isOpenSelectToken} handleClose={onCloseSelectToken} inToken={inToken} outToken={outToken} isInToken={isInToken} onSelectToken={(token: any, isInToken: boolean) => onSelectToken(token, isInToken)} />
                 <div className="flex flex-row justify-between mt-2 items-center">
                     <div className='text-white text-[18px] md:text-[24px]'>
                         OrbitSwap
                     </div>
                 </div>
                 <div className='w-full flex flex-col gap-4 mt-6'>
-                    <SwapInput name={inToken?.symbol} value={inputAmount} balance={"0.00"} onChange={(val: any) => onInputChange(val)} logoURI={inToken?.logoURI} onSelectToken={onSelectToken} />
+                    <SwapInput name={inToken?.symbol} value={inputAmount} balance={isLoadingInBalance ? "--" : formatEther(inTokenBalance, inToken?.decimals, 2).toString()} onChange={(val: any) => onInputChange(val)} logoURI={inToken?.logoURI} onOpenSelectModal={() => onOpenSelectModal(true)} />
                     <div className='flex justify-between items-center'>
                         {/* <div className='basis-1/3'>
                         <div className='flex gap-2 items-center'>
@@ -101,7 +162,7 @@ export default function OrbitSwap() {
                         </div>
                     </div> */}
                     </div>
-                    <SwapOutput name={outToken?.symbol} value={outputAmount} balance={"0.00"} onChange={(val: any) => onOutputChange(val)} logoURI={outToken?.logoURI} onSelectToken={onSelectToken} />
+                    <SwapOutput name={outToken?.symbol} value={outputAmount} balance={isLoadingOutBalance ? "--" : formatEther(outTokenBalance, outToken?.decimals, 2).toString()} onChange={(val: any) => onOutputChange(val)} logoURI={outToken?.logoURI} onOpenSelectModal={() => onOpenSelectModal(false)} />
                     <div className='flex gap-4 mt-2'>
                         <Button
                             variant="contained"

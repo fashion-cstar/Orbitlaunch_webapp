@@ -10,22 +10,24 @@ interface ModalProps {
     isOpen: boolean
     inToken: any
     outToken: any
+    isInToken: boolean
     handleClose: () => void
+    onSelectToken: (token: any, isInToken: boolean) => void
 }
 
-const selectContentStyle = {  
-    overflow:'auto', 
-    maxHeight:'calc(100vh - 350px)'
+const selectContentStyle = {
+    overflow: 'auto',
+    maxHeight: 'calc(100vh - 350px)'
 }
 
-export default function SelectTokenModal({ isOpen, inToken, outToken, handleClose }: ModalProps) {
+export default function SelectTokenModal({ isOpen, inToken, outToken, isInToken, handleClose, onSelectToken }: ModalProps) {
     const [searchText, setSearchText] = useState('')
     const [isFilterTokens, setIsFilterTokens] = useState(false)
     const [filteredTokens, setFilteredTokens] = useState<any[]>(swapTokens)
-    
+
     useEffect(() => {
-        if (isFilterTokens) {            
-            setFilteredTokens(swapTokens.filter((item) => !searchText || item.symbol.toLowerCase().indexOf(searchText.toLowerCase())>0 || item.name.toLowerCase().indexOf(searchText.toLowerCase())>0))
+        if (isFilterTokens) {
+            setFilteredTokens(swapTokens.filter((item) => !searchText || item.symbol.toLowerCase().indexOf(searchText.toLowerCase()) > 0 || item.name.toLowerCase().indexOf(searchText.toLowerCase()) > 0))
             setIsFilterTokens(false)
         }
     }, [isFilterTokens])
@@ -61,31 +63,31 @@ export default function SelectTokenModal({ isOpen, inToken, outToken, handleClos
                     <div className='mt-4' style={selectContentStyle}>
                         {
                             filteredTokens.map((item, index) => {
-                                if (item?.symbol.toLowerCase() === inToken?.symbol.toLowerCase() || item?.symbol.toLowerCase() === outToken?.symbol.toLowerCase()){
-                                    return (                                    
+                                if (item?.symbol.toLowerCase() === inToken?.symbol.toLowerCase() || item?.symbol.toLowerCase() === outToken?.symbol.toLowerCase()) {
+                                    return (
                                         <div className='flex gap-4 items-center p-2 w-full rounded-md' key={index} >
                                             <div className="flex items-center justify-center w-7 h-7">
                                                 <img src={item?.logoURI} className='w-[22px] h-[22px] md:w-[24px] md:h-[24px] opacity-70' />
-                                            </div>                                        
+                                            </div>
                                             <div className='flex flex-col'>
-                                                <div className="text-[14px] md:text-[16px] text-[#cccccc] font-semibold">{item?.name}</div>
-                                                <div className="text-[12px] md:text-[14px] text-slate-400">{item?.symbol}</div>
+                                                <div className="text-[14px] md:text-[16px] text-[#cccccc] font-semibold">{item?.symbol}</div>
+                                                <div className="text-[12px] md:text-[14px] text-slate-400">{item?.name}</div>
                                             </div>
                                         </div>
                                     )
-                                }else{
-                                    return (                                    
-                                        <div className='flex gap-4 items-center p-2 w-full cursor-pointer hover:bg-[#0A171F] rounded-md' key={index} >
+                                } else {
+                                    return (
+                                        <div className='flex gap-4 items-center p-2 w-full cursor-pointer hover:bg-[#0A171F] rounded-md' key={index} onClick={() => onSelectToken(item, isInToken)} >
                                             <div className="flex items-center justify-center w-7 h-7">
                                                 <img src={item?.logoURI} className='w-[22px] h-[22px] md:w-[24px] md:h-[24px]' />
-                                            </div>                                        
+                                            </div>
                                             <div className='flex flex-col'>
-                                                <div className="text-[14px] md:text-[16px] text-white font-semibold">{item?.name}</div>
-                                                <div className="text-[12px] md:text-[14px] text-slate-200">{item?.symbol}</div>
+                                                <div className="text-[14px] md:text-[16px] text-white font-semibold">{item?.symbol}</div>
+                                                <div className="text-[12px] md:text-[14px] text-slate-200">{item?.name}</div>
                                             </div>
                                         </div>
                                     )
-                                }                                
+                                }
                             })
                         }
                     </div>

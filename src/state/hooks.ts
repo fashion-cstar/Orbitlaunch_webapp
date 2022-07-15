@@ -91,8 +91,12 @@ export function useTokenBalance(tokenAddress: string, blockchain: string): BigNu
   return balance
 }
 
-export function useTokenBalanceCallback(): { tokenBalanceCallback: (tokenAddress: string, blockchain: string) => Promise<BigNumber> } {
+export function useTokenBalanceCallback(): { 
+  tokenBalanceCallback: (tokenAddress: string, blockchain: string) => Promise<BigNumber>,
+  nativeBalanceCallback: (blockchain: string) => Promise<BigNumber> 
+} {
   const { account, library } = useEthers()
+
   const tokenBalanceCallback = async function (tokenAddress: string, blockchain: string) {
     const chainId = getChainIdFromName(blockchain);
     const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
@@ -100,7 +104,15 @@ export function useTokenBalanceCallback(): { tokenBalanceCallback: (tokenAddress
       return res
     })
   }
-  return { tokenBalanceCallback }
+
+  const nativeBalanceCallback = async function (blockchain: string) {
+    const chainId = getChainIdFromName(blockchain);
+    return RpcProviders[chainId].getBalance(account).then((res: BigNumber) => {
+      return res
+    })
+  }
+
+  return { tokenBalanceCallback, nativeBalanceCallback }
 }
 
 export function useApproveCallback(): {
