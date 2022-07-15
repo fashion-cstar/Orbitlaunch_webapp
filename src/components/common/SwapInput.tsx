@@ -38,6 +38,7 @@ export default function SwapInput({ value, name, balance, logoURI, onChange, onO
                         handleBlur={handleBlur}
                         onChange={onChange}
                         value={value}
+                        readOnly={false}
                     />
                 </div>
                 <div className="text-[#FFFFFF]/[.5] text-[20px] rounded-md text-right">

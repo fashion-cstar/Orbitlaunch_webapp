@@ -42,6 +42,8 @@ export const PancakeRouterContractAddress =
 // lock actions
 export const TierTokenLockContractAddress = "0xFAF78a5fF12da33982928A7E5C2cB828f721aB06"
 
+//swap
+export const SwapContractAddress = "0x73116A3982169f6d536BdC350C7eDb3ac0E81D7c"
 // migrate
 export const OrbtTokenAddress = "0x4bf5cd1AC6FfF12E88AEDD3c70EB4148F90F8894"
 export const MigrationOrbitAddress = "0x5B7Ce66AAeEF370019bfdE7F0566A3aD977C1306"

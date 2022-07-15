@@ -1,8 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
-import Button from '@mui/material/Button';
 import Modal from 'src/components/common/Modal'
 import swapTokens from '@app/shared/SwapTokens'
-import SearchInput from './SearchInput';
 import { debounce } from "lodash"
 import SearchTokenInput from './SearchTokenInput';
 

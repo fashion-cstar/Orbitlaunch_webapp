@@ -38,6 +38,7 @@ export default function SwapOutput({ value, name, balance, logoURI, onChange, on
                         handleBlur={handleBlur}
                         onChange={onChange}
                         value={value}
+                        readOnly={true}
                     />
                 </div>
                 <div className="text-[#FFFFFF]/[.5] text-[20px] rounded-md text-right">

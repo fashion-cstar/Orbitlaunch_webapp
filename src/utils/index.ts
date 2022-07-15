@@ -19,7 +19,7 @@ export enum PROJECT_STATUS {
   ProjectLaunched,
   VestingStarted,
   VestingClosed,
-  PresaleFilled  
+  PresaleFilled
 }
 
 enum NETWORK_NAME {
@@ -118,12 +118,12 @@ export const wait = (time: number) =>
   })
 
 export const formatEther = (amount: BigNumber, decimals: number, toFixed: number): number => {
-  if (decimals<5) return 0
-  try{
+  if (decimals < 5) return 0
+  try {
     let temp: BigNumber = amount.mul(BigNumber.from(10).pow(toFixed))
     temp = temp.div(BigNumber.from(10).pow(decimals))
     return (temp.toNumber()) / (10 ** toFixed)
-  }catch (error) {}
+  } catch (error) { }
   return 0
 }
 
@@ -157,15 +157,15 @@ export const getNativeSymbol = (name: string): string => {
   let symbol = 'BNB'
   switch (name.toLowerCase()) {
     case NETWORK_NAME.Ethereum:
-      symbol="ETH"
+      symbol = "ETH"
       break;
     case NETWORK_NAME.BSC:
-      symbol="BNB"
+      symbol = "BNB"
       break;
     case NETWORK_NAME.Polygon:
-      symbol="MATIC"
+      symbol = "MATIC"
       break;
-    default:      
+    default:
   }
   return symbol
 }
@@ -191,17 +191,17 @@ export const getProjectStatusText = (ps: number): string => {
     case PROJECT_STATUS.VestingClosed:
       return 'vesting closed'
     case PROJECT_STATUS.PresaleFilled:
-      return 'Presale Filled'   
+      return 'Presale Filled'
     default:
-      return ''   
+      return ''
   }
 }
 
-export const getJoinPresaleButtonText = (ps: number): string => {  
+export const getJoinPresaleButtonText = (ps: number): string => {
   switch (ps) {
-    case PROJECT_STATUS.Unknown: 
-    case PROJECT_STATUS.PresaleOpeningSoon: 
-    case PROJECT_STATUS.PresaleOpen: 
+    case PROJECT_STATUS.Unknown:
+    case PROJECT_STATUS.PresaleOpeningSoon:
+    case PROJECT_STATUS.PresaleOpen:
     case PROJECT_STATUS.PublicPresaleOpen:
       return 'Join Presale Now'
     case PROJECT_STATUS.PresaleClosed:
@@ -212,7 +212,7 @@ export const getJoinPresaleButtonText = (ps: number): string => {
 }
 
 export const getJoinPresaleButtonActive = (ps: number): boolean => {
-  if (ps >= PROJECT_STATUS.PresaleOpen && ps <= PROJECT_STATUS.PublicPresaleClosed 
+  if (ps >= PROJECT_STATUS.PresaleOpen && ps <= PROJECT_STATUS.PublicPresaleClosed
     || ps === PROJECT_STATUS.PresaleFilled) return true
   return false
 }
@@ -225,3 +225,14 @@ export const ONEDAY_SECS = 86400
 export const maxUserLockAmount = tierInformation[0].requiredTokens.toNumber()
 
 export const maxUserPlayAmount = 100000000
+
+export const isNativeCoin = (blockchain: string, symbol: string) => {
+  switch (blockchain) {
+    case NETWORK_NAME.BSC:
+      return (symbol.toLowerCase().indexOf('bnb') > 0)
+    case NETWORK_NAME.Ethereum:
+      return (symbol.toLowerCase().indexOf('eth') > 0)
+    case NETWORK_NAME.Polygon:
+      return (symbol.toLowerCase().indexOf('matic') > 0)
+  }
+}

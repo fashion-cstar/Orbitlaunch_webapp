@@ -2,12 +2,13 @@ import InputBoxContainer from './InputBoxContainer'
 
 interface InputBoxProps {
     value: any
+    readOnly: boolean
     onChange: (val: any) => void
     handleFocus: () => void
     handleBlur: () => void
 }
 
-export default function SwapQtyInputBox({ value, onChange, handleFocus, handleBlur }: InputBoxProps) {
+export default function SwapQtyInputBox({ value, readOnly, onChange, handleFocus, handleBlur }: InputBoxProps) {
     return (
         <InputBoxContainer>
             <input
@@ -23,6 +24,7 @@ export default function SwapQtyInputBox({ value, onChange, handleFocus, handleBl
                 }
                 value={Number(value) === 0 || isNaN(Number(value)) ? '' : Number(value)}
                 required={true}
+                readOnly = {readOnly}
             />
         </InputBoxContainer>
     )
