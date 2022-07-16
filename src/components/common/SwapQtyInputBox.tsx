@@ -12,7 +12,7 @@ export default function SwapQtyInputBox({ value, readOnly, onChange, handleFocus
     return (
         <InputBoxContainer>
             <input
-                type="text"
+                type="number"
                 className="bg-[#06111C] text-white text-[24px] rounded-md block w-full p-0 focus:outline-none"
                 placeholder="0.0"
                 onFocus={handleFocus}

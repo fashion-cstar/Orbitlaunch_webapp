@@ -1,12 +1,11 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import BetQtyInputBox from './BetQtyInputBox'
 
-interface TokenInputProps {
-    value: any    
+interface TokenInputProps {    
     onChange: (val: any) => void
 }
 
-export default function BetAmountInput({ value, onChange }: TokenInputProps) {
+export default function BetAmountInput({ onChange }: TokenInputProps) {
     const [isBorder, setIsBorder] = useState(false)
     const handleFocus = () => {
         setIsBorder(true)
@@ -26,8 +25,7 @@ export default function BetAmountInput({ value, onChange }: TokenInputProps) {
                     <BetQtyInputBox
                         handleFocus={handleFocus}
                         handleBlur={handleBlur}
-                        onChange={onChange}
-                        value={value}
+                        onChange={onChange}                        
                     />
                 </div>
                 <div className="text-[#FFFFFF] text-[16px] rounded-md text-right">

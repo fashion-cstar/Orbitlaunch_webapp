@@ -3,7 +3,7 @@ import { formatEther } from "@ethersproject/units"
 import { Contract } from '@ethersproject/contracts'
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useEthers, ChainId } from "@usedapp/core"
-import { calculateGasMargin, getContract, parseEther } from 'src/utils'
+import { calculateGasMargin, getContract, isNativeCoin, parseEther } from 'src/utils'
 import ERC20_ABI from 'src/lib/contract/abis/erc20.json'
 import { RpcProviders } from "@app/shared/PadConstant"
 import { getChainIdFromName } from 'src/utils'
@@ -79,12 +79,42 @@ export function usePromotedTrendingTokens(): any[] {
 }
 
 export function useSwapCallback(): {
-    swapExactETHForTokens: (swapContractAddress: string, outTokenAddress: string, amount: BigNumber, to: string, blockchain: string) => Promise<string>, 
-    swapTokensForETH: (swapContractAddress: string, inTokenAddress: string, amount: BigNumber, to: string, blockchain: string) => Promise<string>, 
-    swapTokensForTokens: (swapContractAddress: string, inTokenAddress: string, outTokenAddress: string, amount: BigNumber, to: string, blockchain: string) => Promise<string>
+    swapExactETHForTokens: (swapContractAddress: string, outTokenAddress: string, amount: BigNumber, to: string, blockchain: string) => Promise<string>,
+    swapTokensForETH: (swapContractAddress: string, inTokenAddress: string, amount: BigNumber, to: string, blockchain: string) => Promise<string>,
+    swapTokensForTokens: (swapContractAddress: string, inTokenAddress: string, outTokenAddress: string, amount: BigNumber, to: string, blockchain: string) => Promise<string>,
+    estimatedGasForSwap: (swapContractAddress: string, inToken: any, outToken: any, amount: BigNumber, to: string, blockchain: string) => Promise<BigNumber>
 } {
     // get claim data for this account
     const { account, library, chainId } = useEthers()
+
+    const estimatedGasForSwap = async function (swapContractAddress: string, inToken: any, outToken: any, amount: BigNumber, to: string, blockchain: string) {
+        const chainId = getChainIdFromName(blockchain);
+        const swapContract: Contract = getContract(swapContractAddress, SWAP_ABI, library, account ? account : undefined)
+
+        if (!account || !library || !swapContract || amount.lte(0)) return
+        var deadline = Math.floor(Date.now() / 1000) + 900;
+        const gasPrice = await RpcProviders[chainId].getGasPrice()
+        if (isNativeCoin('bsc', inToken?.symbol)) {
+            return swapContract.estimateGas.swapExactETHForTokens(BigNumber.from(0), [BNB_TOKEN_ADDRESS, outToken?.address], to, deadline, PancakeRouterContractAddress, {
+                value: amount
+            }).then(estimatedGas => {
+                let gasUsed = estimatedGas.mul(gasPrice)
+                return gasUsed
+            })
+        } else if (isNativeCoin('bsc', outToken?.symbol)) {
+            return swapContract.estimateGas.swapTokensForETH(amount, BigNumber.from(0), [inToken?.address, BNB_TOKEN_ADDRESS], to, deadline, PancakeRouterContractAddress)
+                .then(estimatedGas => {
+                    let gasUsed = estimatedGas.mul(gasPrice)
+                    return gasUsed
+                })
+        } else {            
+            return swapContract.estimateGas.swapTokensForTokens(amount, BigNumber.from(0), [inToken?.address, BNB_TOKEN_ADDRESS, outToken?.address], to, deadline, PancakeRouterContractAddress)
+                .then(estimatedGas => {
+                    let gasUsed = estimatedGas.mul(gasPrice)
+                    return gasUsed
+                })
+        }        
+    }
 
     const swapExactETHForTokens = async function (swapContractAddress: string, outTokenAddress: string, amount: BigNumber, to: string, blockchain: string) {
         const chainId = getChainIdFromName(blockchain);
@@ -99,7 +129,9 @@ export function useSwapCallback(): {
             return swapContract.swapExactETHForTokens(BigNumber.from(0), [BNB_TOKEN_ADDRESS, outTokenAddress], to, deadline, PancakeRouterContractAddress, {
                 gasLimit: calculateGasMargin(gas), value: amount
             }).then((response: TransactionResponse) => {
-                return response.hash
+                return response.wait().then((res: any) => {
+                    return response.hash
+                })
             })
         })
     }
@@ -112,14 +144,16 @@ export function useSwapCallback(): {
         if (!account || !library || !swapContract) return
         var deadline = Math.floor(Date.now() / 1000) + 900;
         return swapContract.estimateGas.swapTokensForETH(amount, BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS], to, deadline, PancakeRouterContractAddress)
-        .then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
-            return swapContract.swapTokensForETH(amount, BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS], to, deadline, PancakeRouterContractAddress, {
-                gasLimit: calculateGasMargin(gas)
-            }).then((response: TransactionResponse) => {
-                return response.hash
+            .then(estimatedGasLimit => {
+                const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+                return swapContract.swapTokensForETH(amount, BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS], to, deadline, PancakeRouterContractAddress, {
+                    gasLimit: calculateGasMargin(gas)
+                }).then((response: TransactionResponse) => {
+                    return response.wait().then((res: any) => {
+                        return response.hash
+                    })
+                })
             })
-        })
     }
 
     const swapTokensForTokens = async function (swapContractAddress: string, inTokenAddress: string, outTokenAddress: string, amount: BigNumber, to: string, blockchain: string) {
@@ -130,16 +164,18 @@ export function useSwapCallback(): {
         if (!account || !library || !swapContract) return
         var deadline = Math.floor(Date.now() / 1000) + 900;
         return swapContract.estimateGas.swapTokensForTokens(amount, BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS, outTokenAddress], to, deadline, PancakeRouterContractAddress)
-        .then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
-            return swapContract.swapTokensForTokens(amount, BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS, outTokenAddress], to, deadline, PancakeRouterContractAddress, {
-                gasLimit: calculateGasMargin(gas)
-            }).then((response: TransactionResponse) => {
-                return response.hash
+            .then(estimatedGasLimit => {
+                const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+                return swapContract.swapTokensForTokens(amount, BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS, outTokenAddress], to, deadline, PancakeRouterContractAddress, {
+                    gasLimit: calculateGasMargin(gas)
+                }).then((response: TransactionResponse) => {
+                    return response.wait().then((res: any) => {
+                        return response.hash
+                    })
+                })
             })
-        })
     }
 
-    return { swapExactETHForTokens, swapTokensForETH, swapTokensForTokens }
+    return { estimatedGasForSwap, swapExactETHForTokens, swapTokensForETH, swapTokensForTokens }
 }
 

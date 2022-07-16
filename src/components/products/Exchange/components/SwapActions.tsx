@@ -7,25 +7,33 @@ import { useSnackbar } from "@app/lib/hooks/useSnackbar"
 import { debounce } from "lodash"
 import { SwapContractAddress } from '@app/shared/AppConstant';
 import { useSwapCallback } from '@app/state/exchange';
+import { BigNumber } from 'ethers'
 
 interface ActionProps {
     inputAmount: number
     inToken: any
     outToken: any
+    inTokenBalance: BigNumber
+    isApproved: boolean
+    setSwapSuccess: (hash: string) => void
+    setIsApproved: (approve: boolean) => void
 }
 
 export default function DiceBetAction({
     inputAmount,
     inToken,
-    outToken
+    outToken,
+    inTokenBalance,
+    isApproved,
+    setSwapSuccess,
+    setIsApproved
 }: ActionProps) {
     const { library, account, chainId } = useEthers()
     const { tokenAllowanceCallback } = useTokenAllowance()
     const { approveCallback } = useApproveCallback()
     const { swapExactETHForTokens, swapTokensForETH, swapTokensForTokens } = useSwapCallback()
     const snackbar = useSnackbar()
-    const [isCheckingAllowance, setIsCheckingAllowance] = useState(false)
-    const [isApproved, setIsApproved] = useState(false)
+    const [isCheckingAllowance, setIsCheckingAllowance] = useState(false)    
     const [isWalletApproving, setIsWalletApproving] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
 
@@ -37,6 +45,7 @@ export default function DiceBetAction({
 
     const checkAllowance = async (): Promise<boolean> => {
         try {
+            if (isNativeCoin('bsc', inToken?.symbol)) return true
             let amount = parseEther(inputAmount, inToken?.decimals ?? 18)
             let res = await tokenAllowanceCallback(account, SwapContractAddress, inToken?.address, 'bsc')
             if (res.gte(amount) && amount.gt(0)) {
@@ -61,15 +70,16 @@ export default function DiceBetAction({
     }, [isCheckingAllowance])
 
     useEffect(() => {
+        setIsApproved(false)
         checkUserApproved()
-    }, [inputAmount, account])
+    }, [inToken, outToken, inputAmount, account])
 
     const onApprove = async () => {
         setIsWalletApproving(true)
         let res = await checkAllowance()
         if (!res) {
             try {
-                await approveCallback(SwapContractAddress, inToken?.address, inputAmount, 'bsc').then((hash: string) => {
+                await approveCallback(SwapContractAddress, inToken?.address, Math.round(inputAmount + 1), 'bsc').then((hash: string) => {
                     setIsWalletApproving(false)
                     setIsApproved(true)
                     snackbar.snackbar.show("Approved!", "success");
@@ -95,6 +105,7 @@ export default function DiceBetAction({
         try {
             swapExactETHForTokens(SwapContractAddress, outToken?.address, parseEther(inputAmount, inToken?.decimals ?? 18), account, 'bsc').then((hash: string) => {
                 snackbar.snackbar.show("Transaction submitted!", "success")
+                setSwapSuccess(hash)
                 setIsLoading(false)
             }).catch(error => {
                 setIsLoading(false)
@@ -114,6 +125,7 @@ export default function DiceBetAction({
         try {
             swapTokensForETH(SwapContractAddress, inToken?.address, parseEther(inputAmount, inToken?.decimals ?? 18), account, 'bsc').then((hash: string) => {
                 snackbar.snackbar.show("Transaction submitted!", "success")
+                setSwapSuccess(hash)
                 setIsLoading(false)
             }).catch(error => {
                 setIsLoading(false)
@@ -133,6 +145,7 @@ export default function DiceBetAction({
         try {
             swapTokensForTokens(SwapContractAddress, inToken?.address, outToken?.address, parseEther(inputAmount, inToken?.decimals ?? 18), account, 'bsc').then((hash: string) => {
                 snackbar.snackbar.show("Transaction submitted!", "success")
+                setSwapSuccess(hash)
                 setIsLoading(false)
             }).catch(error => {
                 setIsLoading(false)
@@ -165,7 +178,7 @@ export default function DiceBetAction({
                 loading={isWalletApproving}
                 loadingPosition="start"
                 onClick={onApprove}
-                disabled={isApproved || isCheckingAllowance || !account || inputAmount<=0}
+                disabled={isApproved || isCheckingAllowance || !account || inputAmount <= 0 || inTokenBalance.lt(parseEther(inputAmount, inToken?.decimals ?? 18))}
             >
                 {isWalletApproving ? 'Approving ...' : isApproved ? "Approved" : "Approve"}
             </LoadingButton>
@@ -175,7 +188,7 @@ export default function DiceBetAction({
                 loading={isLoading}
                 loadingPosition="start"
                 onClick={onSwap}
-                disabled={!isApproved || !account || inputAmount<=0}
+                disabled={!isApproved || !account || inputAmount <= 0 || inTokenBalance.lt(parseEther(inputAmount, inToken?.decimals ?? 18))}
             >
                 {isLoading ? 'Swapping ...' : "Swap"}
             </LoadingButton>

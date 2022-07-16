@@ -41,7 +41,7 @@ export default function SwapInput({ value, name, balance, logoURI, onChange, onO
                         readOnly={false}
                     />
                 </div>
-                <div className="text-[#FFFFFF]/[.5] text-[20px] rounded-md text-right">
+                <div className="text-[#FFFFFF]/[.5] text-[20px] rounded-md text-right whitespace-nowrap">
                     <span>{balance}</span>
                 </div>
             </div>

@@ -1,13 +1,12 @@
 import InputBoxContainer from 'src/components/common/InputBoxContainer'
 
-interface InputBoxProps {
-    value: any
+interface InputBoxProps {    
     onChange: (val: any) => void
     handleFocus: () => void
     handleBlur: () => void
 }
 
-export default function TokenQtyInputBox({ value, onChange, handleFocus, handleBlur }: InputBoxProps) {
+export default function TokenQtyInputBox({ onChange, handleFocus, handleBlur }: InputBoxProps) {
     return (
         <InputBoxContainer>
             <input
@@ -20,8 +19,7 @@ export default function TokenQtyInputBox({ value, onChange, handleFocus, handleB
                     if (isNaN(Number(event.target.value))) onChange(0)
                     else onChange(event.target.value)
                 }
-                }
-                value={Number(value) === 0 || isNaN(Number(value)) ? '' : Number(value)}
+                }                
                 required={true}
             />
         </InputBoxContainer>

@@ -155,7 +155,7 @@ export default function RoshamboModal({ isOpen, orbitDecimals, handleClose }: Ro
                                 </div>
                                 <div className="flex gap-4 my-3 w-full">
                                     <div className="basis-1/2">
-                                        <BetAmountInput value={betAmount} onChange={onBetAmountInputChange} />
+                                        <BetAmountInput onChange={onBetAmountInputChange} />
                                     </div>
                                     <div className="basis-1/2">
                                         <BetSelectBox selectedBet={selectedBet}
