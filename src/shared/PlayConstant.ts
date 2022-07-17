@@ -7,6 +7,6 @@ export const Roshambo_MaxBet = 1250;
 export const SpinWheel_MinBet = 250;
 export const SpinWheel_MaxBet = 1250;
 
-export const OrbitPlayContractAddress = "0x688965ac360B46d9a02CDA9f386aD72b66c5b787";
+export const OrbitPlayContractAddress = "0xe72d337630c72Bce21902E2D04fA116Fd9f488F6";
 //just for test
 export const OrbtTokenAddress = "0xD3C7eeC9daA9b061303CFe54F880978D7D033987"

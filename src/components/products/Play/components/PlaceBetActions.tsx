@@ -45,7 +45,7 @@ export default function DiceBetAction({
     const checkUserApproved = useRef(
         debounce(async () => {
             setIsCheckingAllowance(true)
-        }, 500)
+        }, 300)
     ).current;
 
     const checkAllowance = async (): Promise<boolean> => {
@@ -74,7 +74,7 @@ export default function DiceBetAction({
 
     useEffect(() => {
         checkUserApproved()
-    }, [amount, account, isOpen])
+    }, [amount, betNumber, account, isOpen])
 
     const onApprove = async () => {
         setIsWalletApproving(true)
