@@ -40,7 +40,7 @@ export const LockActionsProvider = ({ children = null as any }) => {
     const lockAndClaimTierCallback = async function (amount: BigNumber, lockDays: number) {
         if (!account || !library || !TierTokenLockContractAddress) return
         return lockContract.estimateGas.lockAndClaimTier(amount, BigNumber.from(lockDays)).then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            const gas = BigNumber.from(estimatedGasLimit)
             return lockContract.lockAndClaimTier(amount, BigNumber.from(lockDays), {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
@@ -59,7 +59,7 @@ export const LockActionsProvider = ({ children = null as any }) => {
     const extendLockTimeCallback = async function (additionalDays: number) {
         if (!account || !library || !TierTokenLockContractAddress) return
         return lockContract.estimateGas.extendLockTime(BigNumber.from(additionalDays)).then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            const gas = BigNumber.from(estimatedGasLimit)
             return lockContract.extendLockTime(BigNumber.from(additionalDays), {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
@@ -71,7 +71,7 @@ export const LockActionsProvider = ({ children = null as any }) => {
     const increaseTierCallback = async function (amount: BigNumber) {
         if (!account || !library || !TierTokenLockContractAddress) return
         return lockContract.estimateGas.increaseTier(amount).then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            const gas = BigNumber.from(estimatedGasLimit)
             return lockContract.increaseTier(amount, {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
@@ -83,7 +83,7 @@ export const LockActionsProvider = ({ children = null as any }) => {
     const unlockTokenCallback = async function () {
         if (!account || !library || !TierTokenLockContractAddress) return
         return lockContract.estimateGas.unlockToken().then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            const gas = BigNumber.from(estimatedGasLimit)
             return lockContract.unlockToken({
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {

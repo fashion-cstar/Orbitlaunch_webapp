@@ -21,7 +21,7 @@ export function useMigrationCallback(): {
     if (!account || !library || !migrateContract) return
     
     return migrateContract.estimateGas.deposit().then(estimatedGasLimit => {
-      const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+      const gas = BigNumber.from(estimatedGasLimit)
       return migrateContract.deposit({
         gasLimit: calculateGasMargin(gas)
       }).then((response: TransactionResponse) => {

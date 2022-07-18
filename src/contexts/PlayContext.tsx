@@ -59,7 +59,7 @@ export const PlayProvider = ({ children = null as any }) => {
         const playContract: Contract = getContract(playContractAddress, orbitplay, library, account ? account : undefined)
         if (!account || !library || !playContractAddress) return
         return playContract.estimateGas.placeDiceRollBet(amount, BigNumber.from(diceNumber)).then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            const gas = BigNumber.from(estimatedGasLimit)
             return playContract.placeDiceRollBet(amount, BigNumber.from(diceNumber), {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
@@ -75,7 +75,7 @@ export const PlayProvider = ({ children = null as any }) => {
         const playContract: Contract = getContract(playContractAddress, orbitplay, library, account ? account : undefined)
         if (!account || !library || !playContractAddress) return
         return playContract.estimateGas.claimDiceRollWin().then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            const gas = BigNumber.from(estimatedGasLimit)
             return playContract.claimDiceRollWin({
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
@@ -89,7 +89,7 @@ export const PlayProvider = ({ children = null as any }) => {
         const playContract: Contract = getContract(playContractAddress, orbitplay, library, account ? account : undefined)
         if (!account || !library || !playContractAddress) return
         return playContract.estimateGas.placeCoinFlipBet(amount, BigNumber.from(sideNumber)).then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            const gas = BigNumber.from(estimatedGasLimit)
             return playContract.placeCoinFlipBet(amount, BigNumber.from(sideNumber), {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
@@ -105,7 +105,7 @@ export const PlayProvider = ({ children = null as any }) => {
         const playContract: Contract = getContract(playContractAddress, orbitplay, library, account ? account : undefined)
         if (!account || !library || !playContractAddress) return
         return playContract.estimateGas.claimCoinFlipWin().then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            const gas = BigNumber.from(estimatedGasLimit)
             return playContract.claimCoinFlipWin({
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
@@ -119,7 +119,7 @@ export const PlayProvider = ({ children = null as any }) => {
         const playContract: Contract = getContract(playContractAddress, orbitplay, library, account ? account : undefined)
         if (!account || !library || !playContractAddress) return
         return playContract.estimateGas.placeSpinBet(amount, BigNumber.from(placeNumber)).then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            const gas = BigNumber.from(estimatedGasLimit)
             return playContract.placeSpinBet(amount, BigNumber.from(placeNumber), {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
@@ -135,7 +135,7 @@ export const PlayProvider = ({ children = null as any }) => {
         const playContract: Contract = getContract(playContractAddress, orbitplay, library, account ? account : undefined)
         if (!account || !library || !playContractAddress) return
         return playContract.estimateGas.claimSpinWin().then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            const gas = BigNumber.from(estimatedGasLimit)
             return playContract.claimSpinWin({
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
@@ -149,7 +149,7 @@ export const PlayProvider = ({ children = null as any }) => {
         const playContract: Contract = getContract(playContractAddress, orbitplay, library, account ? account : undefined)
         if (!account || !library || !playContractAddress) return        
         return playContract.estimateGas.placeRoshamboBet(amount, BigNumber.from(roshamboNumber)).then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            const gas = BigNumber.from(estimatedGasLimit)
             return playContract.placeRoshamboBet(amount, BigNumber.from(roshamboNumber), {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {                
@@ -165,7 +165,7 @@ export const PlayProvider = ({ children = null as any }) => {
         const playContract: Contract = getContract(playContractAddress, orbitplay, library, account ? account : undefined)
         if (!account || !library || !playContractAddress) return
         return playContract.estimateGas.claimRoshamboWin().then(estimatedGasLimit => {
-            const gas = chainId === ChainId.BSC || chainId === ChainId.BSCTestnet ? BigNumber.from(350000) : estimatedGasLimit
+            const gas = BigNumber.from(estimatedGasLimit)
             return playContract.claimRoshamboWin({
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
