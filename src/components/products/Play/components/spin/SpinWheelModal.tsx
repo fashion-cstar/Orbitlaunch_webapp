@@ -168,6 +168,7 @@ export default function SpinWheelModal({ isOpen, orbitDecimals, handleClose }: S
                                     ORBIT_TOKEN={OrbtTokenAddress}
                                     isOpen={isOpen}
                                     isValidAmount={isValidAmount}
+                                    placeString={"Place SpinTheWheel"}
                                     setPlaceBetSuccess={setPlaceSpinBetSuccess}
                                     setIsLoading={setIsLoading}
                                 />

@@ -168,6 +168,7 @@ export default function DiceRollModal({ isOpen, orbitDecimals, handleClose }: Di
                                     ORBIT_TOKEN={OrbtTokenAddress}
                                     isOpen={isOpen}
                                     isValidAmount={isValidAmount}
+                                    placeString={"Place DiceRoll"}
                                     setPlaceBetSuccess={setPlaceDiceBetSuccess}
                                     setIsLoading={setIsLoading}
                                 />

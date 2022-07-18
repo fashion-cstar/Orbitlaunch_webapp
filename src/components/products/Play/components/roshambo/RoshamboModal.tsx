@@ -173,6 +173,7 @@ export default function RoshamboModal({ isOpen, orbitDecimals, handleClose }: Ro
                                     ORBIT_TOKEN={OrbtTokenAddress}
                                     isOpen={isOpen}
                                     isValidAmount={isValidAmount}
+                                    placeString={"Place RockPaperScissors"}
                                     setPlaceBetSuccess={setPlaceRoshamboBetSuccess}
                                     setIsLoading={setIsLoading}
                                 />

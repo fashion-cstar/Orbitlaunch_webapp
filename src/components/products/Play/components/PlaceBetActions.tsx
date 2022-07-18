@@ -18,6 +18,7 @@ interface DiceBetActionProps {
     ORBIT_TOKEN: string
     isOpen: boolean
     isValidAmount: boolean
+    placeString: string
     setPlaceBetSuccess: (destiny: number, returning: BigNumber, burnt: BigNumber) => void
     setIsLoading: (value: boolean) => void
 }
@@ -30,6 +31,7 @@ export default function DiceBetAction({
     ORBIT_TOKEN,
     isOpen,
     isValidAmount,
+    placeString,
     setPlaceBetSuccess,
     setIsLoading }: DiceBetActionProps) {
 
@@ -236,7 +238,7 @@ export default function DiceBetAction({
                     onClick={onPlace}
                     disabled={!isApproved || betNumber <= 0 || !isValidAmount || !account}
                 >
-                    {isLoading ? 'Placing ...' : "Place DiceRoll"}
+                    {isLoading ? 'Placing ...' : placeString}
                 </LoadingButton>}
         </div>
     );

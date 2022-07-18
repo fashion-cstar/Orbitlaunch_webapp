@@ -169,6 +169,7 @@ export default function CoinFlipModal({ isOpen, orbitDecimals, handleClose }: Co
                                     ORBIT_TOKEN={OrbtTokenAddress}
                                     isOpen={isOpen}
                                     isValidAmount={isValidAmount}
+                                    placeString={"Place CoinFlip"}
                                     setPlaceBetSuccess={setPlaceCoinFlipSuccess}
                                     setIsLoading={setIsLoading}
                                 />
