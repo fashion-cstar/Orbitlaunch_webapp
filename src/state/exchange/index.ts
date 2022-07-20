@@ -125,7 +125,7 @@ export function useSwapCallback(): {
         return swapContract.estimateGas.swapExactETHForTokens(BigNumber.from(0), [BNB_TOKEN_ADDRESS, outTokenAddress], to, deadline, PancakeRouterContractAddress, {
             value: amount
         }).then(estimatedGasLimit => {
-            const gas = BigNumber.from(estimatedGasLimit)
+            const gas = estimatedGasLimit
             return swapContract.swapExactETHForTokens(BigNumber.from(0), [BNB_TOKEN_ADDRESS, outTokenAddress], to, deadline, PancakeRouterContractAddress, {
                 gasLimit: calculateGasMargin(gas), value: amount
             }).then((response: TransactionResponse) => {
@@ -145,7 +145,7 @@ export function useSwapCallback(): {
         var deadline = Math.floor(Date.now() / 1000) + 900;
         return swapContract.estimateGas.swapTokensForETH(amount, BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS], to, deadline, PancakeRouterContractAddress)
             .then(estimatedGasLimit => {
-                const gas = BigNumber.from(estimatedGasLimit)
+                const gas = estimatedGasLimit
                 return swapContract.swapTokensForETH(amount, BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS], to, deadline, PancakeRouterContractAddress, {
                     gasLimit: calculateGasMargin(gas)
                 }).then((response: TransactionResponse) => {
@@ -165,7 +165,7 @@ export function useSwapCallback(): {
         var deadline = Math.floor(Date.now() / 1000) + 900;
         return swapContract.estimateGas.swapTokensForTokens(amount, BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS, outTokenAddress], to, deadline, PancakeRouterContractAddress)
             .then(estimatedGasLimit => {
-                const gas = BigNumber.from(estimatedGasLimit)
+                const gas = estimatedGasLimit
                 return swapContract.swapTokensForTokens(amount, BigNumber.from(0), [inTokenAddress, BNB_TOKEN_ADDRESS, outTokenAddress], to, deadline, PancakeRouterContractAddress, {
                     gasLimit: calculateGasMargin(gas)
                 }).then((response: TransactionResponse) => {

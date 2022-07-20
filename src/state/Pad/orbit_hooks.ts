@@ -165,7 +165,7 @@ export function useJoinPresaleCallback(): {
             return padContract.estimateGas.deposit(parseEther(amount, decimals), {
                 value: parseEther(amount, decimals)
             }).then(estimatedGasLimit => {
-                const gas = BigNumber.from(estimatedGasLimit)
+                const gas = estimatedGasLimit
                 return padContract.deposit(parseEther(amount, decimals), {
                     gasLimit: calculateGasMargin(gas), value: parseEther(amount, decimals)
                 }).then((response: TransactionResponse) => {
@@ -178,7 +178,7 @@ export function useJoinPresaleCallback(): {
         } else {
             return padContract.estimateGas.deposit(parseEther(amount, decimals)).then(estimatedGas => {
                 return padContract.estimateGas.deposit(parseEther(amount, decimals)).then(estimatedGasLimit => {
-                    const gas = BigNumber.from(estimatedGasLimit)
+                    const gas = estimatedGasLimit
                     return padContract.deposit(parseEther(amount, decimals), {
                         gasLimit: calculateGasMargin(gas)
                     }).then((response: TransactionResponse) => {
@@ -205,7 +205,7 @@ export function useClaimCallback(): {
         const chainId = getChainIdFromName(blockchain);
         const padContract: Contract = getContract(padContractAddress, ORBIT_WHITELIST_ABI, library, account ? account : undefined)
         return padContract.estimateGas.claim().then(estimatedGasLimit => {
-            const gas = BigNumber.from(estimatedGasLimit)
+            const gas = estimatedGasLimit
             return padContract
                 .claim({ gasLimit: calculateGasMargin(gas) })
                 .then((response: TransactionResponse) => {
